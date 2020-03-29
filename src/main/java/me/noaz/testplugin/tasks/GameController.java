@@ -62,47 +62,26 @@ public class GameController {
         //Og speed 3.9
         gunConfigurations.put("Skullcrusher", new WeaponConfiguration("Skullcrusher", Material.GOLD_INGOT,
                 "Automatic", "burst",
-                2.0, 100.0, 5.0,7.5,3.9,
-                100,4000, 500,3,72,24));
-        gunConfigurations.put("Skullcrusher4", new WeaponConfiguration("Skullcrusher4", Material.GOLD_INGOT,
-                "Automatic", "burst",
                 2.0, 100.0, 5.0,7.5,4,
                 100,4000, 500,3,72,24));
-        gunConfigurations.put("Skullcrusher5", new WeaponConfiguration("Skullcrusher5", Material.GOLD_INGOT,
-                "Automatic", "burst",
-                2.0, 100.0, 5.0,7.5,5,
-                100,4000, 500,3,72,24));
-        gunConfigurations.put("Skullcrusher6", new WeaponConfiguration("Skullcrusher6", Material.GOLD_INGOT,
-                "Automatic", "burst",
-                2.0, 100.0, 5.0,7.5,6,
-                100,4000, 500,3,72,24));
-        gunConfigurations.put("Skullcrusher7", new WeaponConfiguration("Skullcrusher7", Material.GOLD_INGOT,
-                "Automatic", "burst",
-                2.0, 100.0, 5.0,7.5,7,
-                100,4000, 500,3,72,24));
-        gunConfigurations.put("Skullcrusher3", new WeaponConfiguration("Skullcrusher3", Material.GOLD_INGOT,
-                "Automatic", "burst",
-                2.0, 100.0, 5.0,7.5,3,
-                100,4000, 500,3,72,24));
-
         gunConfigurations.put("Python", new WeaponConfiguration("Python", Material.GOLDEN_SHOVEL,
                 "Secondary", "single",
-                2.0, 100.0, 10.0, 20.0, 3.9,
+                2.0, 100.0, 10.0, 20.0, 4,
                 70, 3500, 500, 1, 50, 9));
 
         gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", Material.STONE_AXE,
                 "Sniper", "single",
-                2.0, 100.0, 11.4, 20.0, 3.9,
+                2.0, 100.0, 11.4, 20.0, 4,
                 400, 4250, 500, 1, 32, 7));
 
         gunConfigurations.put("L120 Isolator", new WeaponConfiguration("L120 Isolator", Material.BOWL,
                 "Sniper", "single",
-                2.0, 100.0, 21.4, 25.0, 3.9,
+                2.0, 100.0, 21.4, 25.0, 4,
                 400, 5000, 900, 1, 60, 4));
 
         gunConfigurations.put("AA12", new WeaponConfiguration("AA12", Material.IRON_PICKAXE,
                 "Shotgun", "buck", 1.0, 3.0, 7,
-                9, 3.9, 18, 1500, 450, 6,
+                9, 4, 18, 1500, 450, 6,
                 100, 20));
     }
 

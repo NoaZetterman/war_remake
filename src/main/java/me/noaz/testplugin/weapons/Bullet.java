@@ -4,6 +4,7 @@ import me.noaz.testplugin.TestPlugin;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
@@ -30,10 +31,11 @@ public class Bullet {
 
         bullet.setGravity(false);
         bullet.setVelocity(velocity);
+
         bullet.setMetadata("bodyDamage", new FixedMetadataValue(plugin, bodyDamage));
         bullet.setMetadata("headDamage", new FixedMetadataValue(plugin, headDamage));
 
-        Bukkit.getServer().getScheduler().runTaskLater(plugin, new ActivateGravity(bullet), (int) Math.ceil(range/bulletSpeed)); //Delay = range with respect to speed
+        Bukkit.getServer().getScheduler().runTaskLater(plugin, new ActivateGravity(bullet), (int) Math.ceil(range/bulletSpeed)); //Delay = range with respect to speed (time=dist/speed)
     }
 
     /**

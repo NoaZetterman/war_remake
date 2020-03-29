@@ -81,22 +81,22 @@ public abstract class Weapon {
      * @return A vector containing direction of the bullet
      */
     protected Vector calculateBulletDirection(double accuracy) {
-        Vector velocity = player.getLocation().toVector();
-        velocity.normalize();
+        Vector velocity = player.getLocation().getDirection();
 
         velocity.rotateAroundX(0.5*calculateAccuracy(accuracy));
         velocity.rotateAroundY(0.5*calculateAccuracy(accuracy));
         velocity.rotateAroundZ(0.5*calculateAccuracy(accuracy));
 
+        velocity.normalize();
         velocity.multiply(config.getBulletSpeed());
         return velocity;
     }
 
     private double calculateAccuracy(double accuracy) {
-        if(accuracy <= 100) {
+        if(accuracy < 100) {
             return (Math.random() - 0.5) / accuracy;
         } else {
-            return 1;
+            return 0;
         }
     }
 

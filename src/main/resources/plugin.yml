@@ -1,0 +1,44 @@
+name: TestPlugin
+version: ${project.version}
+main: me.noaz.testplugin.TestPlugin
+api-version: 1.13
+author: noaz
+description: A test plugin
+
+commands:
+  game:
+    aliases: [war]
+    permission: TestPlugin.game
+    description: This command is regarding games.
+  cg:
+    aliases: [changeGame]
+    permission: TestPlugin.cg
+    description: Change current game and gamemode
+  maps:
+    permission: TestPlugin.maps
+    description: List all playable maps
+  profile:
+    permission: TestPlugin.profile
+    descrtion: Displays a players stats
+  ping:
+    permission: TestPlugin.ping
+    description: Displays players ping
+permissions:
+  TestPlugin.game:
+    description: Allows to join and leave games
+    default: true
+  TestPlugin.cg:
+    description: Allows to change game and gamemode
+    default: op
+  TestPlugin.maps:
+    description: Allows to see all playable maps
+    default: op
+  TestPlugin.op:
+    description: Access to everything
+    default: op
+  TestPlugin.profile:
+    description: Allows to check another players profile
+    default: true
+  TestPlugin.ping:
+    description: Allows player to ping himself
+    default: true

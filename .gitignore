@@ -1,1 +1,6 @@
-*.idea
+### INTELLIJ IDEA
+*.iml
+.idea/
+*.ipr
+*.iws
+/out/

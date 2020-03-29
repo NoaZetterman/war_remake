@@ -4,7 +4,6 @@ import me.noaz.testplugin.TestPlugin;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**

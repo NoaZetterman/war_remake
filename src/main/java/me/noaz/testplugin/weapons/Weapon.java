@@ -9,12 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.awt.*;
 import java.util.List;
 
 /**
- * Main class that weapons are built from, may be inherited for special guns, only used to shoot and for setup.
- * Right now a demo gun
+ * Main class that weapons are built from.
  *
  * @author Noa Zetterman
  * @version 2019-12-16

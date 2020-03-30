@@ -58,16 +58,18 @@ public class GameController {
     }
 
     private void createGunConfigurations() {
-        //Should grab the information for all guns with some loop
-        //Og speed 3.9
+        //Should grab the information for all guns from database later on
+
+        // http://puttyland.com/share/TTYWy1vN.txt
         gunConfigurations.put("Skullcrusher", new WeaponConfiguration("Skullcrusher", Material.GOLD_INGOT,
                 "Automatic", "burst",
                 2.0, 100.0, 5.0,7.5,4,
-                100,4000, 500,3,72,24));
+                100,4000, 400,3,72,24));
+
         gunConfigurations.put("Python", new WeaponConfiguration("Python", Material.GOLDEN_SHOVEL,
                 "Secondary", "single",
                 2.0, 100.0, 10.0, 20.0, 4,
-                70, 3500, 500, 1, 50, 9));
+                70, 3500, 333, 1, 50, 9));
 
         gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", Material.STONE_AXE,
                 "Sniper", "single",
@@ -306,7 +308,7 @@ public class GameController {
         if(!mapNames.contains(mapName))
             return false;
 
-        if(!validGamemode(mapName, gamemode))
+        if(!isValidGamemode(mapName, gamemode))
             return false;
 
         nextMapName = mapName;
@@ -328,16 +330,18 @@ public class GameController {
      */
     public void pickNextMapAndGamemode() {
         Random random = new Random();
+
+        //Note: This does not work when there's only one map.
         while(nextMapName.equals(previousMapName)) {
             nextMapName = mapNames.get(random.nextInt(mapNames.size()));
         }
 
-        while(!validGamemode(nextMapName, gamemode)) {
+        while(!isValidGamemode(nextMapName, gamemode)) {
             gamemode = gamemodes[random.nextInt(gamemodes.length)];
         }
     }
 
-    private boolean validGamemode(String mapName, String gamemode) {
+    private boolean isValidGamemode(String mapName, String gamemode) {
         switch(gamemode) {
             case "tdm":
                 if(!maps.get(mapName).containsKey("bluespawn"))

@@ -12,28 +12,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-///gamerule doDaylightCycle false
 
 public final class TestPlugin extends JavaPlugin {
-
-    /*
-     * Getting and setting data
-     *
-     * GET :)
-     * ResultSet result = statement.executeQuery("SELECT * FROM PlayerData WHERE BALANCE = 0;");
-List<String> bankruptPlayers = new ArrayList<String>();
-while (result.next()) {
-    String name = result.getString("PLAYERNAME");
-    bankruptPlayers.add(name);
-}
-*
-*
-* SET :)
-*
-* statement.executeUpdate("INSERT INTO PlayerData (PLAYERNAME, BALANCE) VALUES ('Playername', 100);");
-
-* //May run async with BukkitRunnable
-     */
     private Connection connection;
     private String host, database, username, password;
     private int port;
@@ -58,7 +38,6 @@ while (result.next()) {
 
         this.saveDefaultConfig();
 
-        //TODO: Fix day/night stop
         gameController = new GameController(this);
         ScoreManager scoreManager = new ScoreManager(this);
         getServer().setDefaultGameMode(GameMode.ADVENTURE);
@@ -76,6 +55,9 @@ while (result.next()) {
         gameController.stop();
     }
 
+    /**
+     * Open connection to sql server
+     */
     public void openConnection() throws SQLException, ClassNotFoundException {
         if (connection != null && !connection.isClosed()) {
             return;

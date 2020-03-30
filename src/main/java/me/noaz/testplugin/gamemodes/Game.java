@@ -36,6 +36,8 @@ public abstract class Game {
      * @param handler The players player handler.
      */
     abstract void assignTeam(Player player, PlayerHandler handler);
+    //TODO: Fix the above in all specific gemamodes to not have
+    //a 2 way relation between team and player
 
     /**
      * Lets player join the current game

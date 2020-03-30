@@ -125,7 +125,7 @@ public class DamageEvents implements Listener {
 
         player.setGameMode(GameMode.SPECTATOR);
         player.setSpectatorTarget(killer);
-        //TODO: Fix when game ends and player still in spec
+        //TODO: Fix when game ends and player still in spec DONE?
         BukkitRunnable runnable = new BukkitRunnable() {
 
             int i = 3;

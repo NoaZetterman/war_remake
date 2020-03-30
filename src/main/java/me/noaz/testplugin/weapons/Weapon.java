@@ -44,6 +44,8 @@ public abstract class Weapon {
         this.config = config;
         this.currentClip = config.getClipSize();
         this.currentBullets = config.getStartingBullets();
+
+
     }
 
     /**

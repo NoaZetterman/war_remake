@@ -1,10 +1,11 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.gamemodes.teams.Team;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -17,11 +18,10 @@ public abstract class Game {
     /**
      * Assigns each player a team and teleport them into a starting spawnpoint
      */
-    protected void init() {
-        for(Player p : Bukkit.getServer().getOnlinePlayers()) {
-            PlayerHandler handler = (PlayerHandler) p.getMetadata("handler").get(0).value();
-            assignTeam(p, handler);
-            handler.startPlayingGame();
+    protected void init(HashMap<Player, PlayerExtension> players) {
+        for(PlayerExtension playerExtension : players.values()) {
+            assignTeam(playerExtension);
+            playerExtension.startPlayingGame();
         }
     }
 
@@ -33,9 +33,8 @@ public abstract class Game {
     /**
      * Assigns a player to a team
      * @param player The player to assign a team
-     * @param handler The players player handler.
      */
-    abstract void assignTeam(Player player, PlayerHandler handler);
+    abstract void assignTeam(PlayerExtension player);
     //TODO: Fix the above in all specific gemamodes to not have
     //a 2 way relation between team and player
 
@@ -43,11 +42,10 @@ public abstract class Game {
      * Lets player join the current game
      * @param player the player to join current game
      */
-    public void join(Player player) {
-        PlayerHandler handler = (PlayerHandler) player.getMetadata("handler").get(0).value();
-        if(!handler.isPlayingGame()) {
-            assignTeam(player, handler);
-            handler.startPlayingGame();
+    public void join(PlayerExtension player) {
+        if(!player.isPlayingGame()) {
+            assignTeam(player);
+            player.startPlayingGame();
         }
     }
 
@@ -56,7 +54,7 @@ public abstract class Game {
      * @param player The player to leave the game
      * @return True if player left game, false if player is not in game
      */
-    public boolean leave(Player player) {
+    public boolean leave(PlayerExtension player) {
         boolean leftTeam = false;
         for(Team t : teams) {
             if(t.playerIsOnTeam(player)) {
@@ -66,7 +64,7 @@ public abstract class Game {
         }
 
         if(leftTeam)
-            ((PlayerHandler) player.getMetadata("handler").get(0).value()).endGame();
+            player.endGame();
             //More maybe
 
         return leftTeam;
@@ -78,7 +76,7 @@ public abstract class Game {
      * @param player2 Second player to check
      * @return True if players are on the same team, false otherwise
      */
-    public boolean playersOnSameTeam(Player player1, Player player2) {
+    public boolean playersOnSameTeam(PlayerExtension player1, PlayerExtension player2) {
         if(teams[1].playerIsOnTeam(player1) && teams[1].playerIsOnTeam(player2)) {
             return true;
         } else if(teams[0].playerIsOnTeam(player1) && teams[0].playerIsOnTeam(player2)) {
@@ -97,28 +95,18 @@ public abstract class Game {
 
     /**
      * Ends the game. Must be called before terminating the object.
+     * @param players The players playing this game
+     * @param forceEnd True if the game should force end (used for server shutdown), otherwise false
      */
-    public void end() {
+    public void end(HashMap<Player, PlayerExtension> players, boolean forceEnd) {
         for(Team t : teams) {
-            for(UUID playerUUID : t.getPlayerUUIDs()) {
-                Player player = Bukkit.getServer().getPlayer(playerUUID);
-                ((PlayerHandler) player.getMetadata("handler").get(0).value()).endGame();
+            for(PlayerExtension player : players.values()) {
+                if(forceEnd) {
+                    player.forceEndGame();
+                } else {
+                    player.endGame();
+                }
             }
         }
     }
-
-    /**
-     * Ends the game, should only be used when the server is being shutdown.
-     */
-    public void forceEnd() {
-        for(Team t : teams) {
-            for(UUID playerUUID : t.getPlayerUUIDs()) {
-                Player player = Bukkit.getServer().getPlayer(playerUUID);
-                ((PlayerHandler) player.getMetadata("handler").get(0).value()).forceEndGame();
-            }
-        }
-        //Save player stats
-        //More?
-    }
-
 }

@@ -1,7 +1,7 @@
 package me.noaz.testplugin.gamemodes.misc;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -96,7 +96,7 @@ public class Flag {
                         if (e.getType() == EntityType.PLAYER) {
                             Player player = (Player) e;
 
-                            PlayerHandler handler = (PlayerHandler) player.getMetadata("handler").get(0).value();
+                            PlayerExtension handler = (PlayerExtension) player.getMetadata("handler").get(0).value();
                             if (handler.getTeamColor() != color) {
 
                                 //Make player pick up flag

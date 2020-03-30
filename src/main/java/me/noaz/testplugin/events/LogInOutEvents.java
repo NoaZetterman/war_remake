@@ -3,7 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.AccessDatabase;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
@@ -59,7 +59,9 @@ public class LogInOutEvents implements Listener {
 
         runnable.runTaskAsynchronously(plugin);
 
-        PlayerHandler handler = new PlayerHandler(plugin, event.getPlayer(), scoreManager, gameController.getGunConfigurations(), statement);
+        PlayerExtension handler = new PlayerExtension(plugin, event.getPlayer(), scoreManager, gameController.getGunConfigurations(), statement);
+        gameController.addPlayer(plugin, event.getPlayer(), scoreManager, statement);
+        //TODO: Remove below when all other handler stuff is gone
         event.getPlayer().setMetadata("handler", new FixedMetadataValue(plugin, handler));
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).addPlayer(event.getPlayer());
     }
@@ -69,11 +71,9 @@ public class LogInOutEvents implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        //TODO: Put row below into player extension
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).removePlayer(event.getPlayer());
         event.getPlayer().removePotionEffect(PotionEffectType.SLOW);
-        if(gameController.getGame() != null) {
-            gameController.getGame().leave(event.getPlayer());
-        }
-        //save players statistic to database
+        gameController.removePlayer(event.getPlayer());
     }
 }

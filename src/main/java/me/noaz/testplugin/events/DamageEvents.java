@@ -1,17 +1,15 @@
 package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -33,8 +31,10 @@ public class DamageEvents implements Listener {
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
             Player hitPlayer = (Player) event.getHitEntity();
             Player shooter = (Player) event.getEntity().getShooter();
+            PlayerExtension hitPlayerExtension = gameController.getPlayerExtension(hitPlayer);
+            PlayerExtension shooterExtension = gameController.getPlayerExtension(shooter);
 
-            if(!gameController.getGame().playersOnSameTeam(hitPlayer, shooter) && hitPlayer.getHealth() != 0) {
+            if(!gameController.getGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0) {
 
                 double damage;
                 double eyeToNeckLength = 0.25;
@@ -52,14 +52,13 @@ public class DamageEvents implements Listener {
                     hitPlayer.sendMessage(hitPlayer.getName() + " was shot by " + shooter.getName());
                     shooter.sendMessage(shooter.getName() + " shot " + hitPlayer.getName());
 
-                    ((PlayerHandler) hitPlayer.getMetadata("handler").get(0).value()).getPlayerStatistics().addDeath();
+                    hitPlayerExtension.getPlayerStatistics().addDeath();
 
-                    PlayerHandler killerHandler = (PlayerHandler) shooter.getMetadata("handler").get(0).value();
-                    PlayerStatistic killerStatistic = killerHandler.getPlayerStatistics();
+                    PlayerStatistic killerStatistic = shooterExtension.getPlayerStatistics();
 
                     //Order on the two below matters. (or does it?)
                     killerStatistic.addXP(25);
-                    killerHandler.addKill();
+                    shooterExtension.addKill();
                     respawn(hitPlayer, shooter);
                 } else {
 
@@ -72,7 +71,7 @@ public class DamageEvents implements Listener {
                     hitPlayer.setVelocity(knockback);
                 }
 
-                ((PlayerHandler) shooter.getMetadata("handler").get(0).value()).getPlayerStatistics().addBulletHit();
+                shooterExtension.getPlayerStatistics().addBulletHit();
             }
         } else if(event.getHitBlock() != null && event.getHitBlock().getType().equals(Material.GLASS_PANE)) {
             event.getHitBlock().setType(Material.AIR);
@@ -99,9 +98,9 @@ public class DamageEvents implements Listener {
             deadPlayer.sendMessage(deadPlayer.getName() + " was shot by " + killer.getName());
             killer.sendMessage(killer.getName() + " shot " + deadPlayer.getName());
 
-            ((PlayerHandler) deadPlayer.getMetadata("handler").get(0).value()).getPlayerStatistics().addDeath();
+            ((PlayerExtension) deadPlayer.getMetadata("handler").get(0).value()).getPlayerStatistics().addDeath();
 
-            PlayerHandler killerHandler = (PlayerHandler) killer.getMetadata("handler").get(0).value();
+            PlayerExtension killerHandler = (PlayerExtension) killer.getMetadata("handler").get(0).value();
             PlayerStatistic killerStatistic = killerHandler.getPlayerStatistics();
 
             //Order on the two below matters. (or does it?)
@@ -114,7 +113,7 @@ public class DamageEvents implements Listener {
     public void onRespawnEvent(PlayerRespawnEvent event) {
         //TODO: Fix so that players cant kill teammates with sword
         //Fix cactus pickuup
-        PlayerHandler handler = ((PlayerHandler) event.getPlayer().getMetadata("handler").get(0).value());
+        PlayerExtension handler = ((PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value());
         if(handler.isPlayingGame()) {
             Location loc = handler.respawn();
             event.setRespawnLocation(loc);
@@ -135,7 +134,7 @@ public class DamageEvents implements Listener {
                 i--;
                 //Add spawnres
                 if(i < 0) {
-                    player.teleport(((PlayerHandler) player.getMetadata("handler").get(0).value()).respawn());
+                    player.teleport(((PlayerExtension) player.getMetadata("handler").get(0).value()).respawn());
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(gameController.getGame() == null) {

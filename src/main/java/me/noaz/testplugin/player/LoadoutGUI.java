@@ -53,7 +53,7 @@ public class LoadoutGUI {
     public static void onItemClick(Inventory inventory, int slot) {
         if(inventory.getViewers().get(0) instanceof Player && inventory.getItem(0).getType().equals(goBackArrow)) {
             Player player = (Player) inventory.getViewers().get(0);
-            PlayerHandler handler = (PlayerHandler) player.getMetadata("handler").get(0).value();
+            PlayerExtension handler = (PlayerExtension) player.getMetadata("handler").get(0).value();
             
             String clickedItemName = inventory.getItem(slot).getItemMeta().getDisplayName();
             for(String name : handler.getOwnedWeaponNames()) {

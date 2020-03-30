@@ -1,7 +1,7 @@
 package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.player.LoadoutGUI;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class Events implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        PlayerHandler handler = (PlayerHandler) event.getPlayer().getMetadata("handler").get(0).value();
+        PlayerExtension handler = (PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value();
 
         Action action = event.getAction();
 
@@ -50,7 +50,7 @@ public class Events implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!((PlayerHandler)event.getWhoClicked().getMetadata("handler").get(0).value()).isPlayingGame())
+        if(!((PlayerExtension)event.getWhoClicked().getMetadata("handler").get(0).value()).isPlayingGame())
             LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot());
         event.setCancelled(true);
     }
@@ -61,7 +61,7 @@ public class Events implements Listener {
     @EventHandler
     public void onHandSwingEvent(PlayerAnimationEvent event) {
         if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
-            PlayerHandler handler = (PlayerHandler) event.getPlayer().getMetadata("handler").get(0).value();
+            PlayerExtension handler = (PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value();
 
             if(handler.hasWeaponInMainHand()) {
                 handler.changeScope();
@@ -73,20 +73,20 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerLevelChange(PlayerLevelChangeEvent event) {
-        ChatColor color = ((PlayerHandler) event.getPlayer().getMetadata("handler").get(0).value()).getTeamChatColor();
+        ChatColor color = ((PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value()).getTeamChatColor();
 
         event.getPlayer().setDisplayName("Lvl " + event.getNewLevel() + " " + color + event.getPlayer().getName());
     }
 
     @EventHandler
     public void onChangeMainHand(PlayerItemHeldEvent event) {
-        ((PlayerHandler) event.getPlayer().getMetadata("handler").get(0).value()).unScope();
+        ((PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value()).unScope();
     }
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
         //Reload when pressing Q
-        PlayerHandler handler = (PlayerHandler) event.getPlayer().getMetadata("handler").get(0).value();
+        PlayerExtension handler = (PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value();
         if(handler.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
             handler.reloadWeapon(handler.getPrimaryWeapon());
         } else if (handler.getSecondaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {

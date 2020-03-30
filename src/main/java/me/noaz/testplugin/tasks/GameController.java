@@ -1,10 +1,12 @@
 package me.noaz.testplugin.tasks;
 
+import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.CaptureTheFlag;
 import me.noaz.testplugin.gamemodes.FreeForAll;
 import me.noaz.testplugin.gamemodes.Game;
 import me.noaz.testplugin.gamemodes.TeamDeathMatch;
+import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +39,7 @@ public class GameController {
     private List<String> mapNames = new ArrayList<>();
     private HashMap<String, HashMap<String, List<Location>>> maps = new HashMap<>(); //A bit ugly xd
     private HashMap<String, WeaponConfiguration> gunConfigurations = new HashMap<>();
+    private HashMap<Player, PlayerExtension> playerExtensions = new HashMap<>();
     private String nextMapName = "";
     private String previousMapName = "";
     private String gamemode = "tdm";
@@ -255,7 +259,7 @@ public class GameController {
         if(game == null)
             return false;
 
-        game.join(player);
+        game.join(playerExtensions.get(player));
         return true;
     }
 
@@ -268,7 +272,7 @@ public class GameController {
         if(game == null)
             return false;
 
-        return game.leave(player);
+        return game.leave(playerExtensions.get(player));
     }
 
     public String[] getMaps() {
@@ -282,7 +286,7 @@ public class GameController {
     public void stop() {
         if(game != null) {
             System.out.println("Ending game and saving player data");
-            game.forceEnd();
+            game.end(playerExtensions, true);
         }
         task.cancel();
 
@@ -368,13 +372,13 @@ public class GameController {
         if(game == null) {
             switch(gamemode) {
                 case "tdm":
-                    game = new TeamDeathMatch(nextMapName, maps.get(nextMapName));
+                    game = new TeamDeathMatch(nextMapName, maps.get(nextMapName), playerExtensions);
                     break;
                 case "ctf":
-                    game = new CaptureTheFlag(nextMapName, maps.get(nextMapName), plugin);
+                    game = new CaptureTheFlag(nextMapName, maps.get(nextMapName), plugin, playerExtensions);
                     break;
                 case "ffa":
-                    game = new FreeForAll(nextMapName, maps.get(nextMapName));
+                    game = new FreeForAll(nextMapName, maps.get(nextMapName), playerExtensions);
                     break;
             }
 
@@ -388,7 +392,7 @@ public class GameController {
         if(game != null) {
             plugin.getServer().broadcastMessage("Ending Game, new game in 60 sec!");
             //System.out.println("Ending Game, new game in 60 sec!"); //should be server message
-            game.end();
+            game.end(playerExtensions, false);
             game = null;
             previousMapName = nextMapName;
             pickNextMapAndGamemode();
@@ -401,5 +405,19 @@ public class GameController {
         bar = plugin.getServer().createBossBar(NamespacedKey.minecraft("timer"), "", BarColor.PURPLE, BarStyle.SOLID, BarFlag.PLAY_BOSS_MUSIC);
         bar.setVisible(true);
         bar.setProgress(1.0);
+    }
+
+    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Statement statement) {
+        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations(), statement));
+    }
+
+    public void removePlayer(Player player) {
+        if(game != null)
+            getGame().leave(playerExtensions.get(player));
+        playerExtensions.remove(player);
+    }
+
+    public PlayerExtension getPlayerExtension(Player player) {
+        return playerExtensions.get(player);
     }
 }

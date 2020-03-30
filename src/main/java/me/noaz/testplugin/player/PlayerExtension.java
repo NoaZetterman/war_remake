@@ -21,13 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Player handler contains additional information about the player that cannot be stored normally within the Player class.
- * An instance of this class should be set as metadata on all players
+ * Player extension contains additional player specific methods and information
  *
  * @author Noa Zetterman
- * @version 2019-12-10
+ * @version 2020-03-30
  */
-public class PlayerHandler {
+public class PlayerExtension {
     private TestPlugin plugin;
     private Player player;
     private Weapon primaryWeapon;
@@ -45,8 +44,8 @@ public class PlayerHandler {
      * @param plugin the plugin to use
      * @param player the player this handler belongs to
      */
-    public PlayerHandler(TestPlugin plugin, Player player, ScoreManager scoreManager,
-                         HashMap<String, WeaponConfiguration> gunConfigurations, Statement sqlStatement) {
+    public PlayerExtension(TestPlugin plugin, Player player, ScoreManager scoreManager,
+                           HashMap<String, WeaponConfiguration> gunConfigurations, Statement sqlStatement) {
         this.plugin = plugin;
         this.player = player;
         this.gunConfigurations = gunConfigurations;
@@ -284,5 +283,9 @@ public class PlayerHandler {
      */ //Makes a 2 way relation which is weird?
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public String getName() {
+        return player.getName();
     }
 }

@@ -1,7 +1,7 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.gamemodes.teams.Team;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -21,19 +21,19 @@ public class Infect extends Game {
         init();
 
         Random random = new Random();
-        int playersInGame = teams[1].getPlayerUUIDs().size();
-        UUID rootUUID = teams[1].getPlayerUUIDs().get(random.nextInt(playersInGame));
+        int playersInGame = teams[1].getPlayers().size();
+        UUID rootUUID = teams[1].getPlayers().get(random.nextInt(playersInGame));
 
         Player root = Bukkit.getServer().getPlayer(rootUUID);
         teams[1].removePlayer(root);
         teams[0].addPlayer(root);
-        ((PlayerHandler) root.getMetadata("handler").get(0).value()).setTeam(teams[0]);
+        ((PlayerExtension) root.getMetadata("handler").get(0).value()).setTeam(teams[0]);
         //Also add special root effect stuff I guess
     }
 
 
     @Override
-    public void assignTeam(Player player, PlayerHandler handler) {
+    public void assignTeam(Player player, PlayerExtension handler) {
         teams[1].addPlayer(player);
         handler.setTeam(teams[1]);
     }
@@ -41,7 +41,7 @@ public class Infect extends Game {
     @Override public void end() {
         super.end();
 
-        if(teams[1].getPlayerUUIDs().size() == 0) {
+        if(teams[1].getPlayers().size() == 0) {
             Bukkit.getServer().broadcastMessage("Zombies won!");
         } else {
             Bukkit.getServer().broadcastMessage("Humans won!");

@@ -3,7 +3,7 @@ package me.noaz.testplugin.gamemodes;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.misc.Flag;
 import me.noaz.testplugin.gamemodes.teams.Team;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -18,7 +18,7 @@ public class CaptureTheFlag extends Game {
     private Flag blueFlag;
     private Flag redFlag;
 
-    public CaptureTheFlag(String worldName, HashMap<String, List<Location>> locations, TestPlugin plugin) {
+    public CaptureTheFlag(String worldName, HashMap<String, List<Location>> locations, TestPlugin plugin, HashMap<Player, PlayerExtension> playerExtensions) {
         teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
         teams[0].setSpawnPoints(locations.get("redspawn"));
         teams[1].setSpawnPoints(locations.get("bluespawn"));
@@ -29,7 +29,7 @@ public class CaptureTheFlag extends Game {
         redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin);
         blueFlag = new Flag(Color.BLUE, flags.get(1), flags.get(0), worldName, plugin);
 
-        init();
+        init(playerExtensions);
     }
 
     //Handle something for capturing the flag?? End on 3 caps?
@@ -37,34 +37,33 @@ public class CaptureTheFlag extends Game {
     /**
      * Assigns a player to a team
      * @param player The player to assign a team
-     * @param handler The players player handler.
      */
     @Override
-    public void assignTeam(Player player, PlayerHandler handler) {
+    public void assignTeam(PlayerExtension player) {
         if(teams[1].getTeamSize() == teams[0].getTeamSize()) {
             Random random = new Random();
             if(random.nextInt(2) == 0) {
                 teams[1].addPlayer(player);
-                handler.setTeam(teams[1]);
+                player.setTeam(teams[1]);
             } else {
                 teams[0].addPlayer(player);
-                handler.setTeam(teams[0]);
+                player.setTeam(teams[0]);
             }
         } else if(teams[1].getTeamSize() > teams[0].getTeamSize()) {
             teams[0].addPlayer(player);
-            handler.setTeam(teams[0]);
+            player.setTeam(teams[0]);
         } else {
             teams[1].addPlayer(player);
-            handler.setTeam(teams[1]);
+            player.setTeam(teams[1]);
         }
     }
 
     @Override
-    public void end() {
+    public void end(HashMap<Player, PlayerExtension> players, boolean forceEnd) {
         blueFlag.stop();
         redFlag.stop();
 
-        super.end();
+        super.end(players, forceEnd);
 
         //replace below with captures
         if(redFlag.getCaptures() < blueFlag.getCaptures()) {

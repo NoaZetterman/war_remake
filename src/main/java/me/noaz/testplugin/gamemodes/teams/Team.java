@@ -1,17 +1,13 @@
 package me.noaz.testplugin.gamemodes.teams;
 
-import me.noaz.testplugin.player.PlayerHandler;
-import org.bukkit.Bukkit;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
+//AAAAAAAAAAAAA This might be completely useless
 /**
  * Represents one team of playrs (might make this an interface for ctf, tdm etc teams)
  *
@@ -19,7 +15,8 @@ import java.util.UUID;
  * @version 2019-12-13
  */
 public class Team {
-    private List<UUID> playerUUIDs = new ArrayList<>();
+    //TODO: Think over below implementation, maybe UUID is enough?
+    private List<PlayerExtension> players = new ArrayList<>();
     private Color teamColor; //Maybe useless
     private ChatColor chatColor;
     private List<Location> spawnPoints;
@@ -39,37 +36,37 @@ public class Team {
     /**
      * @param player The player to add to this team
      */
-    public void addPlayer(Player player) {
-        playerUUIDs.add(player.getUniqueId());
+    public void addPlayer(PlayerExtension player) {
+        players.add(player);
     }
 
     /**
      * @param player The player to remove from this team
      */
-    public void removePlayer(Player player) {
-        playerUUIDs.remove(player.getUniqueId());
+    public void removePlayer(PlayerExtension player) {
+        players.remove(player);
     }
 
     /**
      * @param player The player to check if its on this team
      * @return True if the player is on this team, false otherwise
      */
-    public boolean playerIsOnTeam(Player player) {
-        return playerUUIDs.contains(player.getUniqueId());
+    public boolean playerIsOnTeam(PlayerExtension player) {
+        return players.contains(player);
     }
 
     /**
      * @return Returns the amount of players in this team
      */
     public int getTeamSize() {
-        return playerUUIDs.size();
+        return players.size();
     }
 
     /**
-     * @return UUIDs of all players in this team
+     * @return PlayerExtensions of all players in this team
      */
-    public List<UUID> getPlayerUUIDs() {
-        return playerUUIDs;
+    public List<PlayerExtension> getPlayers() {
+        return players;
     }
 
     /**

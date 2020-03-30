@@ -1,7 +1,7 @@
 package me.noaz.testplugin.commands;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.player.PlayerHandler;
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,7 +31,7 @@ public class Profile implements CommandExecutor {
         List<Player> players = plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).getPlayers();
         for(Player player : players) {
             if(player.getName().equals(args[0])) {
-                ((PlayerHandler) player.getMetadata("handler").get(0).value()).getPlayerStatistics().printStatistics((Player)sender);
+                ((PlayerExtension) player.getMetadata("handler").get(0).value()).getPlayerStatistics().printStatistics((Player)sender);
             }
         }
 

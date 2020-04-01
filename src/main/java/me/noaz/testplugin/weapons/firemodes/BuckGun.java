@@ -22,9 +22,15 @@ public class BuckGun extends Weapon {
         super(plugin, player, statistics, config);
     }
 
+    /**
+     * Fires the gun
+     *
+     * For buck guns, a number of bullets gets fired in different directions at the same time, but only removes
+     * one bullet off the clip.
+     */
     public void shoot() {
         if(!isReloading() && currentBullets != 0 && nextBurst <= System.currentTimeMillis()) {
-            int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
+            int totalBulletsInCurrentBurst = config.getBulletsPerClick();
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
 
             for(int i = 0; i < totalBulletsInCurrentBurst; i++) {
@@ -34,8 +40,8 @@ public class BuckGun extends Weapon {
             }
             player.setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-            currentClip -= totalBulletsInCurrentBurst;
-            currentBullets -= totalBulletsInCurrentBurst;
+            currentClip--;
+            currentBullets--;
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
             //Maybe server.getFullTime() instead, what is better? This will not "slow down" reloading when lag

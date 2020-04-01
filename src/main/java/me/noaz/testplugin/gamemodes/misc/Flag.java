@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,7 +28,8 @@ public class Flag {
     private Location enemyFlagPoleLocation;
     private BukkitRunnable task;
     private ArmorStand flagPole;
-    private Player flagHolder = null;
+    private PlayerExtension flagHolder = null;
+    private HashMap<Player, PlayerExtension> players;
 
     private String worldName;
     private int captures = 0;
@@ -40,12 +42,13 @@ public class Flag {
      * @param worldName The name of the map
      * @param plugin This plugin.
      */
-    public Flag(Color color, Location flagPoleLocation, Location enemyFlagPoleLocation, String worldName, TestPlugin plugin) {
+    public Flag(Color color, Location flagPoleLocation, Location enemyFlagPoleLocation, String worldName, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
         this.color = color;
         this.flagPoleLocation = flagPoleLocation;
         this.enemyFlagPoleLocation = enemyFlagPoleLocation;
         this.worldName = worldName;
         this.plugin = plugin;
+        this.players = players;
         //Spawn in the flag
 
         createBannerFlag();
@@ -92,18 +95,17 @@ public class Flag {
 
                 if(flagHolder == null) {
                     List<Entity> entities = flagPole.getNearbyEntities(1, 2, 1);
-                    for (Entity e : entities) {
-                        if (e.getType() == EntityType.PLAYER) {
-                            Player player = (Player) e;
+                    for (Entity entity : entities) {
+                        if (entity.getType() == EntityType.PLAYER) {
+                            PlayerExtension player = players.get(entity);
 
-                            PlayerExtension handler = (PlayerExtension) player.getMetadata("handler").get(0).value();
-                            if (handler.getTeamColor() != color) {
+
+
+                            if(player.getTeamColor() != color) {
 
                                 //Make player pick up flag
                                 flagPole.setHelmet(null);
-
-                                playerHelmet = player.getInventory().getHelmet(); //Fix color
-                                player.getInventory().setHelmet(banner);
+                                player.setHelmet(banner);
                                 flagHolder = player;
 
                                 plugin.getServer().broadcastMessage(flagHolder.getName() + " picket up the flag");
@@ -117,10 +119,11 @@ public class Flag {
                         plugin.getServer().broadcastMessage(flagHolder.getName() + " captured the flag");
                         captures++;
 
-                        flagHolder.getInventory().setHelmet(playerHelmet);
+                        flagHolder.setHelmet(playerHelmet);
                         flagPole.setHelmet(banner);
                         flagHolder = null;
-                    } else if(flagHolder.isDead()) {
+                    } else if(false) {
+                        //When flagholder dies doesnt mean
                         plugin.getServer().broadcastMessage(flagHolder.getName() + " dropped flag");
                         flagPole.setHelmet(banner);
                         flagHolder = null;
@@ -129,10 +132,12 @@ public class Flag {
             }
         };
 
-        task.runTaskTimer(plugin, 0, 20L);
+        task.runTaskTimer(plugin, 0, 5L);
     }
 
-    //TODO: Fix helmet situation
+    //TODO: Fix helmet situation (maybe)
+    //Consider having a player tick thing that checks if player is close to flag rather than the other way around.
+    //Less efficient? No - Still gotta check once for every player per time period.
     //private void createWoolFlag for later
 
     /**

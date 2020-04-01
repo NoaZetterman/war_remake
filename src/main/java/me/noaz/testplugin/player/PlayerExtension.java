@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -287,5 +288,13 @@ public class PlayerExtension {
 
     public String getName() {
         return player.getName();
+    }
+
+    public void setHelmet(ItemStack helmet) {
+        player.getInventory().setHelmet(helmet);
+    }
+
+    public Location getLocation() {
+        return player.getLocation();
     }
 }

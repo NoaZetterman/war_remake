@@ -26,8 +26,8 @@ public class CaptureTheFlag extends Game {
         List<Location> flags = locations.get("flags");
 
         //Flag position 0 is always red and pos 1 is always blue.
-        redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin);
-        blueFlag = new Flag(Color.BLUE, flags.get(1), flags.get(0), worldName, plugin);
+        redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin, playerExtensions);
+        blueFlag = new Flag(Color.BLUE, flags.get(1), flags.get(0), worldName, plugin, playerExtensions);
 
         init(playerExtensions);
     }

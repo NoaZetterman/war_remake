@@ -2,11 +2,9 @@ package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
-import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * Abstract class for a game - Holds the basic components of a gamemode / type of game.

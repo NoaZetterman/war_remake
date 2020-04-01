@@ -7,7 +7,7 @@ import org.bukkit.Location;
 
 import java.util.*;
 
-//AAAAAAAAAAAAA This might be completely useless
+//This might be completely useless
 /**
  * Represents one team of playrs (might make this an interface for ctf, tdm etc teams)
  *

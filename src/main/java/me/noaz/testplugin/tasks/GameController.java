@@ -67,13 +67,13 @@ public class GameController {
         // http://puttyland.com/share/TTYWy1vN.txt
         gunConfigurations.put("Skullcrusher", new WeaponConfiguration("Skullcrusher", Material.GOLD_INGOT,
                 "Automatic", "burst",
-                2.0, 100.0, 5.0,7.5,4,
-                100,4000, 400,3,72,24));
+                2.0, 100.0, 7.2,7.5,4,
+                76,4000, 400,3,72,24));
 
         gunConfigurations.put("Python", new WeaponConfiguration("Python", Material.GOLDEN_SHOVEL,
                 "Secondary", "single",
                 2.0, 100.0, 10.0, 20.0, 4,
-                70, 3500, 333, 1, 50, 9));
+                48, 3500, 333, 1, 50, 9));
 
         gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", Material.STONE_AXE,
                 "Sniper", "single",
@@ -88,7 +88,12 @@ public class GameController {
         gunConfigurations.put("AA12", new WeaponConfiguration("AA12", Material.IRON_PICKAXE,
                 "Shotgun", "buck", 1.0, 3.0, 7,
                 9, 4, 18, 1500, 450, 6,
-                100, 20));
+                32, 20));
+
+        gunConfigurations.put("AK-47", new WeaponConfiguration("AK-47", Material.IRON_HOE,
+                "Automatic", "single", 3, 100.0,
+                4.4, 6, 4, 76, 1500, 150,
+                1, 100, 30));
     }
 
     private void loadMaps() {

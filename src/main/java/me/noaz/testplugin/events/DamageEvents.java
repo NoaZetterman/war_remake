@@ -14,6 +14,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -98,14 +100,14 @@ public class DamageEvents implements Listener {
             deadPlayer.sendMessage(deadPlayer.getName() + " was shot by " + killer.getName());
             killer.sendMessage(killer.getName() + " shot " + deadPlayer.getName());
 
-            ((PlayerExtension) deadPlayer.getMetadata("handler").get(0).value()).getPlayerStatistics().addDeath();
+            gameController.getPlayerExtension(deadPlayer).getPlayerStatistics().addDeath();
 
-            PlayerExtension killerHandler = (PlayerExtension) killer.getMetadata("handler").get(0).value();
-            PlayerStatistic killerStatistic = killerHandler.getPlayerStatistics();
+            PlayerExtension killerExtesion = gameController.getPlayerExtension(killer);
+            PlayerStatistic killerStatistic = killerExtesion.getPlayerStatistics();
 
             //Order on the two below matters. (or does it?)
             killerStatistic.addXP(25);
-            killerHandler.addKill();
+            killerExtesion.addKill();
         }
     }
 
@@ -113,9 +115,9 @@ public class DamageEvents implements Listener {
     public void onRespawnEvent(PlayerRespawnEvent event) {
         //TODO: Fix so that players cant kill teammates with sword
         //Fix cactus pickuup
-        PlayerExtension handler = ((PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value());
-        if(handler.isPlayingGame()) {
-            Location loc = handler.respawn();
+        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        if(player.isPlayingGame()) {
+            Location loc = player.respawn();
             event.setRespawnLocation(loc);
         }
     }
@@ -134,10 +136,11 @@ public class DamageEvents implements Listener {
                 i--;
                 //Add spawnres
                 if(i < 0) {
-                    player.teleport(((PlayerExtension) player.getMetadata("handler").get(0).value()).respawn());
+                    player.teleport(gameController.getPlayerExtension(player).respawn());
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(gameController.getGame() == null) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 6, 10));
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 }
@@ -153,9 +156,4 @@ public class DamageEvents implements Listener {
             event.setCancelled(true);
         }
     }
-
-    /*@EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        if(event.getEntityType() == EntityType.PLAYER && event.)
-    }*/
 }

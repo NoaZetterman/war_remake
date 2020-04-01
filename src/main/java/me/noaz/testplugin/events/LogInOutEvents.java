@@ -59,10 +59,7 @@ public class LogInOutEvents implements Listener {
 
         runnable.runTaskAsynchronously(plugin);
 
-        PlayerExtension handler = new PlayerExtension(plugin, event.getPlayer(), scoreManager, gameController.getGunConfigurations(), statement);
         gameController.addPlayer(plugin, event.getPlayer(), scoreManager, statement);
-        //TODO: Remove below when all other handler stuff is gone
-        event.getPlayer().setMetadata("handler", new FixedMetadataValue(plugin, handler));
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).addPlayer(event.getPlayer());
     }
 

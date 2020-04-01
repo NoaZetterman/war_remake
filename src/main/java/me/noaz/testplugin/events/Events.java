@@ -2,6 +2,7 @@ package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.player.LoadoutGUI;
 import me.noaz.testplugin.player.PlayerExtension;
+import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,6 +19,11 @@ import org.bukkit.event.player.*;
  * Contains all events, may be broken up into multiple event classes later.
  */
 public class Events implements Listener {
+    GameController gameController;
+
+    public Events(GameController gameController) {
+        this.gameController = gameController;
+    }
     /**
      * Disables players dropping items
      */
@@ -34,14 +40,14 @@ public class Events implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        PlayerExtension handler = (PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value();
+        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
 
         Action action = event.getAction();
 
-        if(handler.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
-            handler.getWeaponInMainHand().shoot();
+        if(player.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
+            player.getWeaponInMainHand().shoot();
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
-            LoadoutGUI.loadoutStartScreen(event.getPlayer(), handler.getOwnedWeapons());
+            LoadoutGUI.loadoutStartScreen(event.getPlayer(), player.getOwnedWeapons());
         }
     }
 
@@ -50,7 +56,7 @@ public class Events implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!((PlayerExtension)event.getWhoClicked().getMetadata("handler").get(0).value()).isPlayingGame())
+        if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame())
             LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot());
         event.setCancelled(true);
     }
@@ -61,10 +67,10 @@ public class Events implements Listener {
     @EventHandler
     public void onHandSwingEvent(PlayerAnimationEvent event) {
         if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
-            PlayerExtension handler = (PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value();
+            PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
 
-            if(handler.hasWeaponInMainHand()) {
-                handler.changeScope();
+            if(player.hasWeaponInMainHand()) {
+                player.changeScope();
             }
         }
     }
@@ -73,24 +79,24 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerLevelChange(PlayerLevelChangeEvent event) {
-        ChatColor color = ((PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value()).getTeamChatColor();
+        ChatColor color = gameController.getPlayerExtension(event.getPlayer()).getTeamChatColor();
 
         event.getPlayer().setDisplayName("Lvl " + event.getNewLevel() + " " + color + event.getPlayer().getName());
     }
 
     @EventHandler
     public void onChangeMainHand(PlayerItemHeldEvent event) {
-        ((PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value()).unScope();
+        gameController.getPlayerExtension(event.getPlayer()).unScope();
     }
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
-        //Reload when pressing Q
-        PlayerExtension handler = (PlayerExtension) event.getPlayer().getMetadata("handler").get(0).value();
-        if(handler.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            handler.reloadWeapon(handler.getPrimaryWeapon());
-        } else if (handler.getSecondaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            handler.reloadWeapon(handler.getSecondaryWeapon());
+        //Reload when pressing drop button (Q)
+        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        if(player.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
+            player.reloadWeapon(player.getPrimaryWeapon());
+        } else if (player.getSecondaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
+            player.reloadWeapon(player.getSecondaryWeapon());
         }
 
         event.setCancelled(true);

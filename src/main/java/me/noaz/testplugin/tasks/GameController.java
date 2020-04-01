@@ -73,7 +73,7 @@ public class GameController {
         gunConfigurations.put("Python", new WeaponConfiguration("Python", Material.GOLDEN_SHOVEL,
                 "Secondary", "single",
                 2.0, 100.0, 10.0, 20.0, 4,
-                48, 3500, 333, 1, 50, 9));
+                48, 3500, 300, 1, 50, 9));
 
         gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", Material.STONE_AXE,
                 "Sniper", "single",

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Holds information about a weapon, the same instance is used by all players who uses the same gun
+ * Holds information about a weapon, the same instance is used by all players who uses the same gun.
  *
  * @author Noa Zetterman
  * @version 2019-12-13
@@ -22,14 +22,14 @@ public class WeaponConfiguration {
     private final double accuracyNotScoped;
     private final double bodyDamage;
     private final double headDamage;
-    private double recoil; //Not used yet
+    private double recoil; //Not used yet (though it kinda is)
     private final double bulletSpeed;
     private final int range;
 
     private final Material gunMaterial;
 
-    private final long reloadTime;
-    private final long burstDelay;
+    private final int reloadTime;
+    private final int burstDelay;
 
     private int weight; //Not implemented
 
@@ -48,8 +48,8 @@ public class WeaponConfiguration {
      * @param headDamage The damage bullets fired with this weapon should do to the head of another player
      * @param bulletSpeed The bullet speed of the bullets fired with this weapon
      * @param range The range, in blocks, the bullets fired by this weapon should have.
-     * @param reloadTime The reload time this weapon should have in ms
-     * @param burstDelay The delay in between bursts this weapon should have, delay between shots if there is no bursts
+     * @param reloadTimeInMs The reload time this weapon should have in ms
+     * @param burstDelayInMs The delay in between bursts this weapon should have, delay between shots if there is no bursts
      * @param bulletsPerClick The amount of bullets that should be fired when shooting (right clicking with the gun),
      *                        if this is 1 then it acts as a gun without bursts.
      * @param startingBullets The amount of bullets this gun should start with
@@ -57,7 +57,7 @@ public class WeaponConfiguration {
      */
     public WeaponConfiguration(String name, Material gunMaterial, String weaponType, String fireType, double accuracyNotScoped,
                          double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
-                         long reloadTime, long burstDelay, int bulletsPerClick, int startingBullets, int clipSize) {
+                         int reloadTimeInMs, int burstDelayInMs, int bulletsPerClick, int startingBullets, int clipSize) {
         this.name = name;
         this.gunMaterial = gunMaterial;
         this.weaponType = weaponType;
@@ -68,8 +68,8 @@ public class WeaponConfiguration {
         this.headDamage = headDamage;
         this.bulletSpeed = bulletSpeed;
         this.range = range;
-        this.reloadTime = reloadTime;
-        this.burstDelay = burstDelay;
+        this.reloadTime = convertToTicks(reloadTimeInMs);
+        this.burstDelay = convertToTicks(burstDelayInMs);
         this.bulletsPerClick = bulletsPerClick;
         this.startingBullets = startingBullets;
         this.clipSize = clipSize;
@@ -78,6 +78,10 @@ public class WeaponConfiguration {
         weaponLore = new ArrayList<>();
         weaponLore.add(ChatColor.BLUE + "Type: " + weaponType.toLowerCase());
         weaponLore.add(ChatColor.BLUE + "Yeeters");
+    }
+
+    private int convertToTicks(int timeInMs) {
+        return timeInMs/20;
     }
 
     public String getName() {
@@ -129,11 +133,11 @@ public class WeaponConfiguration {
         return gunMaterial;
     }
 
-    public long getReloadTime() {
+    public int getReloadTime() {
         return reloadTime;
     }
 
-    public long getBurstDelay() {
+    public int getBurstDelay() {
         return burstDelay;
     }
 

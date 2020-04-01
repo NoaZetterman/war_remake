@@ -29,7 +29,7 @@ public class BuckGun extends Weapon {
      * one bullet off the clip.
      */
     public void shoot() {
-        if(!isReloading() && currentBullets != 0 && nextBurst <= System.currentTimeMillis()) {
+        if(!isReloading() && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = config.getBulletsPerClick();
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
 
@@ -42,10 +42,10 @@ public class BuckGun extends Weapon {
 
             currentClip--;
             currentBullets--;
+
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-            //Maybe server.getFullTime() instead, what is better? This will not "slow down" reloading when lag
-            nextBurst = System.currentTimeMillis() + config.getBurstDelay();
+            startBurstDelay();
             TTA_Methods.sendActionBar(player, config.getClipSize() + " / " + currentClip);
 
             if(currentClip <= 0) {

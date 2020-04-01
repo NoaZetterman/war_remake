@@ -7,10 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.List;
 
+//TODO: Use ticks instead of Sys.timems
 /**
  * Main class that weapons are built from.
  *
@@ -25,10 +27,12 @@ public abstract class Weapon {
 
     protected int currentClip;
     protected int currentBullets;
-    protected long reloadEnd;
-    protected long nextBurst;
 
+    protected boolean isNextBulletReady = true; //Time in between bursts or individual bullets if there is no burst.
     protected boolean isReloading = false;
+
+    protected BukkitRunnable reloadTask;
+    protected BukkitRunnable burstDelayTask;
 
 
     /**
@@ -45,6 +49,36 @@ public abstract class Weapon {
         this.currentClip = config.getClipSize();
         this.currentBullets = config.getStartingBullets();
 
+        reloadTask = new BukkitRunnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                i++;
+                if(i > config.getReloadTime()) {
+                    currentClip = Math.min(config.getClipSize(), currentBullets);
+                    isReloading = false;
+                    this.cancel();
+                } else {
+                    //Maybe use some type of disp thing to show a countdown
+                    TTA_Methods.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
+                }
+
+            }
+        };
+
+        burstDelayTask = new BukkitRunnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                i++;
+                if(i > config.getBurstDelay()) {
+                    currentClip = Math.min(config.getClipSize(), currentBullets);
+                    isNextBulletReady = true;
+                    this.cancel();
+                }
+            }
+        };
+
 
     }
 
@@ -53,26 +87,55 @@ public abstract class Weapon {
      */
     public abstract void shoot();
 
+
     /**
-     * Starts reloading the weapon
+     * Reloads the gun
      */
     public void reload() {
-        if(currentClip != config.getClipSize()) {
-            reloadEnd = System.currentTimeMillis() + config.getReloadTime();
-            currentClip = Math.min(config.getClipSize(), currentBullets);
-            isReloading = true;
-            TTA_Methods.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
-            //Differently later
-        }
+        isReloading = true;
+
+        reloadTask = new BukkitRunnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                i++;
+                if(i > config.getReloadTime()) {
+                    currentClip = Math.min(config.getClipSize(), currentBullets);
+                    isReloading = false;
+                    this.cancel();
+                } else {
+                    //Maybe use some type of disp thing to show a countdown
+                    TTA_Methods.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
+                }
+
+            }
+        };
+
+        reloadTask.runTaskTimerAsynchronously(plugin, 1L, 1L);
     }
 
-
-    //Maybe change reloading sys to work with PlayerHandler and drawing out stuff showing reload
+    //Maybe change reloading sys to work with PlayerExtension and drawing out stuff showing reload
     protected boolean isReloading() {
-        if(isReloading && reloadEnd <= System.currentTimeMillis()) {
-            isReloading = false;
-        }
         return isReloading;
+    }
+
+    protected void startBurstDelay() {
+        isNextBulletReady = false;
+        //TODO: Fix so its actually ticks or something like that
+        burstDelayTask = new BukkitRunnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                i++;
+                if(i > config.getBurstDelay()) {
+                    currentClip = Math.min(config.getClipSize(), currentBullets);
+                    isNextBulletReady = true;
+                    this.cancel();
+                }
+            }
+        };
+
+        burstDelayTask.runTaskTimerAsynchronously(plugin, 1L, 1L);
     }
 
     /**
@@ -104,7 +167,12 @@ public abstract class Weapon {
      * Resets the gun to the equivalent of a new gun, use this when a player dies.
      */
     public void reset() {
+        if(isReloading)
+            reloadTask.cancel();
+        if(!isNextBulletReady)
+            burstDelayTask.cancel();
         isReloading = false;
+        isNextBulletReady = true;
         currentBullets = config.getStartingBullets();
         currentClip = config.getClipSize();
     }

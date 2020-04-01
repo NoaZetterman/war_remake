@@ -25,7 +25,7 @@ public class SingleFireGun extends Weapon {
     }
 
     public void shoot() {
-        if(!isReloading() && currentBullets != 0 && nextBurst <= System.currentTimeMillis()) {
+        if(!isReloading() && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
             Vector velocity = calculateBulletDirection(accuracy);
@@ -40,8 +40,7 @@ public class SingleFireGun extends Weapon {
             currentBullets -= totalBulletsInCurrentBurst;
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-            //Maybe server.getFullTime() instead, what is better? This will not "slow down" delay when lag
-            nextBurst = System.currentTimeMillis() + config.getBurstDelay();
+            startBurstDelay();
 
             if(currentClip <= 0) {
                 reload();

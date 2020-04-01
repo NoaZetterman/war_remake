@@ -164,7 +164,7 @@ public class PlayerExtension {
     }
 
     /**
-     * @return The weapon the player currently has in main hand, null if there's no weapon in main hand.
+     * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
     public Weapon getWeaponInMainHand() {
         if(player.getInventory().getItemInMainHand().getType().equals(primaryWeapon.getMaterialType())) {

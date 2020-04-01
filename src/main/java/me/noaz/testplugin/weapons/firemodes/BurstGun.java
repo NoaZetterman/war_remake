@@ -24,7 +24,7 @@ public class BurstGun extends Weapon {
     }
 
     public void shoot() {
-        if(!isReloading() && currentBullets != 0 && nextBurst <= System.currentTimeMillis()) {
+        if(!isReloading() && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
 
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
@@ -51,13 +51,10 @@ public class BurstGun extends Weapon {
             task.runTaskTimer(plugin, 0L, 1L);
             currentClip -= totalBulletsInCurrentBurst;
             currentBullets -= totalBulletsInCurrentBurst;
+
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-            //May be a slow solution, could be changed?
-
-
-            //Maybe server.getFullTime() instead, what is better? This will not "slow down" reloading when lag
-            nextBurst = System.currentTimeMillis() + config.getBurstDelay();
+            startBurstDelay();
             TTA_Methods.sendActionBar(player, ChatColor.DARK_RED + "" + ChatColor.BOLD + config.getClipSize() + " / " + currentClip);
 
             if(currentClip <= 0) {

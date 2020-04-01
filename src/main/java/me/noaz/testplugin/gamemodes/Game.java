@@ -11,6 +11,7 @@ import java.util.HashMap;
  */
 public abstract class Game {
     Team[] teams;
+    HashMap<Player,PlayerExtension> players;
     private int gameLength = 360;
 
     /**
@@ -93,10 +94,9 @@ public abstract class Game {
 
     /**
      * Ends the game. Must be called before terminating the object.
-     * @param players The players playing this game
      * @param forceEnd True if the game should force end (used for server shutdown), otherwise false
      */
-    public void end(HashMap<Player, PlayerExtension> players, boolean forceEnd) {
+    public void end(boolean forceEnd) {
         for(Team t : teams) {
             for(PlayerExtension player : players.values()) {
                 if(forceEnd) {

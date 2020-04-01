@@ -59,11 +59,11 @@ public class CaptureTheFlag extends Game {
     }
 
     @Override
-    public void end(HashMap<Player, PlayerExtension> players, boolean forceEnd) {
+    public void end(boolean forceEnd) {
         blueFlag.stop();
         redFlag.stop();
 
-        super.end(players, forceEnd);
+        super.end(forceEnd);
 
         //replace below with captures
         if(redFlag.getCaptures() < blueFlag.getCaptures()) {

@@ -50,15 +50,13 @@ public class LoadoutGUI {
      * @param inventory The inventory that should be used
      * @param slot The slot that gets clicked on
      */
-    public static void onItemClick(Inventory inventory, int slot) {
+    public static void onItemClick(Inventory inventory, int slot, PlayerExtension player) {
         if(inventory.getViewers().get(0) instanceof Player && inventory.getItem(0).getType().equals(goBackArrow)) {
-            Player player = (Player) inventory.getViewers().get(0);
-            PlayerExtension handler = (PlayerExtension) player.getMetadata("handler").get(0).value();
             
             String clickedItemName = inventory.getItem(slot).getItemMeta().getDisplayName();
-            for(String name : handler.getOwnedWeaponNames()) {
+            for(String name : player.getOwnedWeaponNames()) {
                 if(clickedItemName.equals(name)) {
-                    handler.changeWeapon(clickedItemName);
+                    player.changeWeapon(clickedItemName);
 
                 }
             }

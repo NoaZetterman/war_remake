@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class FreeForAll extends Game {
-    public FreeForAll(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> playerExtensions) {
+    public FreeForAll(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> players) {
+        this.players = players;
+
         teams = new Team[] {new Team(Color.fromRGB(255,85,255), ChatColor.LIGHT_PURPLE)};
 
         teams[0].setSpawnPoints(locations.get("ffaspawn"));
 
-        init(playerExtensions);
+        init(players);
     }
 
     @Override
@@ -38,8 +40,8 @@ public class FreeForAll extends Game {
     }
 
     @Override
-    public void end(HashMap<Player, PlayerExtension> players, boolean forceEnd) {
-        super.end(players, forceEnd);
+    public void end(boolean forceEnd) {
+        super.end( forceEnd);
 
         PlayerExtension leader = players.get(0);
         int leaderKills = 0;

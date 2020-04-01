@@ -57,7 +57,7 @@ public class Events implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame())
-            LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot());
+            LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()));
         event.setCancelled(true);
     }
 

@@ -13,13 +13,15 @@ import java.util.List;
 import java.util.Random;
 
 public class TeamDeathMatch extends Game {
-    public TeamDeathMatch(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> playerExtensions) {
+    public TeamDeathMatch(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> players) {
+        this.players = players;
+
         teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
 
         teams[0].setSpawnPoints(locations.get("redspawn"));
         teams[1].setSpawnPoints(locations.get("bluespawn"));
 
-        init(playerExtensions);
+        init(players);
     }
 
     /**
@@ -47,8 +49,8 @@ public class TeamDeathMatch extends Game {
     }
 
     @Override
-    public void end(HashMap<Player, PlayerExtension> players, boolean forceEnd) {
-        super.end(players, forceEnd);
+    public void end(boolean forceEnd) {
+        super.end(forceEnd);
 
         if(teams[0].getKills() > teams[1].getKills()) {
             Bukkit.getServer().broadcastMessage("Red won!");

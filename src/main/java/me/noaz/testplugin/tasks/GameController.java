@@ -286,7 +286,7 @@ public class GameController {
     public void stop() {
         if(game != null) {
             System.out.println("Ending game and saving player data");
-            game.end(playerExtensions, true);
+            game.end(true);
         }
         task.cancel();
 
@@ -392,7 +392,7 @@ public class GameController {
         if(game != null) {
             plugin.getServer().broadcastMessage("Ending Game, new game in 60 sec!");
             //System.out.println("Ending Game, new game in 60 sec!"); //should be server message
-            game.end(playerExtensions, false);
+            game.end(false);
             game = null;
             previousMapName = nextMapName;
             pickNextMapAndGamemode();

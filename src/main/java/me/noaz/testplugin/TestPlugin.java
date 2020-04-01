@@ -44,7 +44,7 @@ public final class TestPlugin extends JavaPlugin {
         getServer().getWorld("world").setPVP(false);
 
         getServer().getPluginManager().registerEvents(new LogInOutEvents(this, gameController, scoreManager, statement), this);
-        getServer().getPluginManager().registerEvents(new Events(), this);
+        getServer().getPluginManager().registerEvents(new Events(gameController), this);
         getServer().getPluginManager().registerEvents(new DamageEvents(gameController, this), this);
 
         new Command(this, gameController);

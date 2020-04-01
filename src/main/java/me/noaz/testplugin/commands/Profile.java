@@ -28,10 +28,12 @@ public class Profile implements CommandExecutor {
         }
 
 
+        //TODO: Fix below better with new PlayerExtension
         List<Player> players = plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).getPlayers();
         for(Player player : players) {
             if(player.getName().equals(args[0])) {
-                ((PlayerExtension) player.getMetadata("handler").get(0).value()).getPlayerStatistics().printStatistics((Player)sender);
+                sender.sendMessage("Currently disabled");
+                //((PlayerExtension) player.getMetadata("handler").get(0).value()).getPlayerStatistics().printStatistics((Player)sender);
             }
         }
 

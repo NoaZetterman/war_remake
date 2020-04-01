@@ -12,34 +12,34 @@ import java.util.*;
 
 public class Infect extends Game {
 //TODO: The rest
-    public Infect(String worldName, HashMap<String, List<Location>> locations) {
+    public Infect(String worldName, HashMap<String, List<Location>> locations, HashMap<Player,PlayerExtension> players) {
+        this.players = players;
+
         teams = new Team[] {new Team(Color.GREEN, ChatColor.GREEN), new Team(Color.BLUE, ChatColor.BLUE)};
 
         teams[0].setSpawnPoints(locations.get("redspawn"));
         teams[1].setSpawnPoints(locations.get("bluespawn"));
 
-        init();
+        init(players);
 
         Random random = new Random();
-        int playersInGame = teams[1].getPlayers().size();
-        UUID rootUUID = teams[1].getPlayers().get(random.nextInt(playersInGame));
+        PlayerExtension root = players.get(random.nextInt(players.size()));
 
-        Player root = Bukkit.getServer().getPlayer(rootUUID);
         teams[1].removePlayer(root);
         teams[0].addPlayer(root);
-        ((PlayerExtension) root.getMetadata("handler").get(0).value()).setTeam(teams[0]);
+        root.setTeam(teams[0]);
         //Also add special root effect stuff I guess
     }
 
 
     @Override
-    public void assignTeam(Player player, PlayerExtension handler) {
+    public void assignTeam(PlayerExtension player) {
         teams[1].addPlayer(player);
-        handler.setTeam(teams[1]);
+        player.setTeam(teams[1]);
     }
 
-    @Override public void end() {
-        super.end();
+    @Override public void end(boolean forceEnd) {
+        super.end(forceEnd);
 
         if(teams[1].getPlayers().size() == 0) {
             Bukkit.getServer().broadcastMessage("Zombies won!");

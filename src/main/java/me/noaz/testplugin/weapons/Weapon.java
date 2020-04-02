@@ -1,18 +1,16 @@
 package me.noaz.testplugin.weapons;
 
-import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.List;
 
-//TODO: Use ticks instead of Sys.timems
 /**
  * Main class that weapons are built from.
  *
@@ -21,7 +19,7 @@ import java.util.List;
  */
 public abstract class Weapon {
     protected TestPlugin plugin;
-    protected Player player;
+    protected PlayerExtension player;
     protected PlayerStatistic statistics;
     protected WeaponConfiguration config;
 
@@ -41,7 +39,7 @@ public abstract class Weapon {
      * @param statistics That players statistics
      * @param config The configuration of this weapon
      */
-    protected Weapon(TestPlugin plugin, Player player, PlayerStatistic statistics, WeaponConfiguration config) {
+    protected Weapon(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, WeaponConfiguration config) {
         this.plugin = plugin;
         this.player = player;
         this.statistics = statistics;
@@ -49,33 +47,15 @@ public abstract class Weapon {
         this.currentClip = config.getClipSize();
         this.currentBullets = config.getStartingBullets();
 
+        //They have to be initialised now to not cause errors
         reloadTask = new BukkitRunnable() {
-            int i = 0;
             @Override
             public void run() {
-                i++;
-                if(i > config.getReloadTime()) {
-                    currentClip = Math.min(config.getClipSize(), currentBullets);
-                    isReloading = false;
-                    this.cancel();
-                } else {
-                    //Maybe use some type of disp thing to show a countdown
-                    TTA_Methods.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
-                }
-
             }
         };
-
         burstDelayTask = new BukkitRunnable() {
-            int i = 0;
             @Override
             public void run() {
-                i++;
-                if(i > config.getBurstDelay()) {
-                    currentClip = Math.min(config.getClipSize(), currentBullets);
-                    isNextBulletReady = true;
-                    this.cancel();
-                }
             }
         };
 
@@ -105,7 +85,7 @@ public abstract class Weapon {
                     this.cancel();
                 } else {
                     //Maybe use some type of disp thing to show a countdown
-                    TTA_Methods.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
+                    player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
                 }
 
             }
@@ -173,7 +153,7 @@ public abstract class Weapon {
     private int getCurrentBullets() {
         int bulletsLeft = 0;
         //Not used anymore
-        ItemStack[] inventoryContent = player.getInventory().getContents();
+        ItemStack[] inventoryContent = player.getPlayer().getInventory().getContents();
         for(ItemStack i : inventoryContent) {
             if(i.getType().equals(config.getGunMaterial())) {
                 bulletsLeft += i.getAmount();

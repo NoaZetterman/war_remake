@@ -1,14 +1,12 @@
 package me.noaz.testplugin.weapons.firemodes;
 
-import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -19,7 +17,7 @@ public class BurstGun extends Weapon {
      * @param statistics That players statistics
      * @param config     The configuration of this weapon
      */
-    public BurstGun(TestPlugin plugin, Player player, PlayerStatistic statistics, WeaponConfiguration config) {
+    public BurstGun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, WeaponConfiguration config) {
         super(plugin, player, statistics, config);
     }
 
@@ -27,7 +25,7 @@ public class BurstGun extends Weapon {
         if(!isReloading && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
 
-            double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
+            double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
             Vector velocity = calculateBulletDirection(accuracy);
 
             BukkitRunnable task = new BukkitRunnable() {
@@ -37,15 +35,16 @@ public class BurstGun extends Weapon {
                     if (i >= totalBulletsInCurrentBurst) {
                         this.cancel();
                     } else {
-                        new Bullet(player, plugin, velocity, config.getBulletSpeed(),
+                        new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
                                 config.getRange(), config.getBodyDamage(), config.getHeadDamage());
-                        player.setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+                        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
                         i++;
                     }
                 }
             };
 
             task.runTaskTimer(plugin, 0L, 1L);
+            System.out.println("Hello");//Not async?? or is it idk
             currentClip -= totalBulletsInCurrentBurst;
             currentBullets -= totalBulletsInCurrentBurst;
 
@@ -54,11 +53,11 @@ public class BurstGun extends Weapon {
             if(currentClip <= 0) {
                 reload();
             } else {
-                TTA_Methods.sendActionBar(player, ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
                 startBurstDelay();
             }
         } else if(currentBullets == 0){
-            player.sendMessage("Out of ammo!");
+            player.getPlayer().sendMessage("Out of ammo!");
         }
     }
 }

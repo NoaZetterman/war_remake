@@ -1,5 +1,6 @@
 package me.noaz.testplugin.player;
 
+import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.teams.Team;
@@ -36,6 +37,7 @@ public class PlayerExtension {
     private Team team;
     private HashMap<String, WeaponConfiguration> gunConfigurations;
     private List<String> ownedWeaponNames = new ArrayList<>();
+    private String actionBarMessage = "";
 
 
     /**
@@ -114,6 +116,8 @@ public class PlayerExtension {
         statistics.updateTotalScore();
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
         player.removePotionEffect(PotionEffectType.SLOW);
+        primaryWeapon.reset();
+        secondaryWeapon.reset();
 
         player.setPlayerListName(player.getName());
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
@@ -126,6 +130,8 @@ public class PlayerExtension {
      * Ends the game for this player correctly when the server shuts down.
      */
     public void forceEndGame() {
+        primaryWeapon.reset();
+        secondaryWeapon.reset();
         statistics.forceUpdateScore();
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
     }
@@ -147,6 +153,10 @@ public class PlayerExtension {
      */
     public void unScope() {
         player.removePotionEffect(PotionEffectType.SLOW);
+    }
+
+    public boolean isScoping() {
+        return player.hasPotionEffect(PotionEffectType.SLOW);
     }
 
     /**
@@ -267,13 +277,13 @@ public class PlayerExtension {
 
         switch(fireType) {
             case "burst":
-                weaponToChange = new BurstGun(plugin, player, statistics, configuration);
+                weaponToChange = new BurstGun(plugin, this, statistics, configuration);
                 break;
             case "single":
-                weaponToChange = new SingleFireGun(plugin, player, statistics, configuration);
+                weaponToChange = new SingleFireGun(plugin, this, statistics, configuration);
                 break;
             case "buck":
-                weaponToChange = new BuckGun(plugin, player, statistics, configuration);
+                weaponToChange = new BuckGun(plugin, this, statistics, configuration);
                 break;
         }
         return weaponToChange;
@@ -296,5 +306,14 @@ public class PlayerExtension {
 
     public Location getLocation() {
         return player.getLocation();
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setActionBar(String message) {
+        actionBarMessage = "";
+        TTA_Methods.sendActionBar(player.getPlayer(), message);
     }
 }

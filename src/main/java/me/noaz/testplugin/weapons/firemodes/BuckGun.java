@@ -29,7 +29,7 @@ public class BuckGun extends Weapon {
      * one bullet off the clip.
      */
     public void shoot() {
-        if(!isReloading() && currentBullets != 0 && isNextBulletReady) {
+        if(!isReloading && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = config.getBulletsPerClick();
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
 
@@ -45,11 +45,11 @@ public class BuckGun extends Weapon {
 
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-            startBurstDelay();
-            TTA_Methods.sendActionBar(player, config.getClipSize() + " / " + currentClip);
-
             if(currentClip <= 0) {
                 reload();
+            } else {
+                TTA_Methods.sendActionBar(player, currentBullets + " / " + currentClip);
+                startBurstDelay();
             }
         } else if(currentBullets == 0){
             player.sendMessage("Out of ammo!");

@@ -1,10 +1,12 @@
 package me.noaz.testplugin.weapons.firemodes;
 
+import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -25,7 +27,7 @@ public class SingleFireGun extends Weapon {
     }
 
     public void shoot() {
-        if(!isReloading() && currentBullets != 0 && isNextBulletReady) {
+        if(!isReloading && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
             Vector velocity = calculateBulletDirection(accuracy);
@@ -40,10 +42,11 @@ public class SingleFireGun extends Weapon {
             currentBullets -= totalBulletsInCurrentBurst;
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-            startBurstDelay();
-
             if(currentClip <= 0) {
                 reload();
+            } else {
+                TTA_Methods.sendActionBar(player, ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                startBurstDelay();
             }
         } else if(currentBullets == 0){
             player.sendMessage("Out of ammo!");

@@ -99,7 +99,7 @@ public abstract class Weapon {
             @Override
             public void run() {
                 i++;
-                if(i > config.getReloadTime()) {
+                if(i >= config.getReloadTime()) {
                     currentClip = Math.min(config.getClipSize(), currentBullets);
                     isReloading = false;
                     this.cancel();
@@ -114,21 +114,14 @@ public abstract class Weapon {
         reloadTask.runTaskTimerAsynchronously(plugin, 1L, 1L);
     }
 
-    //Maybe change reloading sys to work with PlayerExtension and drawing out stuff showing reload
-    protected boolean isReloading() {
-        return isReloading;
-    }
-
     protected void startBurstDelay() {
         isNextBulletReady = false;
-        //TODO: Fix so its actually ticks or something like that
         burstDelayTask = new BukkitRunnable() {
             int i = 0;
             @Override
             public void run() {
                 i++;
-                if(i > config.getBurstDelay()) {
-                    currentClip = Math.min(config.getClipSize(), currentBullets);
+                if(i >= config.getBurstDelay()) {
                     isNextBulletReady = true;
                     this.cancel();
                 }

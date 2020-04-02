@@ -24,7 +24,7 @@ public class BurstGun extends Weapon {
     }
 
     public void shoot() {
-        if(!isReloading() && currentBullets != 0 && isNextBulletReady) {
+        if(!isReloading && currentBullets != 0 && isNextBulletReady) {
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
 
             double accuracy = player.hasPotionEffect(PotionEffectType.SLOW) ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
@@ -42,9 +42,6 @@ public class BurstGun extends Weapon {
                         player.setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
                         i++;
                     }
-
-                    //Make another bullet constructor so that all bullets fires in same direction in same burst
-
                 }
             };
 
@@ -54,11 +51,11 @@ public class BurstGun extends Weapon {
 
             statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-            startBurstDelay();
-            TTA_Methods.sendActionBar(player, ChatColor.DARK_RED + "" + ChatColor.BOLD + config.getClipSize() + " / " + currentClip);
-
             if(currentClip <= 0) {
                 reload();
+            } else {
+                TTA_Methods.sendActionBar(player, ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                startBurstDelay();
             }
         } else if(currentBullets == 0){
             player.sendMessage("Out of ammo!");

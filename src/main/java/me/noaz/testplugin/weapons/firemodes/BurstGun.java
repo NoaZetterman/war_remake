@@ -33,6 +33,17 @@ public class BurstGun extends Weapon {
 
                 public void run() {
                     if (i >= totalBulletsInCurrentBurst) {
+                        currentClip -= totalBulletsInCurrentBurst;
+                        currentBullets -= totalBulletsInCurrentBurst;
+
+                        statistics.addBulletsShot(totalBulletsInCurrentBurst);
+
+                        if(currentClip <= 0) {
+                            reload();
+                        } else {
+                            player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                            startBurstDelay();
+                        }
                         this.cancel();
                     } else {
                         new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
@@ -44,18 +55,7 @@ public class BurstGun extends Weapon {
             };
 
             task.runTaskTimer(plugin, 0L, 1L);
-            System.out.println("Hello");//Not async?? or is it idk
-            currentClip -= totalBulletsInCurrentBurst;
-            currentBullets -= totalBulletsInCurrentBurst;
 
-            statistics.addBulletsShot(totalBulletsInCurrentBurst);
-
-            if(currentClip <= 0) {
-                reload();
-            } else {
-                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
-                startBurstDelay();
-            }
         } else if(currentBullets == 0){
             player.getPlayer().sendMessage("Out of ammo!");
         }

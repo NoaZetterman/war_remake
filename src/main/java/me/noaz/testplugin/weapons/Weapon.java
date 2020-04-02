@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
+//TODO: Fix the runnables to work properly, fix bullet firing speed on burst guns
 /**
  * Main class that weapons are built from.
  *

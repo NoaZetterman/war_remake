@@ -295,13 +295,13 @@ public class GameController {
         }
         task.cancel();
 
-        System.out.println("Resetting maps");
+        System.out.println("Resetting maps:");
 
         File f = plugin.getServer().getWorldContainer();
         String[] mapNames = f.list();
 
         for(String mapName : mapNames) {
-            System.out.println("Resetting " + mapName);
+            System.out.println(mapName);
             plugin.getServer().unloadWorld(plugin.getServer().getWorld(mapName), false);
             plugin.getServer().getWorld(mapName);
         }

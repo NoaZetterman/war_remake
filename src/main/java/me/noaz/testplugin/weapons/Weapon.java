@@ -30,6 +30,7 @@ public abstract class Weapon {
 
     protected boolean isNextBulletReady = true; //Time in between bursts or individual bullets if there is no burst.
     protected boolean isReloading = false;
+    protected boolean isShooting = false;
 
     protected BukkitRunnable reloadTask;
     protected BukkitRunnable burstDelayTask;
@@ -158,6 +159,10 @@ public abstract class Weapon {
         isNextBulletReady = true;
         currentBullets = config.getStartingBullets();
         currentClip = config.getClipSize();
+    }
+
+    public void stopShooting() {
+        //Derp
     }
 
     private int getCurrentBullets() {

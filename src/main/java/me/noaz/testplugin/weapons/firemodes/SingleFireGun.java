@@ -11,11 +11,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
- * Right now the default weapon works like automatics.
+ * Used for guns that firs one bullet at a time.
  */
 public class SingleFireGun extends Weapon {
-    BukkitRunnable fireAsIfPlayerHoldsRightClick;
-    Boolean isShooting = false;
+    private BukkitRunnable fireAsIfPlayerHoldsRightClick;
 
     /**
      * @param plugin this plugin
@@ -48,13 +47,20 @@ public class SingleFireGun extends Weapon {
         }
     }
 
+    @Override
+    public void stopShooting() {
+        if(isShooting) {
+            fireAsIfPlayerHoldsRightClick.cancel();
+        }
+    }
+
     class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
 
         @Override
         public void run() {
             i++;
-            if(i >= 6 || currentClip <= 0) {
+            if(i >= 60 || currentClip <= 0) {
                 if(currentClip <= 0) {
                     reload();
                 } else {

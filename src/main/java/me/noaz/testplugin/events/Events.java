@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -62,12 +63,6 @@ public class Events implements Listener {
         event.setCancelled(true);
     }
 
-    //Useful events: PlayerChangedMainHandEvent
-    // PlayerItemHeldEvent
-    //
-    /**
-     * Scopes/unscopes if the player is left clicking with a gun, otherwise nothing.
-     */
     @EventHandler
     public void onHandSwingEvent(PlayerAnimationEvent event) {
         if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
@@ -79,7 +74,10 @@ public class Events implements Listener {
         }
     }
 
-    //TODO: onBlockPlaceEvent, cancel.
+    @EventHandler
+    public void onBlockPlaceEvent(BlockPlaceEvent event) {
+        event.setCancelled(true);
+    }
 
     @EventHandler
     public void onPlayerLevelChange(PlayerLevelChangeEvent event) {
@@ -90,6 +88,10 @@ public class Events implements Listener {
 
     @EventHandler
     public void onChangeMainHand(PlayerItemHeldEvent event) {
+        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+
+        player.getPrimaryWeapon().stopShooting();
+        player.getSecondaryWeapon().stopShooting();
         gameController.getPlayerExtension(event.getPlayer()).unScope();
     }
 

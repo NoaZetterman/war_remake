@@ -140,7 +140,7 @@ public class DamageEvents implements Listener {
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(gameController.getGame() == null) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 6, 10));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 2));
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 }

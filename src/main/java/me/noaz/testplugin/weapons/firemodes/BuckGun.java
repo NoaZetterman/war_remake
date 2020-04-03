@@ -9,6 +9,7 @@ import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.ChatColor;
 import org.bukkit.util.Vector;
 
+//TODO: Fix shooting faster than click speed
 public class BuckGun extends Weapon {
 
     /**

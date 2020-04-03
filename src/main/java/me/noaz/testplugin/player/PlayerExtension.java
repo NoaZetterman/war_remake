@@ -5,10 +5,11 @@ import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
-import me.noaz.testplugin.weapons.firemodes.SingleFireGun;
+import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
 import me.noaz.testplugin.weapons.firemodes.BuckGun;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
+import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -280,7 +281,10 @@ public class PlayerExtension {
                 weaponToChange = new BurstGun(plugin, this, statistics, configuration);
                 break;
             case "single":
-                weaponToChange = new SingleFireGun(plugin, this, statistics, configuration);
+                weaponToChange = new SingleBoltGun(plugin, this, statistics, configuration);
+                break;
+            case "automatic":
+                weaponToChange = new FullyAutomaticGun(plugin, this, statistics, configuration);
                 break;
             case "buck":
                 weaponToChange = new BuckGun(plugin, this, statistics, configuration);

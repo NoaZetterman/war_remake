@@ -13,7 +13,7 @@ import org.bukkit.util.Vector;
 /**
  * Used for guns that firs one bullet at a time.
  */
-public class SingleFireGun extends Weapon {
+public class FullyAutomaticGun extends Weapon {
     private BukkitRunnable fireAsIfPlayerHoldsRightClick;
 
     /**
@@ -22,7 +22,7 @@ public class SingleFireGun extends Weapon {
      * @param statistics That players statistics
      * @param config The configuration of this weapon
      */
-    public SingleFireGun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, WeaponConfiguration config) {
+    public FullyAutomaticGun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, WeaponConfiguration config) {
         super(plugin, player, statistics, config);
     }
 
@@ -32,6 +32,7 @@ public class SingleFireGun extends Weapon {
                 fireAsIfPlayerHoldsRightClick.cancel();
             }
 
+            //Pull shot u to weapon? ANd then implement a runnable thingy?
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
             isShooting = true;
@@ -41,10 +42,10 @@ public class SingleFireGun extends Weapon {
     }
 
     public void reset() {
-        super.reset();
         if(isShooting) {
             fireAsIfPlayerHoldsRightClick.cancel();
         }
+        super.reset();
     }
 
     @Override
@@ -54,13 +55,13 @@ public class SingleFireGun extends Weapon {
         }
     }
 
-    class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
+    private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
 
         @Override
         public void run() {
             i++;
-            if(i >= 60 || currentClip <= 0) {
+            if(i >= 6 || currentClip <= 0) {
                 if(currentClip <= 0) {
                     reload();
                 } else {

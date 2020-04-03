@@ -3,7 +3,6 @@ package me.noaz.testplugin.weapons;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -68,7 +67,6 @@ public abstract class Weapon {
      * Tries to shoot one burst of bullets, does not shoot when player should not be able to shoot (eg reloading)
      */
     public abstract void shoot();
-
 
     /**
      * Reloads the gun
@@ -161,6 +159,9 @@ public abstract class Weapon {
         currentClip = config.getClipSize();
     }
 
+    /**
+     * Stops the gun from shooting
+     */
     public void stopShooting() {
         //Derp
     }

@@ -91,12 +91,12 @@ public class GameController {
                 32, 20));
 
         gunConfigurations.put("AK-47", new WeaponConfiguration("AK-47", Material.IRON_HOE,
-                "Automatic", "single", 3, 100.0,
+                "Automatic", "automatic", 3, 100.0,
                 4.4, 6, 4, 76, 1500, 150,
                 1, 100, 30));
 
         gunConfigurations.put("Lemantation", new WeaponConfiguration("Lemantation", Material.IRON_INGOT,
-                "Automatic", "single", 3, 100.0,
+                "Automatic", "automatic", 3, 100.0,
                 3.6, 4.5, 4, 76, 4000, 100,
                 1, 100, 50));
     }

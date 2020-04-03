@@ -3,6 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.player.LoadoutGUI;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -61,6 +62,9 @@ public class Events implements Listener {
         event.setCancelled(true);
     }
 
+    //Useful events: PlayerChangedMainHandEvent
+    // PlayerItemHeldEvent
+    //
     /**
      * Scopes/unscopes if the player is left clicking with a gun, otherwise nothing.
      */

@@ -3,6 +3,7 @@ package me.noaz.testplugin.weapons;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +33,6 @@ public abstract class Weapon {
 
     protected BukkitRunnable reloadTask;
     protected BukkitRunnable burstDelayTask;
-
 
     /**
      * @param plugin this plugin
@@ -85,14 +85,23 @@ public abstract class Weapon {
                     isReloading = false;
                     this.cancel();
                 } else {
-                    //Maybe use some type of disp thing to show a countdown
-                    player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "Reloading");
+                    if(config.getReloadTime()*1/5 >= i) {
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading");
+                    } else if(config.getReloadTime()*2/5 >= i) {
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading");
+                    } else if(config.getReloadTime()*3/5 >= i) {
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading");
+                    } else if(config.getReloadTime()*4/5 >= i) {
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading");
+                    } else {
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading");
+                    }
                 }
 
             }
         };
 
-        reloadTask.runTaskTimerAsynchronously(plugin, 1L, 1L);
+        reloadTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
     }
 
     protected void startBurstDelay() {
@@ -109,7 +118,7 @@ public abstract class Weapon {
             }
         };
 
-        burstDelayTask.runTaskTimerAsynchronously(plugin, 1L, 1L);
+        burstDelayTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
     }
 
     /**

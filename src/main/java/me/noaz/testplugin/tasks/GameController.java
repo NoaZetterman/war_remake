@@ -94,6 +94,11 @@ public class GameController {
                 "Automatic", "single", 3, 100.0,
                 4.4, 6, 4, 76, 1500, 150,
                 1, 100, 30));
+
+        gunConfigurations.put("Lemantation", new WeaponConfiguration("Lemantation", Material.IRON_INGOT,
+                "Automatic", "single", 3, 100.0,
+                3.6, 4.5, 4, 76, 4000, 100,
+                1, 100, 50));
     }
 
     private void loadMaps() {

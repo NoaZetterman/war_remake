@@ -81,7 +81,7 @@ public class WeaponConfiguration {
     }
 
     private int convertToTicks(int timeInMs) {
-        return timeInMs/50;
+        return Math.max(timeInMs/50,1);
     }
 
     public String getName() {

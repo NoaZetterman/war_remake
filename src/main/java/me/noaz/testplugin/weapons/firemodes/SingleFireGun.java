@@ -7,12 +7,15 @@ import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
  * Right now the default weapon works like automatics.
  */
 public class SingleFireGun extends Weapon {
+    BukkitRunnable fireAsIfPlayerHoldsRightClick;
+    Boolean isShooting = false;
 
     /**
      * @param plugin this plugin
@@ -25,29 +28,56 @@ public class SingleFireGun extends Weapon {
     }
 
     public void shoot() {
-        if(!isReloading && currentBullets != 0 && isNextBulletReady) {
-            int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
-            double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
-            Vector velocity = calculateBulletDirection(accuracy);
+        if(currentBullets != 0) {
+            if(isShooting) {
+                fireAsIfPlayerHoldsRightClick.cancel();
+            }
 
-            if(totalBulletsInCurrentBurst != 0) {
+            fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
+            fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
+            isShooting = true;
+        } else {
+            player.getPlayer().sendMessage("Out of ammo!");
+        }
+    }
+
+    public void reset() {
+        super.reset();
+        if(isShooting) {
+            fireAsIfPlayerHoldsRightClick.cancel();
+        }
+    }
+
+    class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
+        int i = 0;
+
+        @Override
+        public void run() {
+            i++;
+            if(i >= 6 || currentClip <= 0) {
+                if(currentClip <= 0) {
+                    reload();
+                } else {
+                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                    startBurstDelay();
+                }
+                isShooting = false;
+                this.cancel();
+            } else if(isNextBulletReady && !isReloading) {
+                double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
+                Vector velocity = calculateBulletDirection(accuracy);
+
+                currentClip--;
+                currentBullets--;
+                statistics.addBulletsShot(1);
+
                 new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(), config.getRange(), config.getBodyDamage(),
                         config.getHeadDamage());
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-            }
 
-            currentClip -= totalBulletsInCurrentBurst;
-            currentBullets -= totalBulletsInCurrentBurst;
-            statistics.addBulletsShot(totalBulletsInCurrentBurst);
-
-            if(currentClip <= 0) {
-                reload();
-            } else {
                 player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
                 startBurstDelay();
             }
-        } else if(currentBullets == 0){
-            player.getPlayer().sendMessage("Out of ammo!");
         }
     }
 }

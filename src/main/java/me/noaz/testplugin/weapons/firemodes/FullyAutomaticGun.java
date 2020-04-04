@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
- * Used for guns that firs one bullet at a time.
+ * Used for guns that fires one bullet at a time at any speed.
  */
 public class FullyAutomaticGun extends Weapon {
     private BukkitRunnable fireAsIfPlayerHoldsRightClick;
@@ -32,7 +32,6 @@ public class FullyAutomaticGun extends Weapon {
                 fireAsIfPlayerHoldsRightClick.cancel();
             }
 
-            //Pull shot u to weapon? ANd then implement a runnable thingy?
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
             isShooting = true;

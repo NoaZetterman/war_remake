@@ -87,8 +87,8 @@ public class GameController {
 
         gunConfigurations.put("AA12", new WeaponConfiguration("AA12", Material.IRON_PICKAXE,
                 "Shotgun", "buck", 1.0, 3.0, 7,
-                9, 4, 18, 1500, 450, 6,
-                32, 20));
+                9, 4, 18, 1500, 450, 1,
+                6, 32, 20));
 
         gunConfigurations.put("AK-47", new WeaponConfiguration("AK-47", Material.IRON_HOE,
                 "Automatic", "automatic", 3, 100.0,

@@ -7,10 +7,14 @@ import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-//TODO: Fix shooting faster than click speed
+/**
+ * A gun that fires multiple bullets at once such as a shotgun.
+ */
 public class BuckGun extends Weapon {
+    private BukkitRunnable fireAsIfPlayerHoldsRightClick;
 
     /**
      * @param plugin     This plugin
@@ -29,30 +33,78 @@ public class BuckGun extends Weapon {
      * one bullet off the clip.
      */
     public void shoot() {
-        if(!isReloading && currentBullets != 0 && isNextBulletReady) {
-            int totalBulletsInCurrentBurst = config.getBulletsPerClick();
-            double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
-
-            for(int i = 0; i < totalBulletsInCurrentBurst; i++) {
-                Vector velocity = calculateBulletDirection(accuracy);
-                new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                        config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+        if(currentBullets != 0) {
+            if(isShooting) {
+                fireAsIfPlayerHoldsRightClick.cancel();
             }
-            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-            currentClip--;
-            currentBullets--;
+            //Pull shot u to weapon? And then implement a runnable thingy?
+            fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
+            fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
+            isShooting = true;
+        } else {
+            player.getPlayer().sendMessage("Out of ammo!");
+        }
+    }
 
-            statistics.addBulletsShot(totalBulletsInCurrentBurst);
+    private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
+        int i = 0;
 
-            if(currentClip <= 0) {
-                reload();
-            } else {
+        @Override
+        public void run() {
+            i++;
+            if(i >= 6 || currentClip <= 0) {
+                if(currentClip <= 0) {
+                    reload();
+                } else {
+                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                    startBurstDelay();
+                }
+                isShooting = false;
+                this.cancel();
+            } else if(isNextBulletReady && !isReloading) {
+                int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerBurst());
+                double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
+
+                currentClip -= totalBulletsInCurrentBurst;
+                currentBullets -= totalBulletsInCurrentBurst;
+                statistics.addBulletsShot(totalBulletsInCurrentBurst*config.getBulletsPerClick());
+
+                //Runnable within a runnable yikes?
+                BukkitRunnable task = new BukkitRunnable() {
+                    private int i = 0;
+
+                    public void run() {
+                        if (i >= totalBulletsInCurrentBurst) {
+                            currentClip -= totalBulletsInCurrentBurst;
+                            currentBullets -= totalBulletsInCurrentBurst;
+
+                            statistics.addBulletsShot(totalBulletsInCurrentBurst);
+
+                            if(currentClip <= 0) {
+                                reload();
+                            } else {
+                                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                                startBurstDelay();
+                            }
+                            this.cancel();
+                        } else {
+                            for(int i = 0; i < config.getBulletsPerClick(); i++) {
+                                Vector velocity = calculateBulletDirection(accuracy);
+                                new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
+                                        config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+                            }
+                        }
+                    }
+                };
+
+                task.runTaskTimer(plugin, 0L, 1L);
+
+                player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+
                 player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
                 startBurstDelay();
             }
-        } else if(currentBullets == 0){
-            player.getPlayer().sendMessage("Out of ammo!");
         }
     }
 }

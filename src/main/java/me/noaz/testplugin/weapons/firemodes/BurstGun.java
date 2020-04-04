@@ -23,7 +23,7 @@ public class BurstGun extends Weapon {
 
     public void shoot() {
         if(!isReloading && currentBullets != 0 && isNextBulletReady) {
-            int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerClick());
+            int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerBurst());
 
             double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
             Vector velocity = calculateBulletDirection(accuracy);

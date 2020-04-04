@@ -9,6 +9,9 @@ import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.ChatColor;
 import org.bukkit.util.Vector;
 
+/**
+ * A gun that does not take into account holding down rightclick, but may fire faster when clicking the mouse fast
+ */
 public class SingleBoltGun extends Weapon {
     /**
      * @param plugin     this plugin

@@ -34,7 +34,7 @@ import java.util.Random;
 public class GameController {
     private Game game;
     private TestPlugin plugin;
-    private BukkitRunnable task;
+    private BukkitRunnable mainGameTask;
     private BossBar bar;
     private List<String> mapNames = new ArrayList<>();
     private HashMap<String, HashMap<String, List<Location>>> maps = new HashMap<>(); //A bit ugly xd
@@ -232,7 +232,7 @@ public class GameController {
     private void runTimer() {
         createVisibleTimer();
 
-        task = new BukkitRunnable() {
+        mainGameTask = new BukkitRunnable() {
             public void run() {
             if (timeUntilNextGame == 0) {
                 if(timeUntilGameEnds == -1) {
@@ -255,7 +255,7 @@ public class GameController {
             }
         };
 
-        task.runTaskTimer(plugin, 0, 20L);
+        mainGameTask.runTaskTimer(plugin, 0, 20L);
     }
 
     /**
@@ -303,7 +303,7 @@ public class GameController {
             System.out.println("Ending game and saving player data");
             game.end(true);
         }
-        task.cancel();
+        mainGameTask.cancel();
 
         System.out.println("Resetting maps:");
 
@@ -321,7 +321,7 @@ public class GameController {
      * Sets the next game to given input.
      * @param mapName The name of the map
      * @param gamemode The gamemode to use
-     * @return True if the map and gamemode was set, false otherwise.
+     * @return True if the map and gamemode was set, False otherwise.
      */
     public boolean pickNextMapAndGamemode(String mapName, String gamemode) {
         if(!mapNames.contains(mapName))

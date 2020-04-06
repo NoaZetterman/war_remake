@@ -54,6 +54,9 @@ public class FullyAutomaticGun extends Weapon {
         }
     }
 
+    /**
+     * Fires the automatic gun for 6 ticks
+     */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
 

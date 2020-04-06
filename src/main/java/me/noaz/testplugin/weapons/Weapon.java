@@ -103,6 +103,9 @@ public abstract class Weapon {
         reloadTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
     }
 
+    /**
+     * Stops the gun from being able to fire for config.getBurstDelay time.
+     */
     protected void startBurstDelay() {
         isNextBulletReady = false;
         burstDelayTask = new BukkitRunnable() {
@@ -161,21 +164,11 @@ public abstract class Weapon {
 
     /**
      * Stops the gun from shooting
+     *
+     * Only used for guns that fires fast such as fully automatic.
      */
     public void stopShooting() {
         //Derp
-    }
-
-    private int getCurrentBullets() {
-        int bulletsLeft = 0;
-        //Not used anymore
-        ItemStack[] inventoryContent = player.getPlayer().getInventory().getContents();
-        for(ItemStack i : inventoryContent) {
-            if(i.getType().equals(config.getGunMaterial())) {
-                bulletsLeft += i.getAmount();
-            }
-        }
-        return bulletsLeft;
     }
 
     /**

@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
- * A gun that fires multiple bullets at once such as a shotgun.
+ * A gun that fires multiple bullets at once such as a shotgun, may be in bursts
  */
 public class BuckGun extends Weapon {
     private BukkitRunnable fireAsIfPlayerHoldsRightClick;
@@ -38,7 +38,6 @@ public class BuckGun extends Weapon {
                 fireAsIfPlayerHoldsRightClick.cancel();
             }
 
-            //Pull shot u to weapon? And then implement a runnable thingy?
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
             isShooting = true;
@@ -47,6 +46,23 @@ public class BuckGun extends Weapon {
         }
     }
 
+    public void reset() {
+        if(isShooting) {
+            fireAsIfPlayerHoldsRightClick.cancel();
+        }
+        super.reset();
+    }
+
+    @Override
+    public void stopShooting() {
+        if(isShooting) {
+            fireAsIfPlayerHoldsRightClick.cancel();
+        }
+    }
+
+    /**
+     * BukkitRunnable that fires the buck gun in the correct way.
+     */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
         int bulletsInBurst = Math.min(currentClip, config.getBulletsPerBurst());

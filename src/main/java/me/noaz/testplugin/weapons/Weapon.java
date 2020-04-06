@@ -11,7 +11,6 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-//TODO: Fix the runnables to work properly, fix bullet firing speed on burst guns
 /**
  * Main class that weapons are built from.
  *
@@ -27,7 +26,7 @@ public abstract class Weapon {
     protected int currentClip;
     protected int currentBullets;
 
-    protected boolean isNextBulletReady = true; //Time in between bursts or individual bullets if there is no burst.
+    protected boolean isNextBulletReady = true;
     protected boolean isReloading = false;
     protected boolean isShooting = false;
 

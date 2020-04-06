@@ -49,6 +49,7 @@ public class BuckGun extends Weapon {
 
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
+        int bulletsInBurst = Math.min(currentClip, config.getBulletsPerBurst());
 
         @Override
         public void run() {
@@ -63,47 +64,36 @@ public class BuckGun extends Weapon {
                 isShooting = false;
                 this.cancel();
             } else if(isNextBulletReady && !isReloading) {
-                int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerBurst());
                 double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
 
-                currentClip -= totalBulletsInCurrentBurst;
-                currentBullets -= totalBulletsInCurrentBurst;
-                statistics.addBulletsShot(totalBulletsInCurrentBurst*config.getBulletsPerClick());
+                currentClip--;
+                currentBullets--;
+                statistics.addBulletsShot(config.getBulletsPerClick());
 
-                //Runnable within a runnable yikes?
-                BukkitRunnable task = new BukkitRunnable() {
-                    private int i = 0;
 
-                    public void run() {
-                        if (i >= totalBulletsInCurrentBurst) {
-                            currentClip -= totalBulletsInCurrentBurst;
-                            currentBullets -= totalBulletsInCurrentBurst;
-
-                            statistics.addBulletsShot(totalBulletsInCurrentBurst);
-
-                            if(currentClip <= 0) {
-                                reload();
-                            } else {
-                                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
-                                startBurstDelay();
-                            }
-                            this.cancel();
-                        } else {
-                            for(int i = 0; i < config.getBulletsPerClick(); i++) {
-                                Vector velocity = calculateBulletDirection(accuracy);
-                                new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                                        config.getRange(), config.getBodyDamage(), config.getHeadDamage());
-                            }
-                        }
+                if (bulletsInBurst > 0) {
+                    bulletsInBurst--;
+                    for(int j = 0; j < config.getBulletsPerClick(); j++) {
+                        Vector velocity = calculateBulletDirection(accuracy);
+                        new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
+                                config.getRange(), config.getBodyDamage(), config.getHeadDamage());
                     }
-                };
+                }
 
-                task.runTaskTimer(plugin, 0L, 1L);
+                if(bulletsInBurst <= 0) {
+                    if(currentClip <= 0) {
+                        reload();
+                    } else {
+                        player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                        startBurstDelay();
+                    }
+                    bulletsInBurst = 0;
+                }
+
 
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
                 player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
-                startBurstDelay();
             }
         }
     }

@@ -75,6 +75,8 @@ public abstract class Weapon {
 
         reloadTask = new BukkitRunnable() {
             int i = 0;
+            int itemSlot = config.getWeaponType().equals("Secondary") ? 2 : 1;
+
             @Override
             public void run() {
                 i++;
@@ -83,16 +85,17 @@ public abstract class Weapon {
                     isReloading = false;
                     this.cancel();
                 } else {
-                    if(config.getReloadTime()*1/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading");
+
+                    if(config.getReloadTime()/5 >= i) {
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading", itemSlot);
                     } else if(config.getReloadTime()*2/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading");
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading", itemSlot);
                     } else if(config.getReloadTime()*3/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading");
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading", itemSlot);
                     } else if(config.getReloadTime()*4/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading");
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading", itemSlot);
                     } else {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading");
+                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading", itemSlot);
                     }
                 }
 

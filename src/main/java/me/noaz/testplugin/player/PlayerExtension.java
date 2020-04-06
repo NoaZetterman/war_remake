@@ -38,7 +38,7 @@ public class PlayerExtension {
     private Team team;
     private HashMap<String, WeaponConfiguration> gunConfigurations;
     private List<String> ownedWeaponNames = new ArrayList<>();
-    private String actionBarMessage = "";
+    private String[] actionBarMessage;
 
 
     /**
@@ -68,6 +68,10 @@ public class PlayerExtension {
         //Below should be replaced by getting a list of the owned guns from the database
         ownedWeaponNames.addAll(gunConfigurations.keySet());
 
+        actionBarMessage = new String[9];
+        for(int i = 0; i < actionBarMessage.length; i++) {
+            actionBarMessage[i] = "";
+        }
     }
 
     /**
@@ -316,8 +320,24 @@ public class PlayerExtension {
         return player;
     }
 
+    public void setActionBar(String message, int slot) {
+        actionBarMessage[slot] = message;
+        if(slot == player.getInventory().getHeldItemSlot()) {
+            TTA_Methods.sendActionBar(player.getPlayer(), message);
+        }
+    }
+
+
     public void setActionBar(String message) {
-        actionBarMessage = "";
-        TTA_Methods.sendActionBar(player.getPlayer(), message);
+        actionBarMessage[player.getInventory().getHeldItemSlot()] = message;
+        TTA_Methods.sendActionBar(player, message);
+    }
+
+    /**
+     * Updates the players action bar corresponding to the current held item.
+     */
+    public void updateActionBar() {
+        int itemSlot = player.getInventory().getHeldItemSlot();
+        TTA_Methods.sendActionBar(player, actionBarMessage[itemSlot]);
     }
 }

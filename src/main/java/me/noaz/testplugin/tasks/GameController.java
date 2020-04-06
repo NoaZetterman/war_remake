@@ -34,7 +34,10 @@ import java.util.Random;
 public class GameController {
     private Game game;
     private TestPlugin plugin;
+
     private BukkitRunnable mainGameTask;
+    private BukkitRunnable updatePlayerActionBars;
+
     private BossBar bar;
     private List<String> mapNames = new ArrayList<>();
     private HashMap<String, HashMap<String, List<Location>>> maps = new HashMap<>(); //A bit ugly xd
@@ -58,7 +61,7 @@ public class GameController {
         this.plugin = plugin;
         createGunConfigurations();
         loadMaps();
-        runTimer();
+        runTasks();
     }
 
     private void createGunConfigurations() {
@@ -229,9 +232,10 @@ public class GameController {
     /**
      * Creates a BukkitRunnable task that takes counts time until next game and during a game, and starts games
      */
-    private void runTimer() {
+    private void runTasks() {
         createVisibleTimer();
 
+        //Task that is used to count timer and take care of game start/end
         mainGameTask = new BukkitRunnable() {
             public void run() {
             if (timeUntilNextGame == 0) {
@@ -255,7 +259,19 @@ public class GameController {
             }
         };
 
-        mainGameTask.runTaskTimer(plugin, 0, 20L);
+        //Task that takes handles player action bars, so that it is always visible
+        updatePlayerActionBars = new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                for(PlayerExtension player : playerExtensions.values()) {
+                    player.updateActionBar();
+                }
+            }
+        };
+
+        updatePlayerActionBars.runTaskTimer(plugin, 0L, 10L);
+        mainGameTask.runTaskTimer(plugin, 0L, 20L);
     }
 
     /**
@@ -303,7 +319,9 @@ public class GameController {
             System.out.println("Ending game and saving player data");
             game.end(true);
         }
+
         mainGameTask.cancel();
+        updatePlayerActionBars.cancel();
 
         System.out.println("Resetting maps:");
 

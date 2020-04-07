@@ -153,6 +153,8 @@ public class PlayerExtension {
         primaryWeapon.reset();
         secondaryWeapon.reset();
 
+        Arrays.fill(actionBarMessage, "");
+
         player.setPlayerListName(player.getName());
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
         team = null;

@@ -35,6 +35,7 @@ public class DamageEvents implements Listener {
                 double eyeToNeckLength = 0.25;
 
                 //Check if bullet was a headshot or not
+                //Maybe not hit when its too far away from body?
                 if (hitPlayer.getEyeLocation().getY() - eyeToNeckLength <= event.getEntity().getLocation().getY()) {
                     damage = (double) event.getEntity().getMetadata("headDamage").get(0).value();
                 } else {

@@ -83,7 +83,8 @@ public abstract class Weapon {
                 if(i >= config.getReloadTime()) {
                     currentClip = Math.min(config.getClipSize(), currentBullets);
                     isReloading = false;
-                    this.cancel();
+                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                    cancel();
                 } else {
 
                     if(config.getReloadTime()/5 >= i) {

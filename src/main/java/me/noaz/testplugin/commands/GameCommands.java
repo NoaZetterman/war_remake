@@ -22,14 +22,14 @@ public class GameCommands implements CommandExecutor {
             return false;
         }
 
-        if(args[0].toLowerCase().equals("join")) {
+        if(args[0].toLowerCase().equals("join") || args[0].toLowerCase().equals("j")) {
             if(gameController.joinGame((Player)sender)) {
                 sender.sendMessage("Joining game");
             } else {
                 sender.sendMessage("Game has not yet started");
             }
 
-        } else if(args[0].toLowerCase().equals("leave")) {
+        } else if(args[0].toLowerCase().equals("leave") || args[0].toLowerCase().equals("l")) {
             if(gameController.leaveGame((Player)sender)) {
                 sender.sendMessage("Leaving game");
             } else {

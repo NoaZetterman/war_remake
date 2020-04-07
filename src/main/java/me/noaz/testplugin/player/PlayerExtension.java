@@ -12,11 +12,13 @@ import me.noaz.testplugin.weapons.WeaponConfiguration;
 import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -77,12 +79,33 @@ public class PlayerExtension {
     /**
      * Respawn the player in a one spawnpoint belonging to its team.
      */
-    public Location respawn() {
-        primaryWeapon.reset();
-        secondaryWeapon.reset();
-        player.setHealth(20D);
-        DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryWeapon, secondaryWeapon);
-        return team.getSpawnPoint();
+    public void respawn(Player killer) {
+        player.setGameMode(GameMode.SPECTATOR);
+        player.setSpectatorTarget(killer);
+
+        new BukkitRunnable() {
+
+            int i = 3;
+            @Override
+            public void run() {
+                player.sendTitle("Respawning in " + i, "", 1,20,1);
+                i--;
+                //Add spawnres
+                if(team == null) {
+                    player.setGameMode(GameMode.ADVENTURE);
+                    this.cancel();
+                } else if(i < 0) {
+                    primaryWeapon.reset();
+                    secondaryWeapon.reset();
+                    player.setHealth(20D);
+                    DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryWeapon, secondaryWeapon);
+                    player.teleport(team.getSpawnPoint());
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 2));
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0, 20L);
     }
 
     /**

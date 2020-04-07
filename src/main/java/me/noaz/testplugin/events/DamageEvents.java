@@ -21,11 +21,9 @@ import org.bukkit.util.Vector;
 
 public class DamageEvents implements Listener {
     private GameController gameController;
-    private TestPlugin plugin;
 
-    public DamageEvents(GameController gameController, TestPlugin plugin) {
+    public DamageEvents(GameController gameController) {
         this.gameController = gameController;
-        this.plugin = plugin;
     }
 
     @EventHandler
@@ -61,7 +59,7 @@ public class DamageEvents implements Listener {
                     //Order on the two below matters. (or does it?)
                     killerStatistic.addXP(25);
                     shooterExtension.addKill();
-                    respawn(hitPlayer, shooter);
+                    hitPlayerExtension.respawn(shooter);
                 } else {
 
                     hitPlayer.damage(0.1, shooter); //To get the damage animation and correct player hit
@@ -89,9 +87,6 @@ public class DamageEvents implements Listener {
         event.setDeathMessage(null);
         event.getDrops().clear();
 
-
-
-
         if(event.getEntity().getKiller() != null) {
 
             Player deadPlayer = event.getEntity();
@@ -117,36 +112,8 @@ public class DamageEvents implements Listener {
         //Fix cactus pickuup
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         if(player.isPlayingGame()) {
-            Location loc = player.respawn();
-            event.setRespawnLocation(loc);
+            player.respawn(event.getPlayer().getKiller());
         }
-    }
-
-    private void respawn(Player player, Player killer) {
-
-        player.setGameMode(GameMode.SPECTATOR);
-        player.setSpectatorTarget(killer);
-        //TODO: Fix when game ends and player still in spec DONE?
-        BukkitRunnable runnable = new BukkitRunnable() {
-
-            int i = 3;
-            @Override
-            public void run() {
-                player.sendTitle("Respawning in " + i, "", 1,20,1);
-                i--;
-                //Add spawnres
-                if(i < 0) {
-                    player.teleport(gameController.getPlayerExtension(player).respawn());
-                    player.setGameMode(GameMode.ADVENTURE);
-                    this.cancel();
-                } else if(gameController.getGame() == null) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 2));
-                    player.setGameMode(GameMode.ADVENTURE);
-                    this.cancel();
-                }
-            }
-        };
-        runnable.runTaskTimer(plugin, 0, 20L);
     }
 
     @EventHandler

@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class PlayerExtension {
     private HashMap<String, WeaponConfiguration> gunConfigurations;
     private List<String> ownedWeaponNames = new ArrayList<>();
     private String[] actionBarMessage;
+    private boolean isDead = false;
 
 
     /**
@@ -71,15 +73,15 @@ public class PlayerExtension {
         ownedWeaponNames.addAll(gunConfigurations.keySet());
 
         actionBarMessage = new String[9];
-        for(int i = 0; i < actionBarMessage.length; i++) {
-            actionBarMessage[i] = "";
-        }
+        Arrays.fill(actionBarMessage, "");
     }
 
     /**
      * Respawn the player in a one spawnpoint belonging to its team.
      */
     public void respawn(Player killer) {
+        isDead = true;
+        DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
         player.setSpectatorTarget(killer);
 
@@ -90,18 +92,22 @@ public class PlayerExtension {
             public void run() {
                 player.sendTitle("Respawning in " + i, "", 1,20,1);
                 i--;
-                //Add spawnres
+                //TODO: Fix working spawnresist
                 if(team == null) {
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(i < 0) {
                     primaryWeapon.reset();
                     secondaryWeapon.reset();
+
+                    isDead = false;
                     player.setHealth(20D);
+
                     DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryWeapon, secondaryWeapon);
+
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 2));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*6, 2));
                     this.cancel();
                 }
             }
@@ -331,8 +337,19 @@ public class PlayerExtension {
         return player.getName();
     }
 
+    /**
+     * Puts given item on the players helmet
+     * @param helmet The helmet to put on the player
+     */
     public void setHelmet(ItemStack helmet) {
         player.getInventory().setHelmet(helmet);
+    }
+
+    /**
+     * Gives the player a leather helmet in the color of its team
+     */
+    public void setHelmet() {
+        DefaultInventories.setArmor(player.getInventory(), getTeamColor());
     }
 
     public Location getLocation() {
@@ -362,5 +379,9 @@ public class PlayerExtension {
     public void updateActionBar() {
         int itemSlot = player.getInventory().getHeldItemSlot();
         TTA_Methods.sendActionBar(player, actionBarMessage[itemSlot]);
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }

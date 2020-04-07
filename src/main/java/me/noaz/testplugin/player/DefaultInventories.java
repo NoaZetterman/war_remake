@@ -3,6 +3,7 @@ package me.noaz.testplugin.player;
 import me.noaz.testplugin.weapons.Weapon;
 import org.bukkit.Material;
 import org.bukkit.Color;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -31,6 +32,10 @@ public class DefaultInventories {
 
     }
 
+    public static void giveEmptyInventory(PlayerInventory inventory) {
+        inventory.clear();
+    }
+
     /**
      * Gives the player the correct loadout for a game.
      *
@@ -50,7 +55,7 @@ public class DefaultInventories {
         inventory.setItem(2, customItemName(secondaryWeapon.getMaterialAsItemStack(), secondaryWeapon.toString(), secondaryWeapon.getLore()));
     }
 
-    private static void setArmor(PlayerInventory inventory, Color teamColor) {
+    public static void setArmor(PlayerInventory inventory, Color teamColor) {
         /*ItemStack helmet;
         if(teamColor == Color.RED) {
             helmet = new ItemStack(Material.RED_WOOL);
@@ -69,6 +74,14 @@ public class DefaultInventories {
             armor[i] = colorArmor(armor[i], teamColor);
         }
         inventory.setArmorContents(armor);
+    }
+
+    public static void setHelmet(PlayerInventory inventory, Color teamColor) {
+
+        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+
+        helmet = colorArmor(helmet, teamColor);
+        inventory.setHelmet(helmet);
     }
 
     private static ItemStack colorArmor(ItemStack armor, Color color) {

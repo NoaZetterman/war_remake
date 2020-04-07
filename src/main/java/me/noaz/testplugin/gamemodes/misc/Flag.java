@@ -88,7 +88,6 @@ public class Flag {
 
 
         task = new BukkitRunnable() {
-            ItemStack playerHelmet;
 
             @Override
             public void run() {
@@ -98,8 +97,6 @@ public class Flag {
                     for (Entity entity : entities) {
                         if (entity.getType() == EntityType.PLAYER) {
                             PlayerExtension player = players.get(entity);
-
-
 
                             if(player.getTeamColor() != color) {
 
@@ -119,11 +116,12 @@ public class Flag {
                         plugin.getServer().broadcastMessage(flagHolder.getName() + " captured the flag");
                         captures++;
 
-                        flagHolder.setHelmet(playerHelmet);
+                        //Dismount the flag first? cus player helemt is not there.
+
+                        flagHolder.setHelmet();
                         flagPole.setHelmet(banner);
                         flagHolder = null;
-                    } else if(false) {
-                        //When flagholder dies doesnt mean
+                    } else if(flagHolder.isDead()){
                         plugin.getServer().broadcastMessage(flagHolder.getName() + " dropped flag");
                         flagPole.setHelmet(banner);
                         flagHolder = null;

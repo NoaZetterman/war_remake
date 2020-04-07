@@ -24,6 +24,7 @@ public class CaptureTheFlag extends Game {
         teams[1].setSpawnPoints(locations.get("bluespawn"));
 
         List<Location> flags = locations.get("flags");
+        //FLAGS ARE BROKEN :v
 
         //Flag position 0 is always red and pos 1 is always blue.
         redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin, playerExtensions);

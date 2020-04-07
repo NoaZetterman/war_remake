@@ -93,11 +93,13 @@ public class Events implements Listener {
         player.getPrimaryWeapon().stopShooting();
         player.getSecondaryWeapon().stopShooting();
         gameController.getPlayerExtension(event.getPlayer()).unScope();
+        player.updateActionBar();
     }
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
         //Reload when pressing drop button (Q)
+        //TODO: Fix so that player cant reload while reloading
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         if(player.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
             player.reloadWeapon(player.getPrimaryWeapon());

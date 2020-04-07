@@ -32,7 +32,12 @@ public class BurstGun extends Weapon {
                 private int i = 0;
 
                 public void run() {
-                    if (i >= totalBulletsInCurrentBurst) {
+                    i++;
+                    if (i <= totalBulletsInCurrentBurst) {
+                        new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
+                                config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+                        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+                    } else {
                         currentClip -= totalBulletsInCurrentBurst;
                         currentBullets -= totalBulletsInCurrentBurst;
 
@@ -45,11 +50,6 @@ public class BurstGun extends Weapon {
                             startBurstDelay();
                         }
                         this.cancel();
-                    } else {
-                        new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                                config.getRange(), config.getBodyDamage(), config.getHeadDamage());
-                        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-                        i++;
                     }
                 }
             };

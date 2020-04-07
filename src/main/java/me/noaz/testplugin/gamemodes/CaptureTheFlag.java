@@ -18,19 +18,19 @@ public class CaptureTheFlag extends Game {
     private Flag blueFlag;
     private Flag redFlag;
 
-    public CaptureTheFlag(String worldName, HashMap<String, List<Location>> locations, TestPlugin plugin, HashMap<Player, PlayerExtension> playerExtensions) {
+    public CaptureTheFlag(String worldName, HashMap<String, List<Location>> locations, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
+        this.players = players;
         teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
         teams[0].setSpawnPoints(locations.get("redspawn"));
         teams[1].setSpawnPoints(locations.get("bluespawn"));
 
         List<Location> flags = locations.get("flags");
-        //FLAGS ARE BROKEN :v
 
         //Flag position 0 is always red and pos 1 is always blue.
-        redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin, playerExtensions);
-        blueFlag = new Flag(Color.BLUE, flags.get(1), flags.get(0), worldName, plugin, playerExtensions);
+        redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin, players);
+        blueFlag = new Flag(Color.BLUE, flags.get(1), flags.get(0), worldName, plugin, players);
 
-        init(playerExtensions);
+        init(players);
     }
 
     //Handle something for capturing the flag?? End on 3 caps?
@@ -64,6 +64,7 @@ public class CaptureTheFlag extends Game {
         blueFlag.stop();
         redFlag.stop();
 
+        System.out.println(players.size());
         super.end(forceEnd);
 
         //replace below with captures

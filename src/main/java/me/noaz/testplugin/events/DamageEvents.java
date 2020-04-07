@@ -29,7 +29,7 @@ public class DamageEvents implements Listener {
             PlayerExtension hitPlayerExtension = gameController.getPlayerExtension(hitPlayer);
             PlayerExtension shooterExtension = gameController.getPlayerExtension(shooter);
 
-            if(!gameController.getGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0 && !hitPlayer.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+            if(!gameController.getGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0) {
 
                 double damage;
                 double eyeToNeckLength = 0.25;
@@ -42,7 +42,10 @@ public class DamageEvents implements Listener {
                     damage = (double) event.getEntity().getMetadata("bodyDamage").get(0).value();
                 }
 
-                double healthLeft = (hitPlayer.getHealth() - damage) <= 0 ? 0 : hitPlayer.getHealth() - damage;
+                double healthLeft = 20.0;
+                if(!hitPlayer.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+                    healthLeft = (hitPlayer.getHealth() - damage) <= 0 ? 0 : hitPlayer.getHealth() - damage;
+                }
 
                 if(healthLeft <= 0) {
                     hitPlayer.sendMessage(hitPlayer.getName() + " was shot by " + shooter.getName());

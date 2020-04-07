@@ -142,7 +142,9 @@ public class Flag {
      * Safely removes the the flag.
      */
     public void stop() {
+        System.out.println("Removing task");
         task.cancel();
+        System.out.println("Taskk cancelled");
         flagPole.remove();
     }
 }

@@ -1,11 +1,8 @@
 package me.noaz.testplugin.events;
 
-import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.tasks.GameController;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,9 +11,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class DamageEvents implements Listener {
@@ -34,7 +29,7 @@ public class DamageEvents implements Listener {
             PlayerExtension hitPlayerExtension = gameController.getPlayerExtension(hitPlayer);
             PlayerExtension shooterExtension = gameController.getPlayerExtension(shooter);
 
-            if(!gameController.getGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0) {
+            if(!gameController.getGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0 && !hitPlayer.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
 
                 double damage;
                 double eyeToNeckLength = 0.25;

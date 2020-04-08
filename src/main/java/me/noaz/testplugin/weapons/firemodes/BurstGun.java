@@ -22,7 +22,8 @@ public class BurstGun extends Weapon {
     }
 
     public void shoot() {
-        if(!isReloading && currentBullets != 0 && isNextBulletReady) {
+        if(!isReloading && currentBullets != 0 && isNextBulletReady && !isShooting) {
+            isShooting = true;
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerBurst());
 
             double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
@@ -41,6 +42,7 @@ public class BurstGun extends Weapon {
                         currentClip -= totalBulletsInCurrentBurst;
                         currentBullets -= totalBulletsInCurrentBurst;
 
+                        isShooting = false;
                         statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
                         if(currentClip <= 0) {

@@ -24,11 +24,12 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
-        Location snowballLocation = event.getEntity().getLocation();
+        //TODO: Reduce hitbox size
+/*        Location snowballLocation = event.getEntity().getLocation();
         Player hitPlayer = (Player)event.getHitEntity();
-        //hitPlayer.getLocation().getY
+        hitPlayer.getLocation().getY*/
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
-            //Player hitPlayer = (Player) event.getHitEntity();
+            Player hitPlayer = (Player) event.getHitEntity();
             Player shooter = (Player) event.getEntity().getShooter();
             PlayerExtension hitPlayerExtension = gameController.getPlayerExtension(hitPlayer);
             PlayerExtension shooterExtension = gameController.getPlayerExtension(shooter);

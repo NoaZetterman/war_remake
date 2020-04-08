@@ -7,6 +7,7 @@ import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -41,7 +42,7 @@ public class BuckGun extends Weapon {
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
             isShooting = true;
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
-        } else {
+        } else if(currentBullets <= 0) {
             player.getPlayer().sendMessage("Out of ammo!");
         }
     }
@@ -77,8 +78,9 @@ public class BuckGun extends Weapon {
                 currentBullets--;
                 statistics.addBulletsShot(config.getBulletsPerClick());
 
+                playShootSound();
 
-                if (bulletsInBurst > 0) {
+                if(bulletsInBurst > 0) {
                     bulletsInBurst--;
                     for(int j = 0; j < config.getBulletsPerClick(); j++) {
                         Vector velocity = calculateBulletDirection(accuracy);

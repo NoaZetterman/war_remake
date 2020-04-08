@@ -29,6 +29,8 @@ public class SingleBoltGun extends Weapon {
             double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
             Vector velocity = calculateBulletDirection(accuracy);
 
+            playShootSound();
+
             new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
                     config.getRange(), config.getBodyDamage(), config.getHeadDamage());
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));

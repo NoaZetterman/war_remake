@@ -5,6 +5,7 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -67,7 +68,6 @@ public abstract class Weapon {
      */
     public abstract void shoot();
     //TODO: Add sounds
-    //TODO: Fix actionBar message, sometimes shows wrong gun and doesnt update on death
 
     /**
      * Reloads the gun
@@ -85,7 +85,7 @@ public abstract class Weapon {
                 if(i >= config.getReloadTime()) {
                     currentClip = Math.min(config.getClipSize(), currentBullets);
                     isReloading = false;
-                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
+                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets, itemSlot);
                     cancel();
                 } else {
 
@@ -173,7 +173,7 @@ public abstract class Weapon {
      * Only used for guns that fires fast such as fully automatic.
      */
     public void stopShooting() {
-        //Derp
+        //??
     }
 
     /**
@@ -190,13 +190,6 @@ public abstract class Weapon {
         return new ItemStack(config.getGunMaterial());
     }
 
-    /**
-     * @return The amount of bullets this gun starts with
-     */
-    public int getStartingBullets() {
-        return config.getStartingBullets();
-    }
-
     public List<String> getLore() {
         return config.getWeaponLore();
     }
@@ -204,5 +197,9 @@ public abstract class Weapon {
     @Override
     public String toString() {
         return config.getName();
+    }
+
+    protected void playShootSound() {
+        player.getPlayer().playSound(player.getLocation() , config.getSound(), 10, 5);
     }
 }

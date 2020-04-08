@@ -71,42 +71,50 @@ public class GameController {
         gunConfigurations.put("Skullcrusher", new WeaponConfiguration("Skullcrusher", Material.GOLD_INGOT,
                 "Automatic", "burst",
                 2.0, 100.0, 7.2,7.5,4,
-                76,4000, 400,3,72,24));
+                76,4000, 400,3, 1,72,24,
+                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT}));
 
         gunConfigurations.put("Python", new WeaponConfiguration("Python", Material.GOLDEN_SHOVEL,
                 "Secondary", "single",
                 2.0, 100.0, 10.0, 20.0, 4,
-                48, 3500, 300, 1, 50, 9));
+                48, 3500, 300, 1, 1,50, 9,
+                new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR}));
 
+        //One sound is quiet
         gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", Material.STONE_AXE,
                 "Sniper", "single",
                 2.0, 100.0, 11.4, 20.0, 4,
-                400, 4250, 500, 1, 32, 7));
+                400, 4250, 500, 1, 1,32, 7,
+                new Sound[] {Sound.ENTITY_IRON_GOLEM_ATTACK, Sound.ENTITY_WITHER_SHOOT}));
 
         gunConfigurations.put("L120 Isolator", new WeaponConfiguration("L120 Isolator", Material.BOWL,
                 "Sniper", "single",
                 2.0, 100.0, 21.4, 25.0, 4,
-                400, 5000, 900, 1, 60, 4));
+                400, 5000, 900, 1, 1,60, 4,
+                new Sound[] {Sound.ENTITY_IRON_GOLEM_ATTACK, Sound.ENTITY_WITHER_SHOOT}));
 
         gunConfigurations.put("AA12", new WeaponConfiguration("AA12", Material.IRON_PICKAXE,
                 "Shotgun", "buck", 1.0, 3.0, 7,
                 9, 4, 18, 1500, 450, 1,
-                6, 32, 20));
+                6, 32, 20, new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_GENERIC_EXPLODE}));
 
         gunConfigurations.put("Typhoid", new WeaponConfiguration("Typhoid", Material.BRICK, "Shotgun",
                 "buck", 1.0,3.0, 3.6, 4.0, 4,
-                13, 3500, 500, 3, 4, 32, 12));
+                13, 3500, 500, 3, 4, 32, 12,
+                new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_GENERIC_EXPLODE}));
                 //10 or 11 or 24 tick delay?
 
         gunConfigurations.put("AK-47", new WeaponConfiguration("AK-47", Material.IRON_HOE,
                 "Automatic", "automatic", 3, 100.0,
                 4.4, 6, 4, 76, 1500, 150,
-                1, 100, 30));
+                1, 1,100, 30,
+                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT}));
 
         gunConfigurations.put("Lemantation", new WeaponConfiguration("Lemantation", Material.IRON_INGOT,
                 "Automatic", "automatic", 3, 100.0,
                 3.6, 4.5, 4, 76, 4000, 100,
-                1, 100, 50));
+                1, 1,100, 50,
+                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT}));
     }
 
     private void loadMaps() {

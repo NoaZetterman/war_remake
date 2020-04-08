@@ -80,6 +80,8 @@ public class FullyAutomaticGun extends Weapon {
                 currentBullets--;
                 statistics.addBulletsShot(1);
 
+                playShootSound();
+
                 new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(), config.getRange(), config.getBodyDamage(),
                         config.getHeadDamage());
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));

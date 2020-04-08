@@ -130,6 +130,9 @@ public class PlayerStatistic {
     public void addKill() {
         kills++;
         killstreak++;
+        if(killstreak == 5) {
+            //Activate some killstreak
+        }
         scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, xpOnCurrentLevel,
                 totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
     }

@@ -105,13 +105,17 @@ public class Flag {
                                 player.setHelmet(banner);
                                 flagHolder = player;
 
-                                plugin.getServer().broadcastMessage(flagHolder.getName() + " picket up the flag");
+                                plugin.getServer().broadcastMessage(flagHolder.getName() + " picked up the flag");
                             }
                         }
                     }
                 } else {
 
-                    if(enemyFlagPoleLocation.distance(flagHolder.getLocation()) < 1) {
+                    //Improve this
+                    double lengthFromPlayerToFlag = Math.sqrt(Math.pow(enemyFlagPoleLocation.getX(),2) + Math.pow(enemyFlagPoleLocation.getZ(),2)) -
+                            Math.sqrt(Math.pow(flagHolder.getLocation().getX(),2) + Math.pow(flagHolder.getLocation().getZ(),2));
+                    if(Math.abs(lengthFromPlayerToFlag) < 0.75) {
+                        //enemyFlagPoleLocation.getX()^2 + enemyFlagPoleLocation.getZ()^2 - (flagHolder.getX()^2 + flagHolder.getZ()^2)
                         //Cap the flag
                         plugin.getServer().broadcastMessage(flagHolder.getName() + " captured the flag");
                         captures++;
@@ -130,7 +134,7 @@ public class Flag {
             }
         };
 
-        task.runTaskTimer(plugin, 0, 5L);
+        task.runTaskTimer(plugin, 0, 1L);
     }
 
     //TODO: Fix helmet situation (maybe)
@@ -142,9 +146,7 @@ public class Flag {
      * Safely removes the the flag.
      */
     public void stop() {
-        System.out.println("Removing task");
         task.cancel();
-        System.out.println("Taskk cancelled");
         flagPole.remove();
     }
 }

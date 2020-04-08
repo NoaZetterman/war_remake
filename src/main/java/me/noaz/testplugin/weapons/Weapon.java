@@ -66,6 +66,8 @@ public abstract class Weapon {
      * Tries to shoot one burst of bullets, does not shoot when player should not be able to shoot (eg reloading)
      */
     public abstract void shoot();
+    //TODO: Add sounds
+    //TODO: Fix actionBar message, sometimes shows wrong gun and doesnt update on death
 
     /**
      * Reloads the gun
@@ -83,7 +85,7 @@ public abstract class Weapon {
                 if(i >= config.getReloadTime()) {
                     currentClip = Math.min(config.getClipSize(), currentBullets);
                     isReloading = false;
-                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
                     cancel();
                 } else {
 

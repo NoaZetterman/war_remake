@@ -89,14 +89,14 @@ public class BuckGun extends Weapon {
 
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
             }
 
             if(i >= 6 || currentClip <= 0 || bulletsInBurst <= 0) {
                 if (currentClip <= 0) {
                     reload();
                 } else {
-                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
                     startBurstDelay();
                 }
                 isShooting = false;

@@ -3,6 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.tasks.GameController;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,8 +24,11 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
+        Location snowballLocation = event.getEntity().getLocation();
+        Player hitPlayer = (Player)event.getHitEntity();
+        //hitPlayer.getLocation().getY
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
-            Player hitPlayer = (Player) event.getHitEntity();
+            //Player hitPlayer = (Player) event.getHitEntity();
             Player shooter = (Player) event.getEntity().getShooter();
             PlayerExtension hitPlayerExtension = gameController.getPlayerExtension(hitPlayer);
             PlayerExtension shooterExtension = gameController.getPlayerExtension(shooter);

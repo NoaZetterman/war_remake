@@ -80,6 +80,9 @@ public class PlayerExtension {
      * Respawn the player in a one spawnpoint belonging to its team.
      */
     public void respawn(Player killer) {
+        primaryWeapon.reset();
+        secondaryWeapon.reset();
+        //TODO: Fix guns to display correctly
         isDead = true;
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);

@@ -41,9 +41,11 @@ public class FreeForAll extends Game {
 
     @Override
     public void end(boolean forceEnd) {
-        super.end( forceEnd);
+        super.end(forceEnd);
 
-        PlayerExtension leader = players.get(0);
+        //Kinda broken
+
+        PlayerExtension leader = null;
         int leaderKills = 0;
         for(PlayerExtension player : teams[0].getPlayers()) {
             int kills = player.getPlayerStatistics().getKillsThisGame();
@@ -53,8 +55,12 @@ public class FreeForAll extends Game {
             }
         }
 
-        String leaderName = leader.getName();
+        if(leader != null) {
+            String leaderName = leader.getName();
+            Bukkit.getServer().broadcastMessage(leaderName + " won this ffa");
+        } else {
+            Bukkit.getServer().broadcastMessage("Noone won");
+        }
 
-        Bukkit.getServer().broadcastMessage(leaderName + " won this ffa");
     }
 }

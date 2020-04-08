@@ -46,7 +46,7 @@ public class BurstGun extends Weapon {
                         if(currentClip <= 0) {
                             reload();
                         } else {
-                            player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentBullets + " / " + currentClip);
+                            player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
                             startBurstDelay();
                         }
                         this.cancel();

@@ -3,14 +3,13 @@ package me.noaz.testplugin.gamemodes.misc;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +22,16 @@ import java.util.List;
  */
 public class Flag {
     private TestPlugin plugin;
-    private Color color;
+    private Color flagColor;
     private Location flagPoleLocation;
     private Location enemyFlagPoleLocation;
     private BukkitRunnable task;
+    private BukkitRunnable test;
     private ArmorStand flagPole;
     private PlayerExtension flagHolder = null;
     private HashMap<Player, PlayerExtension> players;
+
+    private Item flag;
 
     private String worldName;
     private int captures = 0;
@@ -43,7 +45,7 @@ public class Flag {
      * @param plugin This plugin.
      */
     public Flag(Color color, Location flagPoleLocation, Location enemyFlagPoleLocation, String worldName, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
-        this.color = color;
+        this.flagColor = color;
         this.flagPoleLocation = flagPoleLocation;
         this.enemyFlagPoleLocation = enemyFlagPoleLocation;
         this.worldName = worldName;
@@ -51,7 +53,7 @@ public class Flag {
         this.players = players;
         //Spawn in the flag
 
-        createBannerFlag();
+        createWoolFlag();
     }
 
     /**
@@ -61,10 +63,11 @@ public class Flag {
         return captures;
     }
 
+    /*
     private void createBannerFlag() {
 
         ItemStack banner;
-        if(color == Color.RED) {
+        if(flagColor == Color.RED) {
             banner = new ItemStack(Material.RED_BANNER);
         } else {
             banner = new ItemStack(Material.BLUE_BANNER);
@@ -76,7 +79,7 @@ public class Flag {
 
         flagPole.setGravity(false);
         flagPole.setInvulnerable(true);
-        flagPole.setVisible(false);
+        flagPole.setVisible(true);
         flagPole.setSmall(false);
         flagPole.setCollidable(false);
         flagPole.setHelmet(banner);
@@ -95,10 +98,10 @@ public class Flag {
                 if(flagHolder == null) {
                     List<Entity> entities = flagPole.getNearbyEntities(1, 2, 1);
                     for (Entity entity : entities) {
-                        if (entity.getType() == EntityType.PLAYER) {
+                        if (entity.getType() == EntityType.PLAYER && ((Player)entity).getGameMode() == GameMode.ADVENTURE) {
                             PlayerExtension player = players.get(entity);
 
-                            if(player.getTeamColor() != color) {
+                            if(player.getTeamColor() != flagColor) {
 
                                 //Make player pick up flag
                                 flagPole.setHelmet(null);
@@ -112,9 +115,10 @@ public class Flag {
                 } else {
 
                     //Improve this
-                    double lengthFromPlayerToFlag = Math.sqrt(Math.pow(enemyFlagPoleLocation.getX(),2) + Math.pow(enemyFlagPoleLocation.getZ(),2)) -
-                            Math.sqrt(Math.pow(flagHolder.getLocation().getX(),2) + Math.pow(flagHolder.getLocation().getZ(),2));
-                    if(Math.abs(lengthFromPlayerToFlag) < 0.75) {
+                    //Fix Height.
+                    double lengthFromPlayerToFlag = Math.sqrt(Math.pow(enemyFlagPoleLocation.getX()-flagHolder.getLocation().getX(),2)
+                            + Math.pow(enemyFlagPoleLocation.getZ()-flagHolder.getLocation().getZ(),2));
+                    if(Math.abs(lengthFromPlayerToFlag) < 0.75 && Math.sqrt(Math.pow(enemyFlagPoleLocation.getY() - flagHolder.getLocation().getY(),2)) < 2) {
                         //enemyFlagPoleLocation.getX()^2 + enemyFlagPoleLocation.getZ()^2 - (flagHolder.getX()^2 + flagHolder.getZ()^2)
                         //Cap the flag
                         plugin.getServer().broadcastMessage(flagHolder.getName() + " captured the flag");
@@ -136,6 +140,78 @@ public class Flag {
 
         task.runTaskTimer(plugin, 0, 1L);
     }
+    */
+
+    public void createWoolFlag() {
+        ItemStack flagItemStack;
+        if(flagColor == Color.RED) {
+            flagItemStack = new ItemStack(Material.RED_WOOL);
+        } else {
+            flagItemStack = new ItemStack(Material.BLUE_WOOL);
+        }
+
+        flag = plugin.getServer().getWorld(worldName).dropItem(flagPoleLocation.add(0.5,0.5,0.5), flagItemStack);
+        flag.setGravity(false);
+        flag.setVelocity(new Vector(0,0,0));
+        flag.setPickupDelay(10000);
+
+        test = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(flagHolder == null) {
+                    for(PlayerExtension player : players.values()) {
+
+                        double lengthFromPlayerToFlag = Math.sqrt(Math.pow(flagPoleLocation.getX()-player.getLocation().getX(),2)
+                                + Math.pow(flagPoleLocation.getZ()-player.getLocation().getZ(),2));
+                        if(lengthFromPlayerToFlag < 0.75 && Math.sqrt(Math.pow(flagPoleLocation.getY() - player.getLocation().getY(),2)) < 2
+                                && player.getPlayer().getGameMode() == GameMode.ADVENTURE) {
+
+                            if(player.getTeamColor() != flagColor) {
+                                //Make player pick up flag
+                                flagHolder = player;
+
+                                spawnFlag(flagHolder.getLocation().add(0,1.5,0));
+
+                                plugin.getServer().broadcastMessage(flagHolder.getName() + " picked up the flag");
+                            }
+                        }
+                    }
+                } else {
+                    double lengthFromPlayerToFlag = Math.sqrt(Math.pow(enemyFlagPoleLocation.getX()-flagHolder.getLocation().getX(),2)
+                            + Math.pow(enemyFlagPoleLocation.getZ()-flagHolder.getLocation().getZ(),2));
+                    if(Math.abs(lengthFromPlayerToFlag) < 0.75 && Math.sqrt(Math.pow(enemyFlagPoleLocation.getY() - flagHolder.getLocation().getY(),2)) < 2) {
+                        //Cap the flag
+                        plugin.getServer().broadcastMessage(flagHolder.getName() + " captured the flag");
+                        captures++;
+
+                        flagHolder = null;
+                        spawnFlag(flagPoleLocation);
+                    } else if(flagHolder.isDead()){
+                        plugin.getServer().broadcastMessage(flagHolder.getName() + " dropped flag");
+
+                        flagHolder = null;
+
+                        spawnFlag(flagPoleLocation);
+                    } else {
+                        spawnFlag(flagHolder.getLocation().add(0,2,0));
+
+                    }
+                }
+            }
+
+            private void spawnFlag(Location flagLocation) {
+                flag.remove();
+                flag = plugin.getServer().getWorld(worldName).dropItem(flagLocation, flagItemStack);
+                flag.setGravity(false);
+                flag.setVelocity(new Vector(0,0,0));
+                flag.setPickupDelay(10000);
+            }
+        };
+
+        test.runTaskTimer(plugin, 0L, 1L);
+
+
+    }
 
     //TODO: Fix helmet situation (maybe)
     //Consider having a player tick thing that checks if player is close to flag rather than the other way around.
@@ -146,7 +222,8 @@ public class Flag {
      * Safely removes the the flag.
      */
     public void stop() {
-        task.cancel();
-        flagPole.remove();
+        test.cancel();
+        //task.cancel();
+        //flagPole.remove();
     }
 }

@@ -3,6 +3,8 @@ package me.noaz.testplugin.tasks;
 import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.BossBarMessage;
+import me.noaz.testplugin.Utils.BroadcastMessage;
 import me.noaz.testplugin.gamemodes.CaptureTheFlag;
 import me.noaz.testplugin.gamemodes.FreeForAll;
 import me.noaz.testplugin.gamemodes.Game;
@@ -255,15 +257,15 @@ public class GameController {
                     endGame();
                 }
                 timeUntilGameEnds--;
-                Messages.bossBarMessageTimeUntilGameEnds(bar, timeUntilGameEnds);
+                BossBarMessage.timeUntilGameEnds(bar, timeUntilGameEnds);
             } else {
                 timeUntilNextGame--;
-                Messages.bossBarMessageTimeUntilNextGame(bar, timeUntilNextGame);
+                BossBarMessage.timeUntilNextGame(bar, timeUntilNextGame);
 
                 if(timeUntilNextGame % 10 == 0) {
-                    Messages.broadcastTimeLeftUntilGameStarts(timeUntilNextGame, plugin.getServer());
+                    BroadcastMessage.timeLeftUntilGameStarts(timeUntilNextGame, plugin.getServer());
                 } else if(timeUntilNextGame % 10 == 5) {
-                    Messages.broadcastGameAndGamemode(nextMapName, gamemode, plugin.getServer());
+                    BroadcastMessage.gameAndGamemode(nextMapName, gamemode, plugin.getServer());
                 }
             }
             }
@@ -433,7 +435,7 @@ public class GameController {
 
     public void endGame() {
         if(game != null) {
-            Messages.broadcastEndGameMessage(plugin.getServer());
+            BroadcastMessage.endGameMessage(plugin.getServer());
 
             game.end(false);
             game = null;

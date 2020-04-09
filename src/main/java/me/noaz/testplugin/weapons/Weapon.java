@@ -1,7 +1,7 @@
 package me.noaz.testplugin.weapons;
 
-import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import org.bukkit.Material;
@@ -85,10 +85,10 @@ public abstract class Weapon {
                     if (i >= config.getReloadTime()) {
                         currentClip = Math.min(config.getClipSize(), currentBullets);
                         isReloading = false;
-                        Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
+                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
                         cancel();
                     } else {
-                        Messages.printReloadActionbarMessage(config.getReloadTime(), i, player, itemSlot);
+                        ActionBarMessage.reload(config.getReloadTime(), i, player, itemSlot);
                     }
 
                 }
@@ -156,7 +156,7 @@ public abstract class Weapon {
         currentBullets = config.getStartingBullets();
         currentClip = config.getClipSize();
 
-        Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
+        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
     }
 
     /**

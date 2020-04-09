@@ -1,7 +1,7 @@
 package me.noaz.testplugin.weapons.firemodes;
 
-import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
@@ -40,7 +40,7 @@ public class SingleBoltGun extends Weapon {
 
             statistics.addBulletsShot(1);
 
-            Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
+            ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
 
             if(currentClip <= 0) {
                 reload();

@@ -1,7 +1,7 @@
 package me.noaz.testplugin.weapons.firemodes;
 
-import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
@@ -68,7 +68,7 @@ public class FullyAutomaticGun extends Weapon {
                     reload();
                 } else {
                     //This might be useless?
-                    Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
+                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
                     startBurstDelay();
                 }
                 isShooting = false;
@@ -87,7 +87,7 @@ public class FullyAutomaticGun extends Weapon {
                         config.getHeadDamage());
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-                Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
+                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
                 startBurstDelay();
             }
         }

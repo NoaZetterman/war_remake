@@ -1,9 +1,9 @@
 package me.noaz.testplugin.events;
 
+import me.noaz.testplugin.Utils.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.tasks.GameController;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -53,9 +53,8 @@ public class DamageEvents implements Listener {
                 }
 
                 if(healthLeft <= 0) {
-                    hitPlayer.sendMessage(hitPlayer.getName() + " was shot by " + shooter.getName());
-                    shooter.sendMessage(shooter.getName() + " shot " + hitPlayer.getName());
-
+                    ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
+                    ChatMessage.playerShotKilled(shooter, hitPlayer);
                     hitPlayerExtension.getPlayerStatistics().addDeath();
 
                     PlayerStatistic killerStatistic = shooterExtension.getPlayerStatistics();
@@ -96,8 +95,8 @@ public class DamageEvents implements Listener {
             Player deadPlayer = event.getEntity();
             Player killer = event.getEntity().getKiller();
 
-            deadPlayer.sendMessage(deadPlayer.getName() + " was shot by " + killer.getName());
-            killer.sendMessage(killer.getName() + " shot " + deadPlayer.getName());
+            ChatMessage.playerWasShotToDeath(deadPlayer, killer);
+            ChatMessage.playerShotKilled(killer, deadPlayer);
 
             gameController.getPlayerExtension(deadPlayer).getPlayerStatistics().addDeath();
 

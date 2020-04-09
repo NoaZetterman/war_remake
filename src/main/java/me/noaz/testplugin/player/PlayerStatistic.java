@@ -245,7 +245,7 @@ public class PlayerStatistic {
         player.sendMessage("Kills:" + totalKills);
         player.sendMessage("Deaths:" + totalDeaths);
         player.sendMessage("Level:" + level);
-        //Kdr and stuff, REDO THIS :V
+        //TODO: Kdr and stuff, REDO THIS :V
 
     }
 }

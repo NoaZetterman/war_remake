@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Utils.BroadcastMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
@@ -53,11 +54,11 @@ public class TeamDeathMatch extends Game {
         super.end(forceEnd);
 
         if(teams[0].getKills() > teams[1].getKills()) {
-            Bukkit.getServer().broadcastMessage("Red won!");
+            BroadcastMessage.teamWonGame("Red", Bukkit.getServer());
         } else if(teams[0].getKills() < teams[1].getKills()) {
-            Bukkit.getServer().broadcastMessage("Blue won!");
+            BroadcastMessage.teamWonGame("Blue", Bukkit.getServer());
         } else {
-            Bukkit.getServer().broadcastMessage("The game was a draw");
+            BroadcastMessage.nooneWonGame(Bukkit.getServer());
         }
     }
 }

@@ -1,6 +1,7 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.BroadcastMessage;
 import me.noaz.testplugin.gamemodes.misc.Flag;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
@@ -70,11 +71,11 @@ public class CaptureTheFlag extends Game {
         //replace below with captures
         if(redFlag.getCaptures() < blueFlag.getCaptures()) {
             //Red won by ... caps or something
-            Bukkit.getServer().broadcastMessage("Red won!");
+            BroadcastMessage.teamWonGame("Red", Bukkit.getServer());
         } else if(blueFlag.getCaptures() < redFlag.getCaptures()) {
-            Bukkit.getServer().broadcastMessage("Blue won!");
+            BroadcastMessage.teamWonGame("Blue", Bukkit.getServer());
         } else {
-            Bukkit.getServer().broadcastMessage("The game was a draw");
+            BroadcastMessage.nooneWonGame(Bukkit.getServer());
         }
     }
 }

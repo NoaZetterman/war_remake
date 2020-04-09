@@ -2,6 +2,7 @@ package me.noaz.testplugin.weapons.firemodes;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Utils.ActionBarMessage;
+import me.noaz.testplugin.Utils.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
@@ -36,7 +37,7 @@ public class FullyAutomaticGun extends Weapon {
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
             isShooting = true;
         } else {
-            player.getPlayer().sendMessage("Out of ammo!");
+            ChatMessage.outOfAmmo(player);
         }
     }
 

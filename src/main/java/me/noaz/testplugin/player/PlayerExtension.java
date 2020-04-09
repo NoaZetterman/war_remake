@@ -62,6 +62,7 @@ public class PlayerExtension {
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
 
+        //TODO: Make a separate class for footer & header messages
         player.setPlayerListHeaderFooter("Score stuff \n more score stuff \n ",
                 "\n Pls stay xd");
 
@@ -82,7 +83,6 @@ public class PlayerExtension {
     public void respawn(Player killer) {
         primaryWeapon.reset();
         secondaryWeapon.reset();
-        //TODO: Fix guns to display correctly
         isDead = true;
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
@@ -135,6 +135,7 @@ public class PlayerExtension {
 
         player.teleport(team.getSpawnPoint());
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
+        //TODO: Make a separate class for display name stuff
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
 

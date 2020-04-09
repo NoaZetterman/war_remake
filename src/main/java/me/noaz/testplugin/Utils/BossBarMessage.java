@@ -2,6 +2,12 @@ package me.noaz.testplugin.Utils;
 
 import org.bukkit.boss.BossBar;
 
+/**
+ * A class containing static methods to display a message in the bossbar.
+ *
+ * @author Noa Zetterman
+ * @version 2020-04-09
+ */
 public class BossBarMessage {
 
     /**

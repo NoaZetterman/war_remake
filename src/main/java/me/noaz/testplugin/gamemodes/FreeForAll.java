@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Utils.BroadcastMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
@@ -57,9 +58,9 @@ public class FreeForAll extends Game {
 
         if(leader != null) {
             String leaderName = leader.getName();
-            Bukkit.getServer().broadcastMessage(leaderName + " won this ffa");
+            BroadcastMessage.teamWonGame(leaderName, Bukkit.getServer());
         } else {
-            Bukkit.getServer().broadcastMessage("Noone won");
+            BroadcastMessage.nooneWonGame(Bukkit.getServer());
         }
 
     }

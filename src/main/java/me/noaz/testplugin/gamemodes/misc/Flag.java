@@ -1,6 +1,7 @@
 package me.noaz.testplugin.gamemodes.misc;
 
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.BroadcastMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -12,7 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Represents a flag in Capture the Flag, takes care of everything regarding the flag, such as captures
@@ -51,7 +51,6 @@ public class Flag {
         this.worldName = worldName;
         this.plugin = plugin;
         this.players = players;
-        //Spawn in the flag
 
         createWoolFlag();
     }
@@ -172,7 +171,7 @@ public class Flag {
 
                                 spawnFlag(flagHolder.getLocation().add(0,1.5,0));
 
-                                plugin.getServer().broadcastMessage(flagHolder.getName() + " picked up the flag");
+                                BroadcastMessage.pickedUpFlag(flagHolder, plugin.getServer());
                             }
                         }
                     }
@@ -181,13 +180,13 @@ public class Flag {
                             + Math.pow(enemyFlagPoleLocation.getZ()-flagHolder.getLocation().getZ(),2));
                     if(Math.abs(lengthFromPlayerToFlag) < 0.75 && Math.sqrt(Math.pow(enemyFlagPoleLocation.getY() - flagHolder.getLocation().getY(),2)) < 2) {
                         //Cap the flag
-                        plugin.getServer().broadcastMessage(flagHolder.getName() + " captured the flag");
+                        BroadcastMessage.capturedFlag(flagHolder, plugin.getServer());
                         captures++;
 
                         flagHolder = null;
                         spawnFlag(flagPoleLocation);
                     } else if(flagHolder.isDead()){
-                        plugin.getServer().broadcastMessage(flagHolder.getName() + " dropped flag");
+                        BroadcastMessage.droppedFlag(flagHolder, plugin.getServer());
 
                         flagHolder = null;
 

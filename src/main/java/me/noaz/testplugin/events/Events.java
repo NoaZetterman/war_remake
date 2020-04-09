@@ -99,7 +99,6 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
         //Reload when pressing drop button (Q)
-        //TODO: Fix so that player cant reload while reloading
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         if(player.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
             player.reloadWeapon(player.getPrimaryWeapon());
@@ -126,6 +125,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
+        //TODO: Change this, maybe put in ChatMessages?
         event.setFormat("%s" + ChatColor.GOLD + " >" + ChatColor.WHITE + " %s");
     }
     @EventHandler

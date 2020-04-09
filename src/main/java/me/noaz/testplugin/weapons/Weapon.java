@@ -1,9 +1,9 @@
 package me.noaz.testplugin.weapons;
 
+import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -72,7 +72,7 @@ public abstract class Weapon {
      * Reloads the gun
      */
     public void reload() {
-        if(!isReloading && currentClip != currentBullets) {
+        if(!isReloading && currentClip != config.getClipSize() && currentClip != currentBullets) {
             isReloading = true;
 
             reloadTask = new BukkitRunnable() {
@@ -85,21 +85,10 @@ public abstract class Weapon {
                     if (i >= config.getReloadTime()) {
                         currentClip = Math.min(config.getClipSize(), currentBullets);
                         isReloading = false;
-                        player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets, itemSlot);
+                        Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
                         cancel();
                     } else {
-
-                        if (config.getReloadTime() / 5 >= i) {
-                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading", itemSlot);
-                        } else if (config.getReloadTime() * 2 / 5 >= i) {
-                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading", itemSlot);
-                        } else if (config.getReloadTime() * 3 / 5 >= i) {
-                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading", itemSlot);
-                        } else if (config.getReloadTime() * 4 / 5 >= i) {
-                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading", itemSlot);
-                        } else {
-                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading", itemSlot);
-                        }
+                        Messages.printReloadActionbarMessage(config.getReloadTime(), i, player, itemSlot);
                     }
 
                 }
@@ -166,6 +155,8 @@ public abstract class Weapon {
         isNextBulletReady = true;
         currentBullets = config.getStartingBullets();
         currentClip = config.getClipSize();
+
+        Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
     }
 
     /**

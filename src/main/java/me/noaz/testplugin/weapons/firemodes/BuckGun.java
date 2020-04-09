@@ -1,13 +1,12 @@
 package me.noaz.testplugin.weapons.firemodes;
 
+import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -91,14 +90,15 @@ public class BuckGun extends Weapon {
 
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-                player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
+                Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
             }
 
             if(i >= 6 || currentClip <= 0 || bulletsInBurst <= 0) {
                 if (currentClip <= 0) {
                     reload();
                 } else {
-                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
+                    //MIght be useless?
+                    Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
                     startBurstDelay();
                 }
                 isShooting = false;

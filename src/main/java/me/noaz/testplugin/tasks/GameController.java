@@ -1,5 +1,6 @@
 package me.noaz.testplugin.tasks;
 
+import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.CaptureTheFlag;
@@ -254,14 +255,15 @@ public class GameController {
                     endGame();
                 }
                 timeUntilGameEnds--;
-                bar.setTitle("Time until game ends: " + timeUntilGameEnds);
+                Messages.bossBarMessageTimeUntilGameEnds(bar, timeUntilGameEnds);
             } else {
                 timeUntilNextGame--;
-                bar.setTitle("Time until next game: " + timeUntilNextGame);
+                Messages.bossBarMessageTimeUntilNextGame(bar, timeUntilNextGame);
+
                 if(timeUntilNextGame % 10 == 0) {
-                    plugin.getServer().broadcastMessage(timeUntilNextGame + "s until game starts");
+                    Messages.broadcastTimeLeftUntilGameStarts(timeUntilNextGame, plugin.getServer());
                 } else if(timeUntilNextGame % 10 == 5) {
-                    plugin.getServer().broadcastMessage("Next map: " + nextMapName + " Next gamemode:" + gamemode);
+                    Messages.broadcastGameAndGamemode(nextMapName, gamemode, plugin.getServer());
                 }
             }
             }
@@ -431,8 +433,8 @@ public class GameController {
 
     public void endGame() {
         if(game != null) {
-            plugin.getServer().broadcastMessage("Ending Game, new game in 60 sec!");
-            //System.out.println("Ending Game, new game in 60 sec!"); //should be server message
+            Messages.broadcastEndGameMessage(plugin.getServer());
+
             game.end(false);
             game = null;
             previousMapName = nextMapName;

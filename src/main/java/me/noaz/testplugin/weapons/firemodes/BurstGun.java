@@ -1,12 +1,12 @@
 package me.noaz.testplugin.weapons.firemodes;
 
+import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
-import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -46,10 +46,11 @@ public class BurstGun extends Weapon {
                         isShooting = false;
                         statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
+                        Messages.printAmmunitionActionbarMessage(currentClip, currentBullets, player);
+
                         if(currentClip <= 0) {
                             reload();
                         } else {
-                            player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
                             startBurstDelay();
                         }
                         this.cancel();

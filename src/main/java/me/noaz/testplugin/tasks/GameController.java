@@ -1,6 +1,5 @@
 package me.noaz.testplugin.tasks;
 
-import me.noaz.testplugin.Messages;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Utils.BossBarMessage;

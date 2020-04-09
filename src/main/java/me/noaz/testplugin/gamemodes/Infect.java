@@ -28,7 +28,7 @@ public class Infect extends Game {
 
         teams[1].removePlayer(root);
         teams[0].addPlayer(root);
-        root.setTeam(teams[0]);
+        root.setTeam(teams[0], teams[1]);
         //Also add special root effect stuff I guess
     }
 
@@ -36,7 +36,7 @@ public class Infect extends Game {
     @Override
     public void assignTeam(PlayerExtension player) {
         teams[1].addPlayer(player);
-        player.setTeam(teams[1]);
+        player.setTeam(teams[1], teams[0]);
     }
 
     @Override public void end(boolean forceEnd) {

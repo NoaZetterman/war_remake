@@ -37,7 +37,7 @@ public class FreeForAll extends Game {
     @Override
     public void assignTeam(PlayerExtension player) {
         teams[0].addPlayer(player);
-        player.setTeam(teams[0]);
+        player.setTeam(teams[0], null);
     }
 
     @Override

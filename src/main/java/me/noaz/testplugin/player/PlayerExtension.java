@@ -3,6 +3,8 @@ package me.noaz.testplugin.player;
 import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.BroadcastMessage;
+import me.noaz.testplugin.Utils.ChatMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
@@ -39,6 +41,7 @@ public class PlayerExtension {
     private Weapon secondaryWeapon;
     private PlayerStatistic statistics;
     private Team team;
+    private Team enemyTeam;
     private HashMap<String, WeaponConfiguration> gunConfigurations;
     private List<String> ownedWeaponNames = new ArrayList<>();
     private String[] actionBarMessage;
@@ -121,9 +124,44 @@ public class PlayerExtension {
      * Add one kill to this players statistics and team, if the player has a team
      */
     public void addKill() {
+        primaryWeapon.addBullets((int)Math.floor(primaryWeapon.getStartingBullets()*0.25));
+        secondaryWeapon.addBullets((int)Math.floor(secondaryWeapon.getStartingBullets()*0.25));
         statistics.addKill();
         if(team != null) {
             team.addKill();
+        }
+
+        if(enemyTeam != null) {
+            int killstreak = statistics.getKillstreak();
+            switch (killstreak) {
+                case 5:
+                    primaryWeapon.addBullets(50);
+                    secondaryWeapon.addBullets(50);
+                    break;
+                case 15:
+                    //Launch emp
+                    for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
+                        enemyPlayer.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*15, 4));
+                    }
+
+                    BroadcastMessage.launchEmp(player.getName(), plugin.getServer());
+                    break;
+                case 21:
+                    for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
+                        //TODO: Remove double kill on player that gets nuked
+                        if(!enemyPlayer.isDead() && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+                            enemyPlayer.getPlayerStatistics().addDeath();
+                            ChatMessage.playerShotKilled(player, enemyPlayer.getPlayer());
+                            ChatMessage.playerWasShotToDeath(enemyPlayer.getPlayer(), player);
+                            addKill();
+                            enemyPlayer.respawn(player);
+
+                        }
+                    }
+                    BroadcastMessage.launchNuke(player.getName(), plugin.getServer());
+                    break;
+
+            }
         }
     }
 
@@ -162,6 +200,7 @@ public class PlayerExtension {
         player.setPlayerListName(player.getName());
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
         team = null;
+        enemyTeam = null;
 
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
     }
@@ -335,8 +374,9 @@ public class PlayerExtension {
     /**
      * @param team The team that the player should be in
      */ //Makes a 2 way relation which is weird?
-    public void setTeam(Team team) {
+    public void setTeam(Team team, Team enemyTeam) {
         this.team = team;
+        this.enemyTeam = enemyTeam;
     }
 
     public String getName() {

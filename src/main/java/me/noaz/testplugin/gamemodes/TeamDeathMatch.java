@@ -35,17 +35,17 @@ public class TeamDeathMatch extends Game {
             Random random = new Random();
             if(random.nextInt(2) == 0) {
                 teams[1].addPlayer(player);
-                player.setTeam(teams[1]);
+                player.setTeam(teams[1], teams[0]);
             } else {
                 teams[0].addPlayer(player);
-                player.setTeam(teams[0]);
+                player.setTeam(teams[0], teams[1]);
             }
         } else if(teams[1].getTeamSize() > teams[0].getTeamSize()) {
             teams[0].addPlayer(player);
-            player.setTeam(teams[0]);
+            player.setTeam(teams[0], teams[1]);
         } else {
             teams[1].addPlayer(player);
-            player.setTeam(teams[1]);
+            player.setTeam(teams[1], teams[0]);
         }
     }
 

@@ -59,4 +59,12 @@ public class BroadcastMessage {
         server.broadcastMessage("The game was a draw");
     }
 
+    public static void launchEmp(String playerName, Server server) {
+        server.broadcastMessage(playerName + " launhed an EMP");
+    }
+
+    public static void launchNuke(String playerName, Server server) {
+        server.broadcastMessage(playerName + " launched a Nuke");
+    }
+
 }

@@ -194,4 +194,12 @@ public abstract class Weapon {
     protected void playShootSound() {
         player.getPlayer().playSound(player.getLocation() , config.getSound(), 10, 1);
     }
+
+    public void addBullets(int amount) {
+        currentBullets += amount;
+    }
+
+    public int getStartingBullets() {
+        return config.getStartingBullets();
+    }
 }

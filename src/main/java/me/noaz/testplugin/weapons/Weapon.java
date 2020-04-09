@@ -5,7 +5,6 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -73,39 +72,41 @@ public abstract class Weapon {
      * Reloads the gun
      */
     public void reload() {
-        isReloading = true;
+        if(!isReloading && currentClip != currentBullets) {
+            isReloading = true;
 
-        reloadTask = new BukkitRunnable() {
-            int i = 0;
-            int itemSlot = config.getWeaponType().equals("Secondary") ? 2 : 1;
+            reloadTask = new BukkitRunnable() {
+                int i = 0;
+                int itemSlot = config.getWeaponType().equals("Secondary") ? 2 : 1;
 
-            @Override
-            public void run() {
-                i++;
-                if(i >= config.getReloadTime()) {
-                    currentClip = Math.min(config.getClipSize(), currentBullets);
-                    isReloading = false;
-                    player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets, itemSlot);
-                    cancel();
-                } else {
-
-                    if(config.getReloadTime()/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading", itemSlot);
-                    } else if(config.getReloadTime()*2/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading", itemSlot);
-                    } else if(config.getReloadTime()*3/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading", itemSlot);
-                    } else if(config.getReloadTime()*4/5 >= i) {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading", itemSlot);
+                @Override
+                public void run() {
+                    i++;
+                    if (i >= config.getReloadTime()) {
+                        currentClip = Math.min(config.getClipSize(), currentBullets);
+                        isReloading = false;
+                        player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets, itemSlot);
+                        cancel();
                     } else {
-                        player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading", itemSlot);
+
+                        if (config.getReloadTime() / 5 >= i) {
+                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading", itemSlot);
+                        } else if (config.getReloadTime() * 2 / 5 >= i) {
+                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading", itemSlot);
+                        } else if (config.getReloadTime() * 3 / 5 >= i) {
+                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading", itemSlot);
+                        } else if (config.getReloadTime() * 4 / 5 >= i) {
+                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading", itemSlot);
+                        } else {
+                            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading", itemSlot);
+                        }
                     }
+
                 }
+            };
 
-            }
-        };
-
-        reloadTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
+            reloadTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
+        }
     }
 
     /**
@@ -200,6 +201,6 @@ public abstract class Weapon {
     }
 
     protected void playShootSound() {
-        player.getPlayer().playSound(player.getLocation() , config.getSound(), 10, 5);
+        player.getPlayer().playSound(player.getLocation() , config.getSound(), 10, 1);
     }
 }

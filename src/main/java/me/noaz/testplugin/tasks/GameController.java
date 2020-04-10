@@ -117,6 +117,12 @@ public class GameController {
                 3.6, 4.5, 4, 76, 4000, 100,
                 1, 1,100, 50,
                 new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT}));
+
+        gunConfigurations.put("Famas", new WeaponConfiguration("Famas", Material.DIAMOND_HOE,
+                "Automatic", "burst", 3,100.0,
+                5.8, 6.3, 4, 48, 3750, 300,
+                3, 1, 64, 30,
+                new Sound[] {Sound.BLOCK_NOTE_BLOCK_SNARE, Sound.ENTITY_ITEM_BREAK, Sound.ENTITY_GHAST_SHOOT}));
     }
 
     private void loadMaps() {

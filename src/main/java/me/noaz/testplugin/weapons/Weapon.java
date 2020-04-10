@@ -198,10 +198,7 @@ public abstract class Weapon {
     }
 
     protected void playShootSound() {
-        Location location = player.getLocation();
-        for(Player p: plugin.getServer().getOnlinePlayers()) {
-            p.playSound(location, config.getSound(), 10, 1);
-        }
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.getSound(), 5, 1);
     }
 
     public void addBullets(int amount) {

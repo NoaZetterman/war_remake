@@ -125,9 +125,9 @@ public class GameController {
                 new Sound[] {Sound.BLOCK_NOTE_BLOCK_SNARE, Sound.ENTITY_ITEM_BREAK, Sound.ENTITY_GHAST_SHOOT}));
 
         gunConfigurations.put("Minigun", new WeaponConfiguration("Minigun", Material.DIAMOND,
-                "Automatic", "buck", 2.5, 2,
-                3.6, 4.5, 4, 128, 4000, 100,
-                1, 2, 64, 999,
+                "Automatic", "buck", 3, 10,
+                3.6, 4.5, 4, 128, 100, 50,
+                1, 2, 64, 64,
                 new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT}));
     }
 

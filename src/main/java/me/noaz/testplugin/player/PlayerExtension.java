@@ -98,7 +98,6 @@ public class PlayerExtension {
             public void run() {
                 player.sendTitle("Respawning in " + i, "", 1,20,1);
                 i--;
-                //TODO: Fix working spawnresist
                 if(team == null) {
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
@@ -113,7 +112,7 @@ public class PlayerExtension {
 
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*6, 2));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*5, 2));
                     this.cancel();
                 }
             }

@@ -78,7 +78,7 @@ public class GameController {
 
         gunConfigurations.put("Python", new WeaponConfiguration("Python", Material.GOLDEN_SHOVEL,
                 "Secondary", "single",
-                2.0, 100.0, 10.0, 20.0, 4,
+                2.0, 100.0, 10.0, 15.0, 4,
                 48, 3500, 300, 1, 1,50, 9,
                 new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR}));
 
@@ -123,6 +123,12 @@ public class GameController {
                 5.8, 6.3, 4, 48, 3750, 300,
                 3, 1, 64, 30,
                 new Sound[] {Sound.BLOCK_NOTE_BLOCK_SNARE, Sound.ENTITY_ITEM_BREAK, Sound.ENTITY_GHAST_SHOOT}));
+
+        gunConfigurations.put("Minigun", new WeaponConfiguration("Minigun", Material.DIAMOND,
+                "Automatic", "buck", 2.5, 2,
+                3.6, 4.5, 4, 128, 4000, 100,
+                1, 2, 64, 999,
+                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT}));
     }
 
     private void loadMaps() {
@@ -146,6 +152,7 @@ public class GameController {
                     gameWorld.setMonsterSpawnLimit(0);
                     gameWorld.setWaterAnimalSpawnLimit(0);
                     gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                    gameWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
                     gameWorld.setTime(6000);
                     gameWorld.setGameRule(GameRule.NATURAL_REGENERATION, true);
 

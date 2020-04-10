@@ -33,6 +33,8 @@ public abstract class Weapon {
     protected BukkitRunnable reloadTask;
     protected BukkitRunnable burstDelayTask;
 
+    protected int itemSlot;
+
     /**
      * @param plugin this plugin
      * @param player The player that should use this weapon
@@ -46,6 +48,9 @@ public abstract class Weapon {
         this.config = config;
         this.currentClip = config.getClipSize();
         this.currentBullets = config.getStartingBullets();
+
+        itemSlot = config.getWeaponType().equals("Secondary") ? 2 : 1;
+
 
         //They have to be initialised now to not cause errors
         reloadTask = new BukkitRunnable() {
@@ -77,7 +82,6 @@ public abstract class Weapon {
 
             reloadTask = new BukkitRunnable() {
                 int i = 0;
-                int itemSlot = config.getWeaponType().equals("Secondary") ? 2 : 1;
 
                 @Override
                 public void run() {
@@ -85,7 +89,7 @@ public abstract class Weapon {
                     if (i >= config.getReloadTime()) {
                         currentClip = Math.min(config.getClipSize(), currentBullets);
                         isReloading = false;
-                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                         cancel();
                     } else {
                         ActionBarMessage.reload(config.getReloadTime(), i, player, itemSlot);
@@ -156,7 +160,7 @@ public abstract class Weapon {
         currentBullets = config.getStartingBullets();
         currentClip = config.getClipSize();
 
-        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
     }
 
     /**

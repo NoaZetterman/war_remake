@@ -91,7 +91,7 @@ public class BuckGun extends Weapon {
 
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
             }
 
             if(i >= 6 || currentClip <= 0 || bulletsInBurst <= 0) {
@@ -99,7 +99,7 @@ public class BuckGun extends Weapon {
                     reload();
                 } else {
                     //MIght be useless?
-                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                     startBurstDelay();
                 }
                 isShooting = false;

@@ -41,7 +41,7 @@ public class SingleBoltGun extends Weapon {
 
             statistics.addBulletsShot(1);
 
-            ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+            ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
 
             if(currentClip <= 0) {
                 reload();

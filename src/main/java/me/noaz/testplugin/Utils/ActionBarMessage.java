@@ -40,7 +40,7 @@ public class ActionBarMessage {
      * @param currentBullets The total amount of bullets the player has
      * @param player The players PlayerExtension
      */
-    public static void ammunitionCurrentAndTotal(int currentClip, int currentBullets, PlayerExtension player) {
-        player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets);
+    public static void ammunitionCurrentAndTotal(int currentClip, int currentBullets, PlayerExtension player, int itemSlot) {
+        player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets, itemSlot);
     }
 }

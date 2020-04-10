@@ -69,7 +69,7 @@ public class FullyAutomaticGun extends Weapon {
                     reload();
                 } else {
                     //This might be useless?
-                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                     startBurstDelay();
                 }
                 isShooting = false;
@@ -88,7 +88,7 @@ public class FullyAutomaticGun extends Weapon {
                         config.getHeadDamage());
                 player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                 startBurstDelay();
             }
         }

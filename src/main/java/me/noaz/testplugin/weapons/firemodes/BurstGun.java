@@ -47,7 +47,7 @@ public class BurstGun extends Weapon {
                         isShooting = false;
                         statistics.addBulletsShot(totalBulletsInCurrentBurst);
 
-                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player);
+                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
 
                         if(currentClip <= 0) {
                             reload();

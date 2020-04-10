@@ -4,7 +4,9 @@ import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Utils.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -196,7 +198,10 @@ public abstract class Weapon {
     }
 
     protected void playShootSound() {
-        player.getPlayer().playSound(player.getLocation() , config.getSound(), 10, 1);
+        Location location = player.getLocation();
+        for(Player p: plugin.getServer().getOnlinePlayers()) {
+            p.playSound(location, config.getSound(), 10, 1);
+        }
     }
 
     public void addBullets(int amount) {

@@ -64,24 +64,45 @@ public class BuckGun extends Weapon {
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
         int bulletsInBurst = config.getBulletsPerBurst();
+        int firedBulletsInBurst = 0;
 
         @Override
         public void run() {
             i++;
 
-            if(isNextBulletReady && !isReloading && bulletsInBurst > 0) {
-                bulletsInBurst--;
+            if(!isReloading && isNextBulletReady && firedBulletsInBurst < bulletsInBurst) {
                 fireBullet();
+                firedBulletsInBurst++;
             }
 
-            if(bulletsInBurst <= 0 || currentClip <= 0) {
-                if (currentClip <= 0) {
+            if(currentClip <= 0) {
+                reload();
+                end();
+            } else if(firedBulletsInBurst == bulletsInBurst) {
+                startBurstDelay();
+                firedBulletsInBurst = 0;
+                if(i >= 6) {
+                    end();
+                }
+            }
+
+
+            /*if(firedBulletsInBurst < bulletsInBurst && currentClip > 0 && isNextBulletReady && !isReloading) {
+                fireBullet();
+                firedBulletsInBurst++;
+            } else {
+                if(currentClip <= 0) {
                     reload();
                 } else {
                     startBurstDelay();
                 }
 
-                bulletsInBurst = config.getBulletsPerBurst();
+                //Dont stop mid burst if it goes over time, but then what if .cancel()?
+                //Stop if going to reload
+                //Stop if time is over and not mid burst
+                //Othwerwise keep shooting
+
+                firedBulletsInBurst = 0;
 
                 if(i >= 6) {
                     isShooting = false;
@@ -99,6 +120,11 @@ public class BuckGun extends Weapon {
                 isShooting = false;
                 this.cancel();
             }*/
+        }
+        private void end() {
+            bulletsInBurst = config.getBulletsPerBurst();
+            isShooting = false;
+            this.cancel();
         }
     }
 }

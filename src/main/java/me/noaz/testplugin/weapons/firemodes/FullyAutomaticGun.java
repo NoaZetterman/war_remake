@@ -32,8 +32,8 @@ public class FullyAutomaticGun extends Weapon {
             }
 
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
-            fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
             isShooting = true;
+            fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
         } else {
             ChatMessage.outOfAmmo(player);
         }

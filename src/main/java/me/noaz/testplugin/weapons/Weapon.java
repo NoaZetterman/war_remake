@@ -176,6 +176,8 @@ public abstract class Weapon {
 
     /**
      * Fires as many bullets as should get fired in one click/shot
+     * If multiple bullets are fired at once they will be fired in the same direction
+     * Do not use this for shotguns and alike.
      *
      * @param bulletDirection The bullets direction
      */

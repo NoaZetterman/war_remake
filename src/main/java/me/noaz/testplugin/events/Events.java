@@ -42,8 +42,9 @@ public class Events implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        event.setCancelled(true);
 
+        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
 
         if(player.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {

@@ -35,7 +35,7 @@ public class ScoreManager {
      * @param deaths The total amount of deaths this player has
      * @param level The level of this player
      */
-    public void giveLobbyScoreboard(UUID playerUUID, int kills, int deaths, int level,
+    public void giveLobbyScoreboard(UUID playerUUID, int kills, int deaths, int level, int credits,
                                     int currentXp, int totalXp, int bulletsHit, int bulletsShot) {
             Scoreboard scoreboard = scoreboards.get(playerUUID);
 
@@ -50,6 +50,7 @@ public class ScoreManager {
             sidebar.getScore("").setScore(5);
             sidebar.getScore("Level: " + level).setScore(4);
             sidebar.getScore("Xp: " + currentXp + "/" + totalXp).setScore(3);
+            sidebar.getScore("Credits: " + credits).setScore(2);
 
             sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
@@ -68,7 +69,7 @@ public class ScoreManager {
      * @param bulletsHit Amount of bullets the player has hit in the current game
      * @param bulletsShot Amount of bullets the player has shot in the current game
      */
-    public void giveGameScoreboard(UUID playerUUID, int kills, int deaths, int killstreak, int level,
+    public void giveGameScoreboard(UUID playerUUID, int kills, int deaths, int killstreak, int level, int credits,
                                    int currentXp, int totalXp, int bulletsHit, int bulletsShot) {
         Scoreboard scoreboard = scoreboards.get(playerUUID);
 
@@ -86,6 +87,7 @@ public class ScoreManager {
         sidebar.getScore("").setScore(4);
         sidebar.getScore("Level: " + level).setScore(3);
         sidebar.getScore("Xp: " + currentXp + "/" +  totalXp).setScore(2);
+        sidebar.getScore("Credits: " + credits).setScore(1);
 
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }

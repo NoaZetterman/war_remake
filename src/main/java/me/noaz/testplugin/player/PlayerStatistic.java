@@ -35,6 +35,7 @@ public class PlayerStatistic {
     private int totalXpOnCurrentLevel;
     private int totalFiredBullets;
     private int totalFiredBulletsThatHitEnemy;
+    private int credits;
 
     private int kills = 0;
     private int deaths = 0;
@@ -54,8 +55,9 @@ public class PlayerStatistic {
         this.scoreManager = scoreManager;
         playerUUID = player.getUniqueId();
 
-        //level "quickfix"
-        levels = new int[] {100, 120, 150, 200, 325, 450, 700, 1000, 1500, 3000, 5000, 8500, 12000, 15000, 20000, 30000, 45000, 60000, 80000, 100000, 150000, 200000, 300000, 400000, 500000};
+        //level quickfix
+        levels = new int[] {100, 120, 150, 200, 325, 450, 700, 1000, 1500, 3000, 5000, 8500, 12000, 15000, 20000, 30000,
+                45000, 60000, 80000, 100000, 150000, 200000, 300000, 400000, 500000};
         level = 1;
 
 
@@ -70,6 +72,7 @@ public class PlayerStatistic {
                 totalFiredBulletsThatHitEnemy = result.getInt("bullets_hit");
                 xpOnCurrentLevel = result.getInt("xp_on_level");
                 level = result.getInt("level");
+                credits = result.getInt("credits");
             }
 
         } catch (SQLException e) {
@@ -79,8 +82,7 @@ public class PlayerStatistic {
         totalXpOnCurrentLevel = levels[level-1];
 
         scoreManager.givePlayerNewScoreboard(playerUUID);
-        scoreManager.giveLobbyScoreboard(playerUUID, totalKills, totalDeaths, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, totalFiredBulletsThatHitEnemy, totalFiredBullets);
+        giveLobbyScoreboard();
 
         player.setLevel(level);
         addXP(0);
@@ -101,6 +103,9 @@ public class PlayerStatistic {
         return level;
     }
 
+    /**
+     * @return This players killstreak
+     */
     public int getKillstreak() {
         return killstreak;
     }
@@ -119,9 +124,8 @@ public class PlayerStatistic {
             player.setLevel(level);
             xpOnCurrentLevel -= totalXpOnCurrentLevel;
             player.setExp(0);
-            totalXpOnCurrentLevel = levels[level-1]; //Get amount from database or from yml or somewhere where its defined how
+            totalXpOnCurrentLevel = levels[level-1]; //Get amount from database
             //much xp per level.
-
         }
 
         float xpToAddInPercent = ((float) xpOnCurrentLevel) / ((float) totalXpOnCurrentLevel);
@@ -135,8 +139,13 @@ public class PlayerStatistic {
         kills++;
         killstreak++;
 
-        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
+        giveGameScoreboard();
+    }
+
+    public void addCredits(int amount) {
+        credits += amount;
+
+        giveGameScoreboard();
     }
 
     /**
@@ -145,8 +154,7 @@ public class PlayerStatistic {
     public void addDeath() {
         deaths++;
         killstreak = 0;
-        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
+        giveGameScoreboard();
     }
 
     /**
@@ -154,8 +162,7 @@ public class PlayerStatistic {
      */
     public void addBulletHit() {
         firedBulletsThatHitEnemy++;
-        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
+        giveGameScoreboard();
 
     }
 
@@ -165,8 +172,7 @@ public class PlayerStatistic {
      */
     public void addBulletsShot(int amount) {
         firedBullets += amount;
-        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
+        giveGameScoreboard();
     }
 
     /**
@@ -178,9 +184,7 @@ public class PlayerStatistic {
         killstreak = 0;
         firedBullets = 0;
         firedBulletsThatHitEnemy = 0;
-        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
-
+        giveGameScoreboard();
     }
 
     /**
@@ -193,8 +197,7 @@ public class PlayerStatistic {
         totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
         totalFiredBullets += firedBullets;
 
-        scoreManager.giveLobbyScoreboard(playerUUID, totalKills, totalDeaths, level, xpOnCurrentLevel,
-                totalXpOnCurrentLevel, totalFiredBulletsThatHitEnemy, totalFiredBullets);
+        giveLobbyScoreboard();
 
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
@@ -204,6 +207,7 @@ public class PlayerStatistic {
                         ", bullets_fired=" + totalFiredBullets +
                         ", bullets_hit=" + totalFiredBulletsThatHitEnemy +
                         ", level=" + level +
+                        ", credits=" + credits +
                         ", xp_on_level=" + xpOnCurrentLevel +
                         " WHERE player_uuid=\"" + playerUUID + "\";";
                 try {
@@ -233,6 +237,7 @@ public class PlayerStatistic {
                 ", bullets_fired=" + totalFiredBullets +
                 ", bullets_hit=" + totalFiredBulletsThatHitEnemy +
                 ", level=" + level +
+                ", credits=" + credits +
                 ", xp_on_level=" + xpOnCurrentLevel +
                 " WHERE player_uuid=\"" + playerUUID + "\";";
         try {
@@ -247,7 +252,17 @@ public class PlayerStatistic {
         player.sendMessage("Kills:" + totalKills);
         player.sendMessage("Deaths:" + totalDeaths);
         player.sendMessage("Level:" + level);
-        //TODO: Kdr and stuff, REDO THIS :V
+        //TODO: Kdr and stuff, REDO THIS
 
+    }
+
+    private void giveGameScoreboard() {
+        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, credits, xpOnCurrentLevel,
+                                        totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
+    }
+
+    private void giveLobbyScoreboard() {
+        scoreManager.giveLobbyScoreboard(playerUUID, totalKills, totalDeaths, level, credits, xpOnCurrentLevel,
+                totalXpOnCurrentLevel, totalFiredBulletsThatHitEnemy, totalFiredBullets);
     }
 }

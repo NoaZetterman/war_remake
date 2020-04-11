@@ -397,9 +397,9 @@ public class GameController {
             nextMapName = mapNames.get(random.nextInt(mapNames.size()));
         }
 
-        while(!isValidGamemode(nextMapName, gamemode)) {
+        do {
             gamemode = gamemodes[random.nextInt(gamemodes.length)];
-        }
+        } while(!isValidGamemode(nextMapName, gamemode));
     }
 
     private boolean isValidGamemode(String mapName, String gamemode) {
@@ -445,6 +445,9 @@ public class GameController {
         }
     }
 
+    /**
+     * End the current game, and start a new one in 60 seconds
+     */
     public void endGame() {
         if(game != null) {
             BroadcastMessage.endGameMessage(plugin.getServer());

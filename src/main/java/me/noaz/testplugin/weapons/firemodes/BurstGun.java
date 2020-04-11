@@ -36,24 +36,15 @@ public class BurstGun extends Weapon {
                 public void run() {
                     i++;
                     if (i <= totalBulletsInCurrentBurst) {
-                        playShootSound();
-                        new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                                config.getRange(), config.getBodyDamage(), config.getHeadDamage());
-                        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+                        fireBullet(velocity);
                     } else {
-                        currentClip -= totalBulletsInCurrentBurst;
-                        currentBullets -= totalBulletsInCurrentBurst;
-
-                        isShooting = false;
-                        statistics.addBulletsShot(totalBulletsInCurrentBurst);
-
-                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
-
                         if(currentClip <= 0) {
                             reload();
                         } else {
                             startBurstDelay();
                         }
+
+                        isShooting = false;
                         this.cancel();
                     }
                 }

@@ -26,22 +26,7 @@ public class SingleBoltGun extends Weapon {
 
     public void shoot() {
         if(!isReloading && currentClip != 0 && isNextBulletReady) {
-
-            double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
-            Vector velocity = calculateBulletDirection(accuracy);
-
-            playShootSound();
-
-            new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                    config.getRange(), config.getBodyDamage(), config.getHeadDamage());
-            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-
-            currentClip--;
-            currentBullets--;
-
-            statistics.addBulletsShot(1);
-
-            ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+            fireBullet();
 
             if(currentClip <= 0) {
                 reload();

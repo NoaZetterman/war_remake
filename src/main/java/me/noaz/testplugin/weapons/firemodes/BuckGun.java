@@ -1,15 +1,12 @@
 package me.noaz.testplugin.weapons.firemodes;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.ActionBarMessage;
 import me.noaz.testplugin.Utils.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 /**
  * A gun that fires multiple bullets at once such as a shotgun, may be in bursts
@@ -66,45 +63,42 @@ public class BuckGun extends Weapon {
      */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
-        int bulletsInBurst = Math.min(currentClip, config.getBulletsPerBurst());
+        int bulletsInBurst = config.getBulletsPerBurst();
 
         @Override
         public void run() {
             i++;
-            if(isNextBulletReady && !isReloading && currentClip > 0) {
-                double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
 
-                currentClip--;
-                currentBullets--;
-                statistics.addBulletsShot(config.getBulletsPerClick());
-
-                playShootSound();
-
-                if(bulletsInBurst > 0) {
-                    bulletsInBurst--;
-                    for(int j = 0; j < config.getBulletsPerClick(); j++) {
-                        Vector velocity = calculateBulletDirection(accuracy);
-                        new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                                config.getRange(), config.getBodyDamage(), config.getHeadDamage());
-                    }
-                }
-
-                player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-
-                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+            if(isNextBulletReady && !isReloading && bulletsInBurst > 0) {
+                bulletsInBurst--;
+                fireBullet();
             }
 
-            if(i >= 6 || currentClip <= 0 || bulletsInBurst <= 0) {
+            if(bulletsInBurst <= 0 || currentClip <= 0) {
                 if (currentClip <= 0) {
                     reload();
                 } else {
-                    //MIght be useless?
-                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+                    startBurstDelay();
+                }
+
+                bulletsInBurst = config.getBulletsPerBurst();
+
+                if(i >= 6) {
+                    isShooting = false;
+                    this.cancel();
+                }
+            }
+
+            //Is this going to work? No.
+            /*if((i >= 6 && bulletsInBurst <= 0) || currentClip <= 0 || bulletsInBurst <= 0) {
+                if (currentClip <= 0) {
+                    reload();
+                } else {
                     startBurstDelay();
                 }
                 isShooting = false;
                 this.cancel();
-            }
+            }*/
         }
     }
 }

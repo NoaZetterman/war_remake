@@ -5,11 +5,9 @@ import me.noaz.testplugin.Utils.ActionBarMessage;
 import me.noaz.testplugin.Utils.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Bullet;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 /**
  * Used for guns that fires one bullet at a time at any speed.
@@ -41,6 +39,7 @@ public class FullyAutomaticGun extends Weapon {
         }
     }
 
+    @Override
     public void reset() {
         if(isShooting) {
             fireAsIfPlayerHoldsRightClick.cancel();
@@ -56,7 +55,7 @@ public class FullyAutomaticGun extends Weapon {
     }
 
     /**
-     * Fires the automatic gun for 6 ticks
+     * Fires the automatic gun for 6 ticks (300ms)
      */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
@@ -68,27 +67,12 @@ public class FullyAutomaticGun extends Weapon {
                 if(currentClip <= 0) {
                     reload();
                 } else {
-                    //This might be useless?
-                    ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                     startBurstDelay();
                 }
                 isShooting = false;
                 this.cancel();
             } else if(isNextBulletReady && !isReloading) {
-                double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
-                Vector velocity = calculateBulletDirection(accuracy);
-
-                currentClip--;
-                currentBullets--;
-                statistics.addBulletsShot(1);
-
-                playShootSound();
-
-                new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(), config.getRange(), config.getBodyDamage(),
-                        config.getHeadDamage());
-                player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-
-                ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+                fireBullet();
                 startBurstDelay();
             }
         }

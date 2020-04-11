@@ -175,6 +175,53 @@ public abstract class Weapon {
     }
 
     /**
+     * Fires as many bullets as should get fired in one click/shot
+     *
+     * @param bulletDirection The bullets direction
+     */
+    protected void fireBullet(Vector bulletDirection) {
+        playShootSound();
+
+        for(int i = 0; i < config.getBulletsPerClick(); i++) {
+            new Bullet(player.getPlayer(), plugin, bulletDirection, config.getBulletSpeed(),
+                    config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+        }
+
+        currentClip--;
+        currentBullets--;
+
+        statistics.addBulletsShot(config.getBulletsPerClick());
+
+        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+    }
+
+    /**
+     * Fires as many bullets as should get fired in one click/shot
+     *
+     * Each bullet is fired in a different direction, but more accurate when scoping.
+     */
+    protected void fireBullet() {
+        playShootSound();
+        double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
+
+        for(int i = 0; i < config.getBulletsPerClick(); i++) {
+            Vector velocity = calculateBulletDirection(accuracy);
+            new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
+                    config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+        }
+
+        currentClip--;
+        currentBullets--;
+        statistics.addBulletsShot(config.getBulletsPerClick());
+
+        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+
+        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+    }
+
+    /**
      * @return The material type of this weapon
      */
     public Material getMaterialType() {

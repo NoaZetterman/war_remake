@@ -2,12 +2,12 @@ package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.Utils.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -24,7 +24,7 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
-        //TODO: Reduce hitbox size
+        //TODO: Reduce hitbox size (maybe)
 /*        Location snowballLocation = event.getEntity().getLocation();
         Player hitPlayer = (Player)event.getHitEntity();
         hitPlayer.getLocation().getY*/
@@ -55,12 +55,9 @@ public class DamageEvents implements Listener {
                 if(healthLeft <= 0) {
                     ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
                     ChatMessage.playerShotKilled(shooter, hitPlayer);
-                    hitPlayerExtension.getPlayerStatistics().addDeath();
+                    hitPlayerExtension.addDeath();
 
-                    PlayerStatistic killerStatistic = shooterExtension.getPlayerStatistics();
-
-                    //Order on the two below matters. (or does it?)
-                    killerStatistic.addXP(25);
+                    shooterExtension.addXp(25);
                     shooterExtension.addKill();
                     hitPlayerExtension.respawn(shooter);
                 } else {
@@ -98,21 +95,18 @@ public class DamageEvents implements Listener {
             ChatMessage.playerWasShotToDeath(deadPlayer, killer);
             ChatMessage.playerShotKilled(killer, deadPlayer);
 
-            gameController.getPlayerExtension(deadPlayer).getPlayerStatistics().addDeath();
+            gameController.getPlayerExtension(deadPlayer).addDeath();
 
-            PlayerExtension killerExtesion = gameController.getPlayerExtension(killer);
-            PlayerStatistic killerStatistic = killerExtesion.getPlayerStatistics();
+            PlayerExtension killerExtension = gameController.getPlayerExtension(killer);
 
-            //Order on the two below matters. (or does it?)
-            killerStatistic.addXP(25);
-            killerExtesion.addKill();
+            killerExtension.addXp(25);
+            killerExtension.addCredits(1);
+            killerExtension.addKill();
         }
     }
 
     @EventHandler
     public void onRespawnEvent(PlayerRespawnEvent event) {
-        //TODO: Fix so that players cant kill teammates with sword
-        //Fix cactus pickuup
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         if(player.isPlayingGame()) {
             player.respawn(event.getPlayer().getKiller());
@@ -124,6 +118,29 @@ public class DamageEvents implements Listener {
         if((event.getEntity() instanceof Player) &&
                 event.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageEntity(EntityDamageByEntityEvent event) {
+        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            Player damagedPlayer = (Player) event.getEntity();
+            Player damager = (Player) event.getDamager();
+            PlayerExtension damagedPlayerExtension = gameController.getPlayerExtension(damagedPlayer);
+            PlayerExtension damagerExtension = gameController.getPlayerExtension(damager);
+
+            if(gameController.getGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
+                event.setCancelled(true);
+            } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
+                event.setCancelled(true);
+                damagedPlayerExtension.respawn(damager);
+
+                damagerExtension.addCredits(1);
+                damagerExtension.addKill();
+                damagerExtension.addXp(25);
+
+                damagedPlayerExtension.addDeath();
+            }
         }
     }
 }

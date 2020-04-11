@@ -127,9 +127,6 @@ public class PlayerExtension {
         secondaryWeapon.addBullets((int)Math.floor(secondaryWeapon.getStartingBullets()*0.25));
         statistics.addKill();
 
-        //Credit amount may be different at times in the future.
-        statistics.addCredits(1);
-
         if(team != null) {
             team.addKill();
         }
@@ -166,6 +163,18 @@ public class PlayerExtension {
 
             }
         }
+    }
+
+    public void addDeath() {
+        statistics.addDeath();
+    }
+
+    public void addXp(int amount) {
+        statistics.addXP(amount);
+    }
+
+    public void addCredits(int amount) {
+        statistics.addCredits(amount);
     }
 
     /**

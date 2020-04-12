@@ -7,10 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -141,6 +138,35 @@ public class DamageEvents implements Listener {
 
                 damagedPlayerExtension.addDeath();
             }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if(event.getEntity() instanceof Player) {
+            Player damagedPlayer = (Player) event.getEntity();
+            PlayerExtension damagedPlayerExtension = gameController.getPlayerExtension(damagedPlayer);
+
+
+            switch(event.getCause()) {
+                case VOID:
+                    if (damagedPlayerExtension.isPlayingGame()) {
+                        damagedPlayerExtension.addDeath();
+                        damagedPlayerExtension.respawn(null);
+                    } else {
+                        damagedPlayer.teleport(damagedPlayer.getWorld().getSpawnLocation());
+                    }
+
+                    event.setCancelled(true);
+
+
+                    //TODO: Get last damage that wasn't void
+                    break;
+                default:
+                    //TODO: Add more cases
+                    break;
+            }
+
         }
     }
 }

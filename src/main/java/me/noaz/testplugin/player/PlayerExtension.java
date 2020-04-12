@@ -89,7 +89,12 @@ public class PlayerExtension {
         isDead = true;
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
-        player.setSpectatorTarget(killer);
+
+        if(killer != null) {
+            player.setSpectatorTarget(killer);
+        } else {
+            player.teleport(team.getSpawnPoint());
+        }
 
         new BukkitRunnable() {
 

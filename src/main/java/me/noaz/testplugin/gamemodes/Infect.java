@@ -1,6 +1,7 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.Utils.BroadcastMessage;
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
@@ -37,6 +38,14 @@ public class Infect extends Game {
     public void assignTeam(PlayerExtension player) {
         teams[1].addPlayer(player);
         player.setTeam(teams[1], teams[0]);
+    }
+
+    @Override
+    public void updatePlayerList() {
+        //TODO: CHange this
+        for(Player player : players.keySet()) {
+            PlayerListMessage.setTeamDeathMatchHeader(player, teams[0].getKills(), teams[1].getKills());
+        }
     }
 
     @Override public void end(boolean forceEnd) {

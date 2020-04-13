@@ -3,6 +3,7 @@ package me.noaz.testplugin.player;
 import me.noaz.testplugin.AccessDatabase;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -82,7 +83,7 @@ public class PlayerStatistic {
         totalXpOnCurrentLevel = levels[level-1];
 
         scoreManager.givePlayerNewScoreboard(playerUUID);
-        giveLobbyScoreboard();
+        updateLobbyScoreboard();
 
         player.setLevel(level);
         addXP(0);
@@ -139,13 +140,13 @@ public class PlayerStatistic {
         kills++;
         killstreak++;
 
-        giveGameScoreboard();
+        updateGameScoreboard();
     }
 
     public void addCredits(int amount) {
         credits += amount;
 
-        giveGameScoreboard();
+        updateGameScoreboard();
     }
 
     /**
@@ -154,7 +155,7 @@ public class PlayerStatistic {
     public void addDeath() {
         deaths++;
         killstreak = 0;
-        giveGameScoreboard();
+        updateGameScoreboard();
     }
 
     /**
@@ -162,7 +163,7 @@ public class PlayerStatistic {
      */
     public void addBulletHit() {
         firedBulletsThatHitEnemy++;
-        giveGameScoreboard();
+        updateGameScoreboard();
 
     }
 
@@ -172,7 +173,7 @@ public class PlayerStatistic {
      */
     public void addBulletsShot(int amount) {
         firedBullets += amount;
-        giveGameScoreboard();
+        updateGameScoreboard();
     }
 
     /**
@@ -184,7 +185,7 @@ public class PlayerStatistic {
         killstreak = 0;
         firedBullets = 0;
         firedBulletsThatHitEnemy = 0;
-        giveGameScoreboard();
+        updateGameScoreboard();
     }
 
     /**
@@ -197,7 +198,7 @@ public class PlayerStatistic {
         totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
         totalFiredBullets += firedBullets;
 
-        giveLobbyScoreboard();
+        updateLobbyScoreboard();
 
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
@@ -256,12 +257,12 @@ public class PlayerStatistic {
 
     }
 
-    private void giveGameScoreboard() {
+    private void updateGameScoreboard() {
         scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, credits, xpOnCurrentLevel,
                                         totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
     }
 
-    private void giveLobbyScoreboard() {
+    private void updateLobbyScoreboard() {
         scoreManager.giveLobbyScoreboard(playerUUID, totalKills, totalDeaths, level, credits, xpOnCurrentLevel,
                 totalXpOnCurrentLevel, totalFiredBulletsThatHitEnemy, totalFiredBullets);
     }

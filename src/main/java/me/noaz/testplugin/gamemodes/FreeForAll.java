@@ -1,6 +1,7 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.Utils.BroadcastMessage;
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
@@ -38,6 +39,25 @@ public class FreeForAll extends Game {
     public void assignTeam(PlayerExtension player) {
         teams[0].addPlayer(player);
         player.setTeam(teams[0], null);
+    }
+
+    @Override
+    public void updatePlayerList() {
+        String leaderName = "";
+        int leaderKills = 0;
+        for(PlayerExtension player : teams[0].getPlayers()) {
+            int kills = player.getPlayerStatistics().getKillsThisGame();
+            if(leaderKills < kills) {
+                leaderKills = kills;
+                leaderName = player.getName();
+            }
+        }
+
+        //TODO: Handle 0 players / No leader (may be in PlayerListMessage)
+
+        for(Player player : players.keySet()) {
+            PlayerListMessage.setFreeForAllHeader(player, leaderName, leaderKills);
+        }
     }
 
     @Override

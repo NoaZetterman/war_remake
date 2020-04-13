@@ -2,6 +2,7 @@ package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Utils.BroadcastMessage;
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.misc.Flag;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
@@ -58,6 +59,12 @@ public class CaptureTheFlag extends Game {
             teams[1].addPlayer(player);
             player.setTeam(teams[1], teams[0]);
         }
+    }
+
+    @Override
+    public void updatePlayerList() {
+        for(Player player : players.keySet())
+        PlayerListMessage.setCaptureTheFlagHeader(player, redFlag.getCaptures(), blueFlag.getCaptures());
     }
 
     @Override

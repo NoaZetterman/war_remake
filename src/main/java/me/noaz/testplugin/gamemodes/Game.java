@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.entity.Player;
@@ -91,6 +92,8 @@ public abstract class Game {
     public int getLength() {
         return gameLength; //Differs between gamemodes and may differ depending on player amount (?)
     }
+
+    public abstract void updatePlayerList();
 
     /**
      * Ends the game. Must be called before terminating the object.

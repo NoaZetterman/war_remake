@@ -4,6 +4,7 @@ import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Utils.BossBarMessage;
 import me.noaz.testplugin.Utils.BroadcastMessage;
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.CaptureTheFlag;
 import me.noaz.testplugin.gamemodes.FreeForAll;
 import me.noaz.testplugin.gamemodes.Game;
@@ -288,6 +289,9 @@ public class GameController {
 
             @Override
             public void run() {
+
+                updatePlayerList();
+                //TODO: (after release) Redo below to be more efficient
                 for(PlayerExtension player : playerExtensions.values()) {
                     player.updateActionBar();
                 }
@@ -479,5 +483,15 @@ public class GameController {
 
     public PlayerExtension getPlayerExtension(Player player) {
         return playerExtensions.get(player);
+    }
+
+    private void updatePlayerList() {
+        if(game == null) {
+            for(Player player : playerExtensions.keySet()) {
+                PlayerListMessage.setLobbyHeader(player, gamemode, nextMapName);
+            }
+        } else  {
+            game.updatePlayerList();
+        }
     }
 }

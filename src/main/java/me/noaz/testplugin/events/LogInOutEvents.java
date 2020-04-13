@@ -3,6 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.AccessDatabase;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.Utils.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.NamespacedKey;
@@ -58,6 +59,9 @@ public class LogInOutEvents implements Listener {
         };
 
         runnable.runTaskAsynchronously(plugin);
+
+        //Temp
+        PlayerListMessage.setFooter(event.getPlayer());
 
         gameController.addPlayer(plugin, event.getPlayer(), scoreManager, statement);
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).addPlayer(event.getPlayer());

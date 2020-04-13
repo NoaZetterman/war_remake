@@ -65,9 +65,7 @@ public class PlayerExtension {
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
 
-        //TODO: Make a separate class for footer & header messages
-        player.setPlayerListHeaderFooter("Score stuff \n more score stuff \n ",
-                "\n Pls stay xd");
+
 
         //Get current used guns from database instead
         primaryWeapon = createNewWeapon(gunConfigurations.get("Skullcrusher"), primaryWeapon);
@@ -428,12 +426,6 @@ public class PlayerExtension {
         if(slot == player.getInventory().getHeldItemSlot()) {
             TTA_Methods.sendActionBar(player.getPlayer(), message);
         }
-    }
-
-
-    public void setActionBar(String message) {
-        actionBarMessage[player.getInventory().getHeldItemSlot()] = message;
-        TTA_Methods.sendActionBar(player, message);
     }
 
     /**

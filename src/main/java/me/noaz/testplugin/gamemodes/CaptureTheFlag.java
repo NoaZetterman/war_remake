@@ -64,7 +64,7 @@ public class CaptureTheFlag extends Game {
     @Override
     public void updatePlayerList() {
         for(Player player : players.keySet())
-        PlayerListMessage.setCaptureTheFlagHeader(player, redFlag.getCaptures(), blueFlag.getCaptures());
+        PlayerListMessage.setCaptureTheFlagHeader(player, blueFlag.getCaptures(), redFlag.getCaptures());
     }
 
     @Override

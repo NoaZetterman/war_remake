@@ -46,12 +46,13 @@ public class Flag {
      */
     public Flag(Color color, Location flagPoleLocation, Location enemyFlagPoleLocation, String worldName, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
         this.flagColor = color;
-        this.flagPoleLocation = flagPoleLocation;
-        this.enemyFlagPoleLocation = enemyFlagPoleLocation;
+        this.flagPoleLocation = flagPoleLocation.clone();
+        this.enemyFlagPoleLocation = enemyFlagPoleLocation.clone();
         this.worldName = worldName;
         this.plugin = plugin;
         this.players = players;
 
+        //TODO: remove flag when ending
         createWoolFlag();
     }
 

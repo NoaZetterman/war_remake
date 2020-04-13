@@ -35,8 +35,6 @@ public abstract class Game {
      * @param player The player to assign a team
      */
     abstract void assignTeam(PlayerExtension player);
-    //TODO: Fix the above in all specific gemamodes to not have
-    //a 2 way relation between team and player
 
     /**
      * Lets player join the current game

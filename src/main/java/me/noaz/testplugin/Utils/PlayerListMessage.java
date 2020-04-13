@@ -3,8 +3,6 @@ package me.noaz.testplugin.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 public class PlayerListMessage {
     public static void setTeamDeathMatchHeader(Player player, int redTeamKills, int blueTeamKills) {
 
@@ -57,8 +55,6 @@ public class PlayerListMessage {
                 "─────────────────────────────────" + "\n" +
                 "Map creator: {name or lias or whatevs} (YT/Twitter/whatever to map creator)");
     }
-
-    //TODO: Lobby header
 
     public static void setFooter(Player player) {
         player.setPlayerListFooter("VVVVVVVVVVVVVVVote xd \n" +

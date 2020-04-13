@@ -242,6 +242,7 @@ public class PlayerExtension {
         }
     }
 
+    //TODO: Move scoping stuff to weapon
     /**
      * Makes the player be stop scoping (or nothing if the player is not scoping).
      */

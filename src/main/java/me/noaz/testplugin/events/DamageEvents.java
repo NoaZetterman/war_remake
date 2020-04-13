@@ -55,6 +55,7 @@ public class DamageEvents implements Listener {
                     hitPlayerExtension.addDeath();
 
                     shooterExtension.addXp(25);
+                    shooterExtension.addCredits(1);
                     shooterExtension.addKill();
                     hitPlayerExtension.respawn(shooter);
                 } else {
@@ -162,8 +163,8 @@ public class DamageEvents implements Listener {
 
                     //TODO: Get last damage that wasn't void
                     break;
+                //Add more cases(?)
                 default:
-                    //TODO: Add more cases
                     break;
             }
 

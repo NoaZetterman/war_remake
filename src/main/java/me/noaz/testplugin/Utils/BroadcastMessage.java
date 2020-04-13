@@ -1,7 +1,6 @@
 package me.noaz.testplugin.Utils;
 
 import me.noaz.testplugin.player.PlayerExtension;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
 /**

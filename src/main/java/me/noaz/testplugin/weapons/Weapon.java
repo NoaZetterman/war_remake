@@ -31,6 +31,7 @@ public abstract class Weapon {
     protected boolean isNextBulletReady = true;
     protected boolean isReloading = false;
     protected boolean isShooting = false;
+    protected boolean justStartedReloading = false;
 
     protected BukkitRunnable reloadTask;
     protected BukkitRunnable burstDelayTask;
@@ -79,6 +80,7 @@ public abstract class Weapon {
      * Reloads the gun
      */
     public void reload() {
+        justStartedReloading = true;
         if(!isReloading && currentClip != config.getClipSize() && currentClip != currentBullets) {
             isReloading = true;
 
@@ -102,6 +104,14 @@ public abstract class Weapon {
 
             reloadTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
         }
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                justStartedReloading = false;
+            }
+        }.runTaskLater(plugin, 1L);
     }
 
     /**
@@ -256,5 +266,9 @@ public abstract class Weapon {
 
     public int getStartingBullets() {
         return config.getStartingBullets();
+    }
+
+    public boolean justStartedReloading() {
+        return justStartedReloading;
     }
 }

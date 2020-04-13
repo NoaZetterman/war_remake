@@ -66,13 +66,30 @@ public class Events implements Listener {
 
     @EventHandler
     public void onHandSwingEvent(PlayerAnimationEvent event) {
+
         if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
             PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
 
-            if(player.hasWeaponInMainHand()) {
+            if(player.hasWeaponInMainHand() && !player.getWeaponInMainHand().justStartedReloading()) {
                 player.changeScope();
             }
         }
+    }
+
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event){
+        //Reload when pressing drop button (Q)
+        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        if(player.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
+            player.reloadWeapon(player.getPrimaryWeapon());
+        } else if (player.getSecondaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
+            player.reloadWeapon(player.getSecondaryWeapon());
+        }
+
+        System.out.println(event);
+        event.setCancelled(true);
+        event.getItemDrop().remove();
     }
 
     @EventHandler
@@ -95,20 +112,6 @@ public class Events implements Listener {
         player.getSecondaryWeapon().stopShooting();
         gameController.getPlayerExtension(event.getPlayer()).unScope();
         player.updateActionBar();
-    }
-
-    @EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent event){
-        //Reload when pressing drop button (Q)
-        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
-        if(player.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            player.reloadWeapon(player.getPrimaryWeapon());
-        } else if (player.getSecondaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            player.reloadWeapon(player.getSecondaryWeapon());
-        }
-
-        event.setCancelled(true);
-        event.getItemDrop().remove();
     }
 
     @EventHandler

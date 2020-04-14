@@ -53,13 +53,10 @@ public class PlayerListMessage {
         player.setPlayerListHeader("Next Game: " + nextGamemode + "\n" +
                 "Next Map: " + nextMap + "\n" +
                 "─────────────────────────────────" + "\n" +
-                "Map creator: {name or lias or whatevs} (YT/Twitter/whatever to map creator)");
+                "Map creator: {name or alias of mapcreator} (YT/Twitter/whatever to map creator)");
     }
 
     public static void setFooter(Player player) {
-        player.setPlayerListFooter("VVVVVVVVVVVVVVVote xd \n" +
-                "serverip.ip \n" +
-                "Websiteip.ip \n" +
-                "Discord? This is stupid bc its not clickable in tab lmao");
+        player.setPlayerListFooter("Some info");
     }
 }

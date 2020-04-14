@@ -1,4 +1,4 @@
-package me.noaz.testplugin.Utils;
+package me.noaz.testplugin.Messages;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

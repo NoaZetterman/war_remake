@@ -1,7 +1,7 @@
 package me.noaz.testplugin.gamemodes;
 
-import me.noaz.testplugin.Utils.BroadcastMessage;
-import me.noaz.testplugin.Utils.PlayerListMessage;
+import me.noaz.testplugin.Messages.BroadcastMessage;
+import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class FreeForAll extends Game {
     public FreeForAll(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> players) {

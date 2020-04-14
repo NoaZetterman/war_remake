@@ -3,7 +3,6 @@ package me.noaz.testplugin.player;
 import me.noaz.testplugin.AccessDatabase;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.PlayerListMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,6 +35,7 @@ public class PlayerStatistic {
     private int totalXpOnCurrentLevel;
     private int totalFiredBullets;
     private int totalFiredBulletsThatHitEnemy;
+    private int totalHeadshotKills;
     private int credits;
 
     private int kills = 0;
@@ -74,6 +74,7 @@ public class PlayerStatistic {
                 xpOnCurrentLevel = result.getInt("xp_on_level");
                 level = result.getInt("level");
                 credits = result.getInt("credits");
+                totalHeadshotKills = result.getInt("headshots");
             }
 
         } catch (SQLException e) {
@@ -143,6 +144,10 @@ public class PlayerStatistic {
         updateGameScoreboard();
     }
 
+    public void addHeadshotKill() {
+        totalHeadshotKills++;
+    }
+
     public void addCredits(int amount) {
         credits += amount;
 
@@ -210,6 +215,7 @@ public class PlayerStatistic {
                         ", level=" + level +
                         ", credits=" + credits +
                         ", xp_on_level=" + xpOnCurrentLevel +
+                        ", headshots=" + totalHeadshotKills +
                         " WHERE player_uuid=\"" + playerUUID + "\";";
                 try {
                     AccessDatabase.update(sqlStatement, updatePlayerData);
@@ -240,6 +246,7 @@ public class PlayerStatistic {
                 ", level=" + level +
                 ", credits=" + credits +
                 ", xp_on_level=" + xpOnCurrentLevel +
+                ", headshots=" + totalHeadshotKills +
                 " WHERE player_uuid=\"" + playerUUID + "\";";
         try {
             AccessDatabase.update(sqlStatement, updatePlayerData);
@@ -253,7 +260,7 @@ public class PlayerStatistic {
         player.sendMessage("Kills:" + totalKills);
         player.sendMessage("Deaths:" + totalDeaths);
         player.sendMessage("Level:" + level);
-        //TODO: Kdr and stuff, REDO THIS
+        //TODO: Kdr and stuff, Rework.
 
     }
 

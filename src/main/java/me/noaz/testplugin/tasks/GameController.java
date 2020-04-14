@@ -2,9 +2,9 @@ package me.noaz.testplugin.tasks;
 
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.BossBarMessage;
-import me.noaz.testplugin.Utils.BroadcastMessage;
-import me.noaz.testplugin.Utils.PlayerListMessage;
+import me.noaz.testplugin.Messages.BossBarMessage;
+import me.noaz.testplugin.Messages.BroadcastMessage;
+import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.CaptureTheFlag;
 import me.noaz.testplugin.gamemodes.FreeForAll;
 import me.noaz.testplugin.gamemodes.Game;

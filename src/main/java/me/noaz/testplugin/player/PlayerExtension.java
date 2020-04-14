@@ -3,8 +3,8 @@ package me.noaz.testplugin.player;
 import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.BroadcastMessage;
-import me.noaz.testplugin.Utils.ChatMessage;
+import me.noaz.testplugin.Messages.BroadcastMessage;
+import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
@@ -166,6 +166,11 @@ public class PlayerExtension {
 
             }
         }
+    }
+
+    public void addHeadshotKill() {
+        addKill();
+        statistics.addHeadshotKill();
     }
 
     public void addDeath() {

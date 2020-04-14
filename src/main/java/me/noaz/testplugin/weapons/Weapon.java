@@ -1,12 +1,10 @@
 package me.noaz.testplugin.weapons;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.ActionBarMessage;
+import me.noaz.testplugin.Messages.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;

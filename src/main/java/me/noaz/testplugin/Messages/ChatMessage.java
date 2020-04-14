@@ -1,4 +1,4 @@
-package me.noaz.testplugin.Utils;
+package me.noaz.testplugin.Messages;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.entity.Player;
@@ -21,5 +21,13 @@ public class ChatMessage {
 
     public static void playerShotKilled(Player shooter, Player killedPlayer) {
         shooter.sendMessage(shooter.getName() + " shot " + killedPlayer.getName());
+    }
+
+    public static void playerWasHeadshotToDeath(Player killedPlayer, Player shooter) {
+        killedPlayer.sendMessage(killedPlayer.getName() + " was headshot by " + shooter.getName());
+    }
+
+    public static void playerHeadshotKilled(Player shooter, Player killedPlayer) {
+        shooter.sendMessage(shooter.getName() + " headshot " + killedPlayer.getName());
     }
 }

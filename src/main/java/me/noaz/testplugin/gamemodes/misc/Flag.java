@@ -1,7 +1,7 @@
 package me.noaz.testplugin.gamemodes.misc;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.BroadcastMessage;
+import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
 import org.bukkit.GameMode;

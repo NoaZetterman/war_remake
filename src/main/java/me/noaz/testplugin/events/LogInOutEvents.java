@@ -3,15 +3,13 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.AccessDatabase;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.PlayerListMessage;
-import me.noaz.testplugin.player.PlayerExtension;
+import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 

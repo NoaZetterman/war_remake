@@ -1,6 +1,6 @@
 package me.noaz.testplugin.events;
 
-import me.noaz.testplugin.Utils.ChatMessage;
+import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.Material;
@@ -38,10 +38,14 @@ public class DamageEvents implements Listener {
 
                 //Check if bullet was a headshot or not
                 //Maybe not hit when its too far away from body?
+                boolean isHeadshot;
                 if (hitPlayer.getEyeLocation().getY() - eyeToNeckLength <= event.getEntity().getLocation().getY()) {
                     damage = (double) event.getEntity().getMetadata("headDamage").get(0).value();
+                    //Headshot
+                    isHeadshot = true;
                 } else {
                     damage = (double) event.getEntity().getMetadata("bodyDamage").get(0).value();
+                    isHeadshot = false;
                 }
 
                 double healthLeft = 20.0;
@@ -50,13 +54,21 @@ public class DamageEvents implements Listener {
                 }
 
                 if(healthLeft <= 0) {
-                    ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
-                    ChatMessage.playerShotKilled(shooter, hitPlayer);
-                    hitPlayerExtension.addDeath();
+                    if(isHeadshot) {
+                        shooterExtension.addHeadshotKill();
+                        shooterExtension.addXp(35);
+                        shooterExtension.addCredits(2);
+                        ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter);
+                        ChatMessage.playerHeadshotKilled(shooter, hitPlayer);
+                    } else {
+                        shooterExtension.addXp(25);
+                        shooterExtension.addCredits(1);
+                        shooterExtension.addKill();
+                        ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
+                        ChatMessage.playerShotKilled(shooter, hitPlayer);
+                    }
 
-                    shooterExtension.addXp(25);
-                    shooterExtension.addCredits(1);
-                    shooterExtension.addKill();
+                    hitPlayerExtension.addDeath();
                     hitPlayerExtension.respawn(shooter);
                 } else {
 

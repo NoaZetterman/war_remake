@@ -1,8 +1,8 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Utils.BroadcastMessage;
-import me.noaz.testplugin.Utils.PlayerListMessage;
+import me.noaz.testplugin.Messages.BroadcastMessage;
+import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.misc.Flag;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;

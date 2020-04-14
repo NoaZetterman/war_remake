@@ -1,4 +1,4 @@
-package me.noaz.testplugin.Utils;
+package me.noaz.testplugin.Messages;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Server;

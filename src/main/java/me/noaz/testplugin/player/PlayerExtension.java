@@ -1,6 +1,7 @@
 package me.noaz.testplugin.player;
 
 import de.Herbystar.TTA.TTA_Methods;
+import me.noaz.testplugin.Inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.BroadcastMessage;

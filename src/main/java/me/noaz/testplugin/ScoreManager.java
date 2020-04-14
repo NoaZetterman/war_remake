@@ -75,7 +75,7 @@ public class ScoreManager {
 
         scoreboard.getObjective("sidebar").unregister();
 
-        Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", "The stuff!");
+        Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", "Stats");
 
         sidebar.getScore(" ").setScore(10);
         sidebar.getScore("Kills: " + kills).setScore(9);

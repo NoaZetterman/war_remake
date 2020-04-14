@@ -24,7 +24,7 @@ public class WeaponConfiguration {
     private final double accuracyNotScoped;
     private final double bodyDamage;
     private final double headDamage;
-    private double recoil; //Not used yet (though it kinda is)
+    private double recoil; //Not added yet
     private final double bulletSpeed;
     private final int range;
 
@@ -39,6 +39,9 @@ public class WeaponConfiguration {
     private final int bulletsPerBurst;
     private final int startingBullets;
     private final int clipSize;
+
+    private final int unlockLevel;
+    private final int loadoutSlot;
 
     private final Sound[] sounds;
 
@@ -65,7 +68,8 @@ public class WeaponConfiguration {
      */
     public WeaponConfiguration(String name, Material gunMaterial, String weaponType, String fireType, double accuracyNotScoped,
                                 double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
-                                int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets, int clipSize, Sound[] sounds) {
+                                int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
+                               int clipSize, Sound[] sounds, int unlockLevel, int loadoutSlot) {
         this.name = name;
         this.gunMaterial = gunMaterial;
         this.weaponType = weaponType;
@@ -83,13 +87,15 @@ public class WeaponConfiguration {
         this.startingBullets = startingBullets;
         this.clipSize = clipSize;
         this.sounds = sounds;
+        this.unlockLevel = unlockLevel;
+        this.loadoutSlot = loadoutSlot;
 
 
 
         //Do some logic to show it in a more beautiful way
         weaponLore = new ArrayList<>();
         weaponLore.add(ChatColor.BLUE + "Type: " + weaponType.toLowerCase());
-        weaponLore.add(ChatColor.BLUE + "Yeeters");
+        weaponLore.add(ChatColor.BLUE + "Hello");
     }
 
     private int convertToTicks(int timeInMs) {
@@ -169,5 +175,13 @@ public class WeaponConfiguration {
 
     public Sound getSound() {
         return sounds[random.nextInt(sounds.length)];
+    }
+
+    public int getUnlockLevel() {
+        return unlockLevel;
+    }
+
+    public int getLoadoutSlot() {
+        return loadoutSlot;
     }
 }

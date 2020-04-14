@@ -1,9 +1,8 @@
-package me.noaz.testplugin.player;
+package me.noaz.testplugin.Inventories;
 
 import me.noaz.testplugin.weapons.Weapon;
 import org.bukkit.Material;
 import org.bukkit.Color;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;

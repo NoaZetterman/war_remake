@@ -1,5 +1,6 @@
-package me.noaz.testplugin.player;
+package me.noaz.testplugin.Inventories;
 
+import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.WeaponConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -80,3 +81,7 @@ public class LoadoutGUI {
 
 
 }
+
+//Create a main loadout class that gets whats clicked on if its this inventory,
+//then depending on whats clicked, send to some diff classes that creates the new inv
+//https://bukkit.org/threads/icon-menu.108342/ nice.

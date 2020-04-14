@@ -1,6 +1,7 @@
 package me.noaz.testplugin.events;
 
-import me.noaz.testplugin.player.LoadoutGUI;
+import me.noaz.testplugin.Inventories.LoadoutGUI;
+import me.noaz.testplugin.Inventories.LoadoutSelector;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.ChatColor;
@@ -49,7 +50,7 @@ public class Events implements Listener {
         if(player.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
             player.getWeaponInMainHand().shoot();
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
-            LoadoutGUI.loadoutStartScreen(event.getPlayer(), player.getOwnedWeapons());
+            LoadoutSelector.loadoutStartScreen(event.getPlayer(), player.getOwnedWeapons());
         }
     }
 
@@ -58,7 +59,7 @@ public class Events implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame())
+        if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() && event.getClickedInventory() != null)
             LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()));
         event.setCancelled(true);
     }
@@ -86,7 +87,6 @@ public class Events implements Listener {
             player.reloadWeapon(player.getSecondaryWeapon());
         }
 
-        System.out.println(event);
         event.setCancelled(true);
         event.getItemDrop().remove();
     }

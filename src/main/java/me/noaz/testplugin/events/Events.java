@@ -1,7 +1,7 @@
 package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.Inventories.LoadoutGUI;
-import me.noaz.testplugin.Inventories.LoadoutSelector;
+import me.noaz.testplugin.Inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.ChatColor;
@@ -42,7 +42,9 @@ public class Events implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        event.setCancelled(true);
+        //event.setCancelled(true);
+
+        //event.getItem()
 
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
@@ -50,7 +52,8 @@ public class Events implements Listener {
         if(player.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
             player.getWeaponInMainHand().shoot();
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
-            LoadoutSelector.loadoutStartScreen(event.getPlayer(), player.getOwnedWeapons());
+            LoadoutMenu.loadoutStartScreen(player);
+            //player.getOwnedWeapons();
         }
     }
 

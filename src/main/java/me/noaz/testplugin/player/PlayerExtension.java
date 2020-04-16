@@ -44,6 +44,8 @@ public class PlayerExtension {
     private Team team;
     private Team enemyTeam;
     private HashMap<String, WeaponConfiguration> gunConfigurations;
+    private List<String> ownedPrimaryGuns;
+    private List<String> ownedSecondaryGuns;
     private List<String> ownedWeaponNames = new ArrayList<>();
     private String[] actionBarMessage;
     private boolean isDead = false;
@@ -62,6 +64,20 @@ public class PlayerExtension {
         this.player = player;
         this.gunConfigurations = gunConfigurations;
         statistics = new PlayerStatistic(player, scoreManager, sqlStatement, plugin);
+
+        ownedPrimaryGuns = new ArrayList<>();
+        ownedSecondaryGuns = new ArrayList<>();
+
+        //TODO: Create a list with owned guns in database
+        // And use that one
+
+        for(String gun : gunConfigurations.keySet()) {
+            if(gunConfigurations.get(gun).getWeaponType().equals("Secondary")) {
+                ownedSecondaryGuns.add(gun);
+            } else {
+                ownedPrimaryGuns.add(gun);
+            }
+        }
 
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
@@ -325,14 +341,8 @@ public class PlayerExtension {
     /**
      * @return An array with weapon configurations this player can use
      */
-    public WeaponConfiguration[] getOwnedWeapons() {
-        WeaponConfiguration[] configurations = new WeaponConfiguration[ownedWeaponNames.size()];
-
-        for(int i = 0; i < configurations.length; i++) {
-            configurations[i] = gunConfigurations.get(ownedWeaponNames.get(i));
-        }
-
-        return configurations;
+    public HashMap<String, WeaponConfiguration> getWeaponConfigurations() {
+        return gunConfigurations;
     }
 
     /**
@@ -445,5 +455,13 @@ public class PlayerExtension {
 
     public boolean isDead() {
         return isDead;
+    }
+
+    public List<String> getOwnedPrimaryGuns() {
+        return ownedPrimaryGuns;
+    }
+
+    public List<String> getOwnedSecondaryGuns() {
+        return ownedSecondaryGuns;
     }
 }

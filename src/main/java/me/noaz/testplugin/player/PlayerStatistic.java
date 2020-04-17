@@ -1,15 +1,12 @@
 package me.noaz.testplugin.player;
 
-import me.noaz.testplugin.AccessDatabase;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.UUID;
 
 /**
@@ -22,7 +19,7 @@ import java.util.UUID;
 public class PlayerStatistic {
     private UUID playerUUID;
     private ScoreManager scoreManager;
-    private Statement sqlStatement;
+    private Connection connection;
     private TestPlugin plugin;
 
 
@@ -50,8 +47,8 @@ public class PlayerStatistic {
      * @param player The player that "owns" this object
      * @param scoreManager The ScoreManager it communicates with
      */
-    public PlayerStatistic(Player player, ScoreManager scoreManager, Statement sqlStatement, TestPlugin plugin) {
-        this.sqlStatement = sqlStatement;
+    public PlayerStatistic(Player player, ScoreManager scoreManager, Connection connection, TestPlugin plugin) {
+        this.connection = connection;
         this.plugin = plugin;
         this.scoreManager = scoreManager;
         playerUUID = player.getUniqueId();
@@ -63,9 +60,11 @@ public class PlayerStatistic {
 
 
         //Get current player stats from database
-        String getPlayerData = "SELECT * FROM test.player WHERE player_uuid=\"" + playerUUID + "\";";
+        //String getPlayerData = "SELECT * FROM test.player WHERE player_uuid=\"" + playerUUID + "\";";
         try {
-            ResultSet result = AccessDatabase.getQueryResult(sqlStatement, getPlayerData);
+            //ResultSet result = AccessDatabase.getQueryResult(sqlStatement, getPlayerData);
+            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE player_uuid=\"" + playerUUID + "\";");
+            ResultSet result = getPlayerData.executeQuery();
             while(result.next()) {
                 totalKills = result.getInt("kills");
                 totalDeaths = result.getInt("deaths");
@@ -208,17 +207,21 @@ public class PlayerStatistic {
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                String updatePlayerData = "UPDATE test.player SET kills=" + totalKills +
-                        ", deaths=" + totalDeaths +
-                        ", bullets_fired=" + totalFiredBullets +
-                        ", bullets_hit=" + totalFiredBulletsThatHitEnemy +
-                        ", level=" + level +
-                        ", credits=" + credits +
-                        ", xp_on_level=" + xpOnCurrentLevel +
-                        ", headshots=" + totalHeadshotKills +
-                        " WHERE player_uuid=\"" + playerUUID + "\";";
                 try {
-                    AccessDatabase.update(sqlStatement, updatePlayerData);
+                    PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
+                            "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
+                            "level=?, credits=?, xp_on_level=?, headshots=? " +
+                            "WHERE player_uuid=?");
+
+                    updatePlayerData.setInt(1, kills);
+                    updatePlayerData.setInt(2, deaths);
+                    updatePlayerData.setInt(3, totalFiredBullets);
+                    updatePlayerData.setInt(4, totalFiredBulletsThatHitEnemy);
+                    updatePlayerData.setInt(5, level);
+                    updatePlayerData.setInt(6, credits);
+                    updatePlayerData.setInt(7, xpOnCurrentLevel);
+                    updatePlayerData.setInt(8, totalHeadshotKills);
+                    updatePlayerData.setString(9, playerUUID.toString());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -239,17 +242,21 @@ public class PlayerStatistic {
         totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
         totalFiredBullets += firedBullets;
 
-        String updatePlayerData = "UPDATE test.player SET kills=" + totalKills +
-                ", deaths=" + totalDeaths +
-                ", bullets_fired=" + totalFiredBullets +
-                ", bullets_hit=" + totalFiredBulletsThatHitEnemy +
-                ", level=" + level +
-                ", credits=" + credits +
-                ", xp_on_level=" + xpOnCurrentLevel +
-                ", headshots=" + totalHeadshotKills +
-                " WHERE player_uuid=\"" + playerUUID + "\";";
         try {
-            AccessDatabase.update(sqlStatement, updatePlayerData);
+            PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
+                    "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
+                    "level=?, credits=?, xp_on_level=?, headshots=? " +
+                    "WHERE player_uuid=?");
+
+            updatePlayerData.setInt(1, kills);
+            updatePlayerData.setInt(2, deaths);
+            updatePlayerData.setInt(3, totalFiredBullets);
+            updatePlayerData.setInt(4, totalFiredBulletsThatHitEnemy);
+            updatePlayerData.setInt(5, level);
+            updatePlayerData.setInt(6, credits);
+            updatePlayerData.setInt(7, xpOnCurrentLevel);
+            updatePlayerData.setInt(8, totalHeadshotKills);
+            updatePlayerData.setString(9, playerUUID.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }

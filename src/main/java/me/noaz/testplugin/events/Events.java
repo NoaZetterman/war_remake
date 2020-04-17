@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
@@ -62,7 +63,8 @@ public class Events implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() && event.getClickedInventory() != null)
+        if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() &&
+                event.getClickedInventory() != null && event.getAction() != InventoryAction.NOTHING)
             LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()));
         event.setCancelled(true);
     }

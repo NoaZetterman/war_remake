@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.sql.Statement;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -477,8 +477,8 @@ public class GameController {
         bar.setProgress(1.0);
     }
 
-    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Statement statement) {
-        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations(), statement));
+    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Connection connection) {
+        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations(), connection));
     }
 
     public void removePlayer(Player player) {

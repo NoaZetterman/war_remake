@@ -18,12 +18,11 @@ import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.Statement;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,11 +58,11 @@ public class PlayerExtension {
      * @param player the player this handler belongs to
      */
     public PlayerExtension(TestPlugin plugin, Player player, ScoreManager scoreManager,
-                           HashMap<String, WeaponConfiguration> gunConfigurations, Statement sqlStatement) {
+                           HashMap<String, WeaponConfiguration> gunConfigurations, Connection connection) {
         this.plugin = plugin;
         this.player = player;
         this.gunConfigurations = gunConfigurations;
-        statistics = new PlayerStatistic(player, scoreManager, sqlStatement, plugin);
+        statistics = new PlayerStatistic(player, scoreManager, connection, plugin);
 
         ownedPrimaryGuns = new ArrayList<>();
         ownedSecondaryGuns = new ArrayList<>();
@@ -79,14 +78,16 @@ public class PlayerExtension {
             }
         }
 
+        ownedPrimaryGuns.remove(1);
+
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
 
 
 
         //Get current used guns from database instead
-        primaryWeapon = createNewWeapon(gunConfigurations.get("Skullcrusher"), primaryWeapon);
-        secondaryWeapon = createNewWeapon(gunConfigurations.get("Python"), secondaryWeapon);
+        primaryWeapon = createNewWeapon(gunConfigurations.get("Skullcrusher"));
+        secondaryWeapon = createNewWeapon(gunConfigurations.get("Python"));
 
         //Below should be replaced by getting a list of the owned guns from the database
         ownedWeaponNames.addAll(gunConfigurations.keySet());
@@ -369,22 +370,29 @@ public class PlayerExtension {
     }
 
     /**
-     * Set a weapon, primary or secondary as the gun the player currently uses
+     * Sets the primary gun of this player
      *
-     * @param weaponName The name of the weapon
+     * @param gun The name of the primary gun
      */
-    public void changeWeapon(String weaponName) {
-        WeaponConfiguration configuration = gunConfigurations.get(weaponName);
-        if(configuration.getWeaponType().equals("Secondary")) {
-            secondaryWeapon = createNewWeapon(configuration, secondaryWeapon);
-        } else {
-            primaryWeapon = createNewWeapon(configuration, primaryWeapon);
-
-        }
+    public void changePrimaryGun(String gun) {
+        WeaponConfiguration configuration = gunConfigurations.get(gun);
+        primaryWeapon = createNewWeapon(configuration);
     }
 
-    private Weapon createNewWeapon(WeaponConfiguration configuration, Weapon weaponToChange) {
+    /**
+     * Sets the secondary gun of this player
+     *
+     * @param gun The name of the primary gun
+     */
+    public void changeSecondaryGun(String gun) {
+        WeaponConfiguration configuration = gunConfigurations.get(gun);
+        secondaryWeapon = createNewWeapon(configuration);
+    }
+
+    private Weapon createNewWeapon(WeaponConfiguration configuration) {
         String fireType = configuration.getFireType();
+
+        Weapon weaponToChange;
 
         switch(fireType) {
             case "burst":
@@ -399,7 +407,10 @@ public class PlayerExtension {
             case "buck":
                 weaponToChange = new BuckGun(plugin, this, statistics, configuration);
                 break;
+            default:
+                weaponToChange = null;
         }
+
         return weaponToChange;
     }
 
@@ -413,21 +424,6 @@ public class PlayerExtension {
 
     public String getName() {
         return player.getName();
-    }
-
-    /**
-     * Puts given item on the players helmet
-     * @param helmet The helmet to put on the player
-     */
-    public void setHelmet(ItemStack helmet) {
-        player.getInventory().setHelmet(helmet);
-    }
-
-    /**
-     * Gives the player a leather helmet in the color of its team
-     */
-    public void setHelmet() {
-        DefaultInventories.setArmor(player.getInventory(), getTeamColor());
     }
 
     public Location getLocation() {
@@ -463,5 +459,9 @@ public class PlayerExtension {
 
     public List<String> getOwnedSecondaryGuns() {
         return ownedSecondaryGuns;
+    }
+
+    public int getLevel() {
+        return statistics.getLevel();
     }
 }

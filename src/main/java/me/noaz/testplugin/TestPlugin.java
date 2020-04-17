@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public final class TestPlugin extends JavaPlugin {
     private Connection connection;
@@ -27,11 +26,9 @@ public final class TestPlugin extends JavaPlugin {
         database = "MYSQL";
         username = "root";
         password = "38r947grunoi8/&Fg8hnuby8v";
-        Statement statement = null;
 
         try {
             openConnection();
-            statement = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -43,7 +40,7 @@ public final class TestPlugin extends JavaPlugin {
         getServer().setDefaultGameMode(GameMode.ADVENTURE);
         getServer().getWorld("world").setPVP(false);
 
-        getServer().getPluginManager().registerEvents(new LogInOutEvents(this, gameController, scoreManager, statement), this);
+        getServer().getPluginManager().registerEvents(new LogInOutEvents(this, gameController, scoreManager, connection), this);
         getServer().getPluginManager().registerEvents(new Events(gameController), this);
         getServer().getPluginManager().registerEvents(new DamageEvents(gameController), this);
 

@@ -35,7 +35,7 @@ public final class TestPlugin extends JavaPlugin {
 
         this.saveDefaultConfig();
 
-        gameController = new GameController(this);
+        gameController = new GameController(this, connection);
         ScoreManager scoreManager = new ScoreManager(this);
         getServer().setDefaultGameMode(GameMode.ADVENTURE);
         getServer().getWorld("world").setPVP(false);

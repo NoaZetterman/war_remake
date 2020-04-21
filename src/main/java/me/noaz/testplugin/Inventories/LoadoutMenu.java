@@ -54,7 +54,7 @@ public class LoadoutMenu {
     }
 
     /**
-     * Opens the start screen of the loadout selector
+     * Opens the loadout selector for primary guns.
      *
      * @param player The players playerExtension who should get the inventory
      */
@@ -64,21 +64,61 @@ public class LoadoutMenu {
 
         HashMap<String, WeaponConfiguration> configurations = player.getWeaponConfigurations();
 
+        items[0] = new ItemStack(goBackArrow);
+
         //Have: All unlocked guns
         //Want: All guns but unlocked in one way and other in other ways. O(n^2)?
         //Loop through unlocked once and make a list of locked ones?
 
         List<String> ownedPrimaryGuns = player.getOwnedPrimaryGuns();
         for(WeaponConfiguration gun : configurations.values()) {
-            if(!gun.getWeaponType().equals("Secondary")) {
-                if (!ownedPrimaryGuns.contains(gun.getName())) {
-                    createLockedWeaponItem(gun);
+            if(!gun.weaponType.equals("Secondary")) {
+                if (!ownedPrimaryGuns.contains(gun.name)) {
+                    //if(gun.getUnlockLevel() > player.getLevel()) {
+                    items[gun.loadoutSlot] = createLockedWeaponItem(gun);
+                    //} /*else if(gun.getCost() > player.getCredits) {
+                        /*items[gun.getLoadoutSlot()] = createLockedVisibleRedItem(gun);
+                    } else {
+                        items[gun.getLoadoutSlot()] = createLockedVisibleGreenItem(gun);
+                    }*/
                 } else {
-                    createUnlockedWeaponItem(gun);
+                    items[gun.loadoutSlot] = createUnlockedWeaponItem(gun);
                 }
             }
+        }
 
-            items[gun.getLoadoutSlot()] = createUnlockedWeaponItem(gun);
+        inventory.setStorageContents(items);
+        player.getPlayer().openInventory(inventory);
+    }
+
+    /**
+     * Opens the loadout selection for secondary guns.
+     *
+     * @param player The players playerExtension who should get the inventory
+     */
+    public static void selectSecondary(PlayerExtension player) {
+        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select secondary");
+        ItemStack[] items = new ItemStack[inventorySize];
+
+        HashMap<String, WeaponConfiguration> configurations = player.getWeaponConfigurations();
+
+        items[0] = new ItemStack(goBackArrow);
+
+        List<String> ownedSecondaryGuns = player.getOwnedSecondaryGuns();
+        for(WeaponConfiguration gun : configurations.values()) {
+            if(gun.weaponType.equals("Secondary")) {
+                if (!ownedSecondaryGuns.contains(gun.name)) {
+                    //if(gun.getUnlockLevel() > player.getLevel()) {
+                        items[gun.loadoutSlot] = createLockedWeaponItem(gun);
+                    //} /*else if(gun.getCost() > player.getCredits) {
+                        /*items[gun.getLoadoutSlot()] = createLockedVisibleRedItem(gun);
+                    } else {
+                        items[gun.getLoadoutSlot()] = createLockedVisibleGreenItem(gun);
+                    }*/
+                } else {
+                    items[gun.loadoutSlot] = createUnlockedWeaponItem(gun);
+                }
+            }
         }
 
         inventory.setStorageContents(items);
@@ -87,9 +127,9 @@ public class LoadoutMenu {
 
 
     private static ItemStack createUnlockedWeaponItem(WeaponConfiguration configuration) {
-        Material material = configuration.getGunMaterial();
-        String name = configuration.getName();
-        List<String> lore = configuration.getWeaponLore();
+        Material material = configuration.gunMaterial;
+        String name = configuration.name;
+        List<String> lore = configuration.weaponLore;
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -108,7 +148,7 @@ public class LoadoutMenu {
 
     private static ItemStack createLockedWeaponItem(WeaponConfiguration configuration) {
         Material material = Material.BARRIER;
-        String name = configuration.getName();
+        String name = configuration.name;
         List<String> lore = new ArrayList<>();
         lore.add("Locked");
 

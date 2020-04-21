@@ -71,7 +71,7 @@ public class PlayerExtension {
         // And use that one
 
         for(String gun : gunConfigurations.keySet()) {
-            if(gunConfigurations.get(gun).getWeaponType().equals("Secondary")) {
+            if(gunConfigurations.get(gun).weaponType.equals("Secondary")) {
                 ownedSecondaryGuns.add(gun);
             } else {
                 ownedPrimaryGuns.add(gun);
@@ -390,7 +390,7 @@ public class PlayerExtension {
     }
 
     private Weapon createNewWeapon(WeaponConfiguration configuration) {
-        String fireType = configuration.getFireType();
+        String fireType = configuration.fireType;
 
         Weapon weaponToChange;
 

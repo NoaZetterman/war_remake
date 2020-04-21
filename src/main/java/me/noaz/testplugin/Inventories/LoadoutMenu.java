@@ -4,6 +4,7 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +16,68 @@ import java.util.List;
 public class LoadoutMenu {
     private static int inventorySize = 36;
     private static Material goBackArrow = Material.LAVA_BUCKET;
+
+    /**
+     * React to a player clicking on a slot in the loadout, select a weapon if a weapon is clicked etc.
+     *
+     * @param inventory The inventory that should be used
+     * @param slot The slot that gets clicked on
+     */
+    public static void onItemClick(Inventory inventory, int slot, PlayerExtension player, List<GunConfiguration> gunConfigurations) {
+        if(inventory.getViewers().get(0) instanceof Player) {
+            String inventoryName = player.getPlayer().getOpenInventory().getTitle();
+
+            String clickedItemName = inventory.getItem(slot).getItemMeta().getDisplayName();
+
+
+            switch (inventoryName) {
+                case "Loadout Selection":
+                    switch (slot) {
+                        case 10:
+                            selectPrimaryScreen(player, gunConfigurations);
+                            break;
+                        case 11:
+                            selectSecondary(player, gunConfigurations);
+                            break;
+                        default:
+                            break;
+                    }
+                case "Select primary":
+                    if (slot == 0) {
+                        loadoutStartScreen(player);
+                    } else {
+                        for(GunConfiguration gun: gunConfigurations) {
+                            if(gun.name.equals(clickedItemName)) {
+                                if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
+                                    player.changePrimaryGun(gun);
+                                } else if(gun.costToBuy < player.getCredits()) {
+                                    buyGun(player, gun);
+                                    //Take player to other screen of buying gun
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "Select secondary":
+                    if (slot == 0) {
+                        loadoutStartScreen(player);
+                    } else {
+                        for(GunConfiguration gun: gunConfigurations) {
+                            if(gun.name.equals(clickedItemName)) {
+                                if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
+                                    player.changePrimaryGun(gun);
+                                } else if(gun.costToBuy < player.getCredits()) {
+                                    //Take player to other screen of buying gun
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     /**
      * Opens the start screen of the loadout selector
@@ -52,12 +115,38 @@ public class LoadoutMenu {
         player.getPlayer().openInventory(inventory);
     }
 
+    private static void buyGun(PlayerExtension player, GunConfiguration gunToBuy) {
+        int inventorySize = 45;
+        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Buy gun");
+        ItemStack[] items = new ItemStack[inventorySize];
+
+        //Maybe no goback arrow?
+        items[0] = new ItemStack(goBackArrow);
+
+        for(int i = 10; i < 10+3*9; i+=9) {
+            for(int j = 0; j < 3; j++) {
+                items[i+j] = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            }
+        }
+
+        for(int i = 14; i < 14+3*9; i+=9) {
+            for(int j = 0; j < 3; j++) {
+                items[i+j] = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+            }
+        }
+
+        items[22] = new ItemStack(gunToBuy.gunMaterial);
+
+        inventory.setStorageContents(items);
+        player.getPlayer().openInventory(inventory);
+    }
+
     /**
      * Opens the loadout selector for primary guns.
      *
      * @param player The players playerExtension who should get the inventory
      */
-    public static void selectPrimaryScreen(PlayerExtension player, List<GunConfiguration> configurations) {
+    private static void selectPrimaryScreen(PlayerExtension player, List<GunConfiguration> configurations) {
         Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select primary");
         ItemStack[] items = new ItemStack[inventorySize];
 
@@ -93,7 +182,7 @@ public class LoadoutMenu {
      *
      * @param player The players playerExtension who should get the inventory
      */
-    public static void selectSecondary(PlayerExtension player, List<GunConfiguration> configurations) {
+    private static void selectSecondary(PlayerExtension player, List<GunConfiguration> configurations) {
         Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select secondary");
         ItemStack[] items = new ItemStack[inventorySize];
 

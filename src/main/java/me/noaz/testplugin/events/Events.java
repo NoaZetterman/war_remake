@@ -1,6 +1,5 @@
 package me.noaz.testplugin.events;
 
-import me.noaz.testplugin.Inventories.LoadoutGUI;
 import me.noaz.testplugin.Inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
@@ -65,7 +64,7 @@ public class Events implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() &&
                 event.getClickedInventory() != null && event.getAction() != InventoryAction.NOTHING)
-            LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()),
+            LoadoutMenu.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()),
                     gameController.getGunConfigurations());
         event.setCancelled(true);
     }
@@ -113,9 +112,11 @@ public class Events implements Listener {
     public void onChangeMainHand(PlayerItemHeldEvent event) {
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
 
-        player.getPrimaryGun().stopShooting();
-        player.getSecondaryGun().stopShooting();
-        gameController.getPlayerExtension(event.getPlayer()).unScope();
+        if(player.isPlayingGame()) {
+            player.getPrimaryGun().stopShooting();
+            player.getSecondaryGun().stopShooting();
+            gameController.getPlayerExtension(event.getPlayer()).unScope();
+        }
         player.updateActionBar();
     }
 

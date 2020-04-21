@@ -1,6 +1,6 @@
 package me.noaz.testplugin.Inventories;
 
-import me.noaz.testplugin.weapons.Weapon;
+import me.noaz.testplugin.weapons.Gun;
 import org.bukkit.Material;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemFlag;
@@ -40,18 +40,18 @@ public class DefaultInventories {
      *
      * @param inventory The players inventory
      * @param teamColor The color of the players team
-     * @param primaryWeapon The players primary weapon
-     * @param secondaryWeapon The playrs secondary weapon
+     * @param primaryGun The players primary weapon
+     * @param secondaryGun The playrs secondary weapon
      */
-    public static void giveDefaultInGameInventory(PlayerInventory inventory, Color teamColor, Weapon primaryWeapon, Weapon secondaryWeapon) {
+    public static void giveDefaultInGameInventory(PlayerInventory inventory, Color teamColor, Gun primaryGun, Gun secondaryGun) {
         inventory.clear();
         setArmor(inventory, teamColor);
 
         // Yikes... gotta be able to set some stuff like dia armor and all types of grenades etc. Ok
         //That shouldn't be hard, just make a class leathal or tactial.
         inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
-        inventory.setItem(1, customItemName(primaryWeapon.getMaterialAsItemStack(), primaryWeapon.toString(), primaryWeapon.getLore()));
-        inventory.setItem(2, customItemName(secondaryWeapon.getMaterialAsItemStack(), secondaryWeapon.toString(), secondaryWeapon.getLore()));
+        inventory.setItem(1, customItemName(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
+        inventory.setItem(2, customItemName(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
     }
 
     public static void setArmor(PlayerInventory inventory, Color teamColor) {

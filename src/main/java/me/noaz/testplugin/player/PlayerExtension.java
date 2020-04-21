@@ -10,7 +10,7 @@ import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
 import me.noaz.testplugin.weapons.firemodes.BuckGun;
-import me.noaz.testplugin.weapons.Weapon;
+import me.noaz.testplugin.weapons.Gun;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
 import org.bukkit.ChatColor;
@@ -23,6 +23,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +40,8 @@ public class PlayerExtension {
     private TestPlugin plugin;
     private Player player;
     private int playerId;
-    private Weapon primaryGun;
-    private Weapon secondaryGun;
+    private Gun primaryGun;
+    private Gun secondaryGun;
     private PlayerStatistic statistics;
     private Team team;
     private Team enemyTeam;
@@ -65,23 +68,61 @@ public class PlayerExtension {
 
         ownedPrimaryGuns = new ArrayList<>();
         ownedSecondaryGuns = new ArrayList<>();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    PreparedStatement getPlayerId = connection.prepareStatement("SELECT player.id FROM test.player WHERE player.uuid=?");
+                    getPlayerId.setString(1, player.getUniqueId().toString());
+                    ResultSet playerId = getPlayerId.executeQuery();
+                    int id = 0;
+                    while(playerId.next()) {
+                        id = playerId.getInt("id");
+                    }
 
-        //SELECT player_id FROM test.player WHERE player.player_uuid=?
+                    System.out.println(id);
 
+                    if(id != 0) {
+                        PreparedStatement getPlayerGuns = connection.prepareStatement("SELECT test.gun_configuration.gun_name FROM test.gun_configuration " +
+                                "INNER JOIN test.player_own_gun " +
+                                "ON test.gun_configuration.gun_id = test.player_own_gun.gun_id  " +
+                                "WHERE test.player_own_gun.player_id = ?");
 
-        /*SELECT * FROM test.gun_configuration
-        INNER JOIN test.player_own_gun ON test.gun_configuration.gun_id=test.player_own_gun.gun_id
-        WHERE player_own_gun.player_id=5*/
-        //TODO: Create a list with owned guns in database
-        // And use that one
+                        getPlayerGuns.setInt(1, id);
+                        ResultSet playerGuns = getPlayerGuns.executeQuery();
 
-        for(GunConfiguration gun : gunConfigurations) {
-            if(gun.weaponType.equals("Secondary")) {
-                ownedSecondaryGuns.add(gun.name);
-            } else {
-                ownedPrimaryGuns.add(gun.name);
+                        List<String> ownedGuns = new ArrayList<>();
+
+                        while(playerGuns.next()) {
+                            ownedGuns.add(playerGuns.getString("gun_name"));
+
+                        }
+
+                        for(GunConfiguration gun : gunConfigurations) {
+                            if(ownedGuns.contains(gun.name)) {
+                                if (gun.weaponType.equals("Secondary")) {
+                                    ownedSecondaryGuns.add(gun.name);
+                                } else {
+                                    ownedPrimaryGuns.add(gun.name);
+                                }
+                            }
+                        }
+
+                        primaryGun = createNewGun(gunConfigurations.get(0));
+                        secondaryGun = createNewGun(gunConfigurations.get(1));
+
+                    } else {
+                        //TODO: Put this somewhere else, and maybe more error messages
+                        player.sendMessage("Something went wrong when loading stats, try to rejoin, if that doesn't work " +
+                                "please contact server admins");
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        }.runTaskAsynchronously(plugin);
+
 
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
@@ -89,8 +130,6 @@ public class PlayerExtension {
 
 
         //Get current used guns from database instead
-        primaryGun = createNewGun(gunConfigurations.get(0));
-        secondaryGun = createNewGun(gunConfigurations.get(1));
 
         actionBarMessage = new String[9];
         Arrays.fill(actionBarMessage, "");
@@ -294,7 +333,7 @@ public class PlayerExtension {
     /**
      * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
-    public Weapon getWeaponInMainHand() {
+    public Gun getWeaponInMainHand() {
         if(player.getInventory().getItemInMainHand().getType().equals(primaryGun.getMaterialType())) {
             return primaryGun;
         } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryGun.getMaterialType())) {
@@ -321,21 +360,21 @@ public class PlayerExtension {
      * Reloads a given weapon
      * @param wep The weapon to reload
      */
-    public void reloadWeapon(Weapon wep) {
+    public void reloadWeapon(Gun wep) {
         wep.reload();
     }
 
     /**
      * @return the primary weapon the player has selected
      */
-    public Weapon getPrimaryGun() {
+    public Gun getPrimaryGun() {
         return primaryGun;
     }
 
     /**
      * @return the secondary weapon the player has selected
      */
-    public Weapon getSecondaryGun() {
+    public Gun getSecondaryGun() {
         return secondaryGun;
     }
 
@@ -358,52 +397,44 @@ public class PlayerExtension {
     /**
      * Sets the primary gun of this player
      *
-     * @param gunName The name of the primary gun
+     * @param gun The guns GunConfiguration
      */
-    public void changePrimaryGun(String gunName) {
-        for(GunConfiguration gun : gunConfigurations) {
-            if(gun.name.equals(gunName) && ownedPrimaryGuns.contains(gunName)) {
-                primaryGun = createNewGun(gun);
-            }
-        }
+    public void changePrimaryGun(GunConfiguration gun) {
+            primaryGun = createNewGun(gun);
     }
 
     /**
      * Sets the secondary gun of this player
      *
-     * @param gunName The name of the primary gun
+     * @param gun The guns GunConfiguration
      */
-    public void changeSecondaryGun(String gunName) {
-        for(GunConfiguration gun : gunConfigurations) {
-            if(gun.name.equals(gunName) && ownedSecondaryGuns.contains(gunName)) {
-                secondaryGun = createNewGun(gun);
-            }
-        }
+    public void changeSecondaryGun(GunConfiguration gun) {
+        secondaryGun = createNewGun(gun);
     }
 
-    private Weapon createNewGun(GunConfiguration configuration) {
+    private Gun createNewGun(GunConfiguration configuration) {
         String fireType = configuration.fireType;
 
-        Weapon weaponToChange;
+        Gun gunToChange;
 
         switch(fireType) {
             case "burst":
-                weaponToChange = new BurstGun(plugin, this, statistics, configuration);
+                gunToChange = new BurstGun(plugin, this, statistics, configuration);
                 break;
             case "single":
-                weaponToChange = new SingleBoltGun(plugin, this, statistics, configuration);
+                gunToChange = new SingleBoltGun(plugin, this, statistics, configuration);
                 break;
             case "automatic":
-                weaponToChange = new FullyAutomaticGun(plugin, this, statistics, configuration);
+                gunToChange = new FullyAutomaticGun(plugin, this, statistics, configuration);
                 break;
             case "buck":
-                weaponToChange = new BuckGun(plugin, this, statistics, configuration);
+                gunToChange = new BuckGun(plugin, this, statistics, configuration);
                 break;
             default:
-                weaponToChange = null;
+                gunToChange = null;
         }
 
-        return weaponToChange;
+        return gunToChange;
     }
 
     /**

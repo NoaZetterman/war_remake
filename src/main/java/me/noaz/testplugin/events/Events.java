@@ -5,7 +5,6 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -67,10 +66,33 @@ public class Events implements Listener {
                 case ENDER_CHEST:
                 case TRAPPED_CHEST:
                 case NOTE_BLOCK:
-                case CAULDRON: {
+                case POTTED_ACACIA_SAPLING:
+                case POTTED_ORANGE_TULIP:
+                case POTTED_ALLIUM:
+                case POTTED_AZURE_BLUET:
+                case POTTED_BAMBOO:
+                case POTTED_BIRCH_SAPLING:
+                case POTTED_BLUE_ORCHID:
+                case POTTED_BROWN_MUSHROOM:
+                case POTTED_CACTUS:
+                case POTTED_CORNFLOWER:
+                case POTTED_DANDELION:
+                case POTTED_DARK_OAK_SAPLING:
+                case POTTED_DEAD_BUSH:
+                case POTTED_FERN:
+                case POTTED_JUNGLE_SAPLING:
+                case POTTED_LILY_OF_THE_VALLEY:
+                case POTTED_OAK_SAPLING:
+                case POTTED_OXEYE_DAISY:
+                case POTTED_PINK_TULIP:
+                case POTTED_POPPY:
+                case POTTED_RED_MUSHROOM:
+                case POTTED_RED_TULIP:
+                case POTTED_SPRUCE_SAPLING:
+                case POTTED_WHITE_TULIP:
+                case POTTED_WITHER_ROSE:
                     event.setCancelled(true);
                     break;
-                }
             }
         }
     }

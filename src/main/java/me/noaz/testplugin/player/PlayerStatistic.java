@@ -63,7 +63,7 @@ public class PlayerStatistic {
         //String getPlayerData = "SELECT * FROM test.player WHERE player_uuid=\"" + playerUUID + "\";";
         try {
             //ResultSet result = AccessDatabase.getQueryResult(sqlStatement, getPlayerData);
-            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE player_uuid=\"" + playerUUID + "\";");
+            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE uuid=\"" + playerUUID + "\";");
             ResultSet result = getPlayerData.executeQuery();
             while(result.next()) {
                 totalKills = result.getInt("kills");
@@ -102,6 +102,13 @@ public class PlayerStatistic {
      */
     public int getLevel() {
         return level;
+    }
+
+    /**
+     * @return This players credits
+     */
+    public int getCredits() {
+        return credits;
     }
 
     /**
@@ -211,7 +218,7 @@ public class PlayerStatistic {
                     PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
                             "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
                             "level=?, credits=?, xp_on_level=?, headshots=? " +
-                            "WHERE player_uuid=?");
+                            "WHERE uuid=?");
 
                     updatePlayerData.setInt(1, kills);
                     updatePlayerData.setInt(2, deaths);
@@ -246,7 +253,7 @@ public class PlayerStatistic {
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
                     "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
                     "level=?, credits=?, xp_on_level=?, headshots=? " +
-                    "WHERE player_uuid=?");
+                    "WHERE uuid=?");
 
             updatePlayerData.setInt(1, kills);
             updatePlayerData.setInt(2, deaths);

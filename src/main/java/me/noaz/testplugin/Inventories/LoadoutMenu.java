@@ -1,7 +1,7 @@
 package me.noaz.testplugin.Inventories;
 
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.weapons.WeaponConfiguration;
+import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class LoadoutMenu {
@@ -35,8 +34,8 @@ public class LoadoutMenu {
             }
         }*/
 
-        items[10] = player.getPrimaryWeapon().getMaterialAsItemStack();
-        items[11] = player.getSecondaryWeapon().getMaterialAsItemStack();
+        items[10] = player.getPrimaryGun().getMaterialAsItemStack();
+        items[11] = player.getSecondaryGun().getMaterialAsItemStack();
 
         /*
         items[13] = lethal item
@@ -58,11 +57,9 @@ public class LoadoutMenu {
      *
      * @param player The players playerExtension who should get the inventory
      */
-    public static void selectPrimaryScreen(PlayerExtension player) {
+    public static void selectPrimaryScreen(PlayerExtension player, List<GunConfiguration> configurations) {
         Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select primary");
         ItemStack[] items = new ItemStack[inventorySize];
-
-        HashMap<String, WeaponConfiguration> configurations = player.getWeaponConfigurations();
 
         items[0] = new ItemStack(goBackArrow);
 
@@ -71,16 +68,16 @@ public class LoadoutMenu {
         //Loop through unlocked once and make a list of locked ones?
 
         List<String> ownedPrimaryGuns = player.getOwnedPrimaryGuns();
-        for(WeaponConfiguration gun : configurations.values()) {
+        for(GunConfiguration gun : configurations) {
             if(!gun.weaponType.equals("Secondary")) {
                 if (!ownedPrimaryGuns.contains(gun.name)) {
-                    //if(gun.getUnlockLevel() > player.getLevel()) {
+                    if(gun.unlockLevel > player.getLevel()) {
                     items[gun.loadoutSlot] = createLockedWeaponItem(gun);
-                    //} /*else if(gun.getCost() > player.getCredits) {
-                        /*items[gun.getLoadoutSlot()] = createLockedVisibleRedItem(gun);
+                    } else if(gun.costToBuy > player.getCredits()) {
+                        items[gun.loadoutSlot] = createLockedVisibleRedItem(gun);
                     } else {
-                        items[gun.getLoadoutSlot()] = createLockedVisibleGreenItem(gun);
-                    }*/
+                        items[gun.loadoutSlot] = createLockedVisibleGreenItem(gun);
+                    }
                 } else {
                     items[gun.loadoutSlot] = createUnlockedWeaponItem(gun);
                 }
@@ -96,25 +93,24 @@ public class LoadoutMenu {
      *
      * @param player The players playerExtension who should get the inventory
      */
-    public static void selectSecondary(PlayerExtension player) {
+    public static void selectSecondary(PlayerExtension player, List<GunConfiguration> configurations) {
         Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select secondary");
         ItemStack[] items = new ItemStack[inventorySize];
 
-        HashMap<String, WeaponConfiguration> configurations = player.getWeaponConfigurations();
 
         items[0] = new ItemStack(goBackArrow);
 
         List<String> ownedSecondaryGuns = player.getOwnedSecondaryGuns();
-        for(WeaponConfiguration gun : configurations.values()) {
+        for(GunConfiguration gun : configurations) {
             if(gun.weaponType.equals("Secondary")) {
                 if (!ownedSecondaryGuns.contains(gun.name)) {
-                    //if(gun.getUnlockLevel() > player.getLevel()) {
+                    if(gun.unlockLevel > player.getLevel()) {
                         items[gun.loadoutSlot] = createLockedWeaponItem(gun);
-                    //} /*else if(gun.getCost() > player.getCredits) {
-                        /*items[gun.getLoadoutSlot()] = createLockedVisibleRedItem(gun);
+                    } else if(gun.costToBuy > player.getCredits()) {
+                        items[gun.loadoutSlot] = createLockedVisibleRedItem(gun);
                     } else {
-                        items[gun.getLoadoutSlot()] = createLockedVisibleGreenItem(gun);
-                    }*/
+                        items[gun.loadoutSlot] = createLockedVisibleGreenItem(gun);
+                    }
                 } else {
                     items[gun.loadoutSlot] = createUnlockedWeaponItem(gun);
                 }
@@ -126,7 +122,7 @@ public class LoadoutMenu {
     }
 
 
-    private static ItemStack createUnlockedWeaponItem(WeaponConfiguration configuration) {
+    private static ItemStack createUnlockedWeaponItem(GunConfiguration configuration) {
         Material material = configuration.gunMaterial;
         String name = configuration.name;
         List<String> lore = configuration.weaponLore;
@@ -146,11 +142,53 @@ public class LoadoutMenu {
         return item;
     }
 
-    private static ItemStack createLockedWeaponItem(WeaponConfiguration configuration) {
+    private static ItemStack createLockedWeaponItem(GunConfiguration configuration) {
         Material material = Material.BARRIER;
         String name = configuration.name;
         List<String> lore = new ArrayList<>();
         lore.add("Locked");
+
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+
+        meta.setUnbreakable(true);
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private static ItemStack createLockedVisibleGreenItem(GunConfiguration configuration) {
+        Material material = configuration.gunMaterial;
+        String name = configuration.name;
+        List<String> lore = new ArrayList<>();
+        lore.add("Buy by clicking");
+
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+
+        meta.setUnbreakable(true);
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private static ItemStack createLockedVisibleRedItem(GunConfiguration configuration) {
+        Material material = configuration.gunMaterial;
+        String name = configuration.name;
+        List<String> lore = new ArrayList<>();
+        lore.add("Not enough credits to buy");
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();

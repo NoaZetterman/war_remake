@@ -11,7 +11,7 @@ import me.noaz.testplugin.weapons.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
 import me.noaz.testplugin.weapons.firemodes.BuckGun;
 import me.noaz.testplugin.weapons.Weapon;
-import me.noaz.testplugin.weapons.WeaponConfiguration;
+import me.noaz.testplugin.weapons.GunConfiguration;
 import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -25,7 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,15 +36,15 @@ import java.util.List;
 public class PlayerExtension {
     private TestPlugin plugin;
     private Player player;
-    private Weapon primaryWeapon;
-    private Weapon secondaryWeapon;
+    private int playerId;
+    private Weapon primaryGun;
+    private Weapon secondaryGun;
     private PlayerStatistic statistics;
     private Team team;
     private Team enemyTeam;
-    private HashMap<String, WeaponConfiguration> gunConfigurations;
+    private List<GunConfiguration> gunConfigurations;
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
-    private List<String> ownedWeaponNames = new ArrayList<>();
     private String[] actionBarMessage;
     private boolean isDead = false;
 
@@ -58,7 +57,7 @@ public class PlayerExtension {
      * @param player the player this handler belongs to
      */
     public PlayerExtension(TestPlugin plugin, Player player, ScoreManager scoreManager,
-                           HashMap<String, WeaponConfiguration> gunConfigurations, Connection connection) {
+                           List<GunConfiguration> gunConfigurations, Connection connection) {
         this.plugin = plugin;
         this.player = player;
         this.gunConfigurations = gunConfigurations;
@@ -67,18 +66,22 @@ public class PlayerExtension {
         ownedPrimaryGuns = new ArrayList<>();
         ownedSecondaryGuns = new ArrayList<>();
 
+        //SELECT player_id FROM test.player WHERE player.player_uuid=?
+
+
+        /*SELECT * FROM test.gun_configuration
+        INNER JOIN test.player_own_gun ON test.gun_configuration.gun_id=test.player_own_gun.gun_id
+        WHERE player_own_gun.player_id=5*/
         //TODO: Create a list with owned guns in database
         // And use that one
 
-        for(String gun : gunConfigurations.keySet()) {
-            if(gunConfigurations.get(gun).weaponType.equals("Secondary")) {
-                ownedSecondaryGuns.add(gun);
+        for(GunConfiguration gun : gunConfigurations) {
+            if(gun.weaponType.equals("Secondary")) {
+                ownedSecondaryGuns.add(gun.name);
             } else {
-                ownedPrimaryGuns.add(gun);
+                ownedPrimaryGuns.add(gun.name);
             }
         }
-
-        ownedPrimaryGuns.remove(1);
 
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
@@ -86,11 +89,8 @@ public class PlayerExtension {
 
 
         //Get current used guns from database instead
-        primaryWeapon = createNewWeapon(gunConfigurations.get("Skullcrusher"));
-        secondaryWeapon = createNewWeapon(gunConfigurations.get("Python"));
-
-        //Below should be replaced by getting a list of the owned guns from the database
-        ownedWeaponNames.addAll(gunConfigurations.keySet());
+        primaryGun = createNewGun(gunConfigurations.get(0));
+        secondaryGun = createNewGun(gunConfigurations.get(1));
 
         actionBarMessage = new String[9];
         Arrays.fill(actionBarMessage, "");
@@ -100,8 +100,8 @@ public class PlayerExtension {
      * Respawn the player in a one spawnpoint belonging to its team.
      */
     public void respawn(Player killer) {
-        primaryWeapon.reset();
-        secondaryWeapon.reset();
+        primaryGun.reset();
+        secondaryGun.reset();
         isDead = true;
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
@@ -123,13 +123,13 @@ public class PlayerExtension {
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(i < 0) {
-                    primaryWeapon.reset();
-                    secondaryWeapon.reset();
+                    primaryGun.reset();
+                    secondaryGun.reset();
 
                     isDead = false;
                     player.setHealth(20D);
 
-                    DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryWeapon, secondaryWeapon);
+                    DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
 
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
@@ -144,8 +144,8 @@ public class PlayerExtension {
      * Add one kill to this players statistics and team, if the player has a team
      */
     public void addKill() {
-        primaryWeapon.addBullets((int)Math.floor(primaryWeapon.getStartingBullets()*0.25));
-        secondaryWeapon.addBullets((int)Math.floor(secondaryWeapon.getStartingBullets()*0.25));
+        primaryGun.addBullets((int)Math.floor(primaryGun.getStartingBullets()*0.25));
+        secondaryGun.addBullets((int)Math.floor(secondaryGun.getStartingBullets()*0.25));
         statistics.addKill();
 
         if(team != null) {
@@ -156,8 +156,8 @@ public class PlayerExtension {
             int killstreak = statistics.getKillstreak();
             switch (killstreak) {
                 case 5:
-                    primaryWeapon.addBullets(50);
-                    secondaryWeapon.addBullets(50);
+                    primaryGun.addBullets(50);
+                    secondaryGun.addBullets(50);
                     break;
                 case 15:
                     //Launch emp
@@ -215,11 +215,11 @@ public class PlayerExtension {
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
 
-        primaryWeapon.reset();
-        secondaryWeapon.reset();
+        primaryGun.reset();
+        secondaryGun.reset();
 
         //Replace with transparent wep corresponding to wep name/id/whatever
-        DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryWeapon, secondaryWeapon);
+        DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
         player.setHealth(20D);
     }
 
@@ -230,8 +230,8 @@ public class PlayerExtension {
         statistics.updateTotalScore();
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
         player.removePotionEffect(PotionEffectType.SLOW);
-        primaryWeapon.reset();
-        secondaryWeapon.reset();
+        primaryGun.reset();
+        secondaryGun.reset();
 
         Arrays.fill(actionBarMessage, "");
 
@@ -247,8 +247,8 @@ public class PlayerExtension {
      * Ends the game for this player correctly when the server shuts down.
      */
     public void forceEndGame() {
-        primaryWeapon.reset();
-        secondaryWeapon.reset();
+        primaryGun.reset();
+        secondaryGun.reset();
         statistics.forceUpdateScore();
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
     }
@@ -295,10 +295,10 @@ public class PlayerExtension {
      * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
     public Weapon getWeaponInMainHand() {
-        if(player.getInventory().getItemInMainHand().getType().equals(primaryWeapon.getMaterialType())) {
-            return primaryWeapon;
-        } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryWeapon.getMaterialType())) {
-            return secondaryWeapon;
+        if(player.getInventory().getItemInMainHand().getType().equals(primaryGun.getMaterialType())) {
+            return primaryGun;
+        } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryGun.getMaterialType())) {
+            return secondaryGun;
         } else {
             return null;
         }
@@ -308,9 +308,9 @@ public class PlayerExtension {
      * @return true if player has weapon in main hand, false otherwise
      */
     public boolean hasWeaponInMainHand() {
-        if(player.getInventory().getItemInMainHand().getType().equals(primaryWeapon.getMaterialType())) {
+        if(player.getInventory().getItemInMainHand().getType().equals(primaryGun.getMaterialType())) {
             return true;
-        } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryWeapon.getMaterialType())) {
+        } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryGun.getMaterialType())) {
             return true;
         } else {
             return false;
@@ -328,29 +328,15 @@ public class PlayerExtension {
     /**
      * @return the primary weapon the player has selected
      */
-    public Weapon getPrimaryWeapon() {
-        return primaryWeapon;
+    public Weapon getPrimaryGun() {
+        return primaryGun;
     }
 
     /**
      * @return the secondary weapon the player has selected
      */
-    public Weapon getSecondaryWeapon() {
-        return secondaryWeapon;
-    }
-
-    /**
-     * @return An array with weapon configurations this player can use
-     */
-    public HashMap<String, WeaponConfiguration> getWeaponConfigurations() {
-        return gunConfigurations;
-    }
-
-    /**
-     * @return A list of weapons this player has access to
-     */
-    public List<String> getOwnedWeaponNames() {
-        return ownedWeaponNames;
+    public Weapon getSecondaryGun() {
+        return secondaryGun;
     }
 
     public ChatColor getTeamChatColor() {
@@ -372,24 +358,30 @@ public class PlayerExtension {
     /**
      * Sets the primary gun of this player
      *
-     * @param gun The name of the primary gun
+     * @param gunName The name of the primary gun
      */
-    public void changePrimaryGun(String gun) {
-        WeaponConfiguration configuration = gunConfigurations.get(gun);
-        primaryWeapon = createNewWeapon(configuration);
+    public void changePrimaryGun(String gunName) {
+        for(GunConfiguration gun : gunConfigurations) {
+            if(gun.name.equals(gunName) && ownedPrimaryGuns.contains(gunName)) {
+                primaryGun = createNewGun(gun);
+            }
+        }
     }
 
     /**
      * Sets the secondary gun of this player
      *
-     * @param gun The name of the primary gun
+     * @param gunName The name of the primary gun
      */
-    public void changeSecondaryGun(String gun) {
-        WeaponConfiguration configuration = gunConfigurations.get(gun);
-        secondaryWeapon = createNewWeapon(configuration);
+    public void changeSecondaryGun(String gunName) {
+        for(GunConfiguration gun : gunConfigurations) {
+            if(gun.name.equals(gunName) && ownedSecondaryGuns.contains(gunName)) {
+                secondaryGun = createNewGun(gun);
+            }
+        }
     }
 
-    private Weapon createNewWeapon(WeaponConfiguration configuration) {
+    private Weapon createNewGun(GunConfiguration configuration) {
         String fireType = configuration.fireType;
 
         Weapon weaponToChange;
@@ -463,5 +455,9 @@ public class PlayerExtension {
 
     public int getLevel() {
         return statistics.getLevel();
+    }
+
+    public int getCredits() {
+        return statistics.getCredits();
     }
 }

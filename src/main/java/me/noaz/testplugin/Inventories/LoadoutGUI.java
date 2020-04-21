@@ -1,8 +1,13 @@
 package me.noaz.testplugin.Inventories;
 
 import me.noaz.testplugin.player.PlayerExtension;
+import me.noaz.testplugin.weapons.GunConfiguration;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Takes care of the loadout GUI in the lobby, lets a player change guns, perks etc.
@@ -19,35 +24,36 @@ public class LoadoutGUI {
      * @param inventory The inventory that should be used
      * @param slot The slot that gets clicked on
      */
-    public static void onItemClick(Inventory inventory, int slot, PlayerExtension player) {
+    public static void onItemClick(Inventory inventory, int slot, PlayerExtension player, List<GunConfiguration> configurations) {
         if(inventory.getViewers().get(0) instanceof Player) {
             String inventoryName = player.getPlayer().getOpenInventory().getTitle();
+
             String clickedItemName = inventory.getItem(slot).getItemMeta().getDisplayName();
 
 
-            switch(inventoryName) {
+            switch (inventoryName) {
                 case "Loadout Selection":
-                    switch(slot) {
+                    switch (slot) {
                         case 10:
-                            LoadoutMenu.selectPrimaryScreen(player);
+                            LoadoutMenu.selectPrimaryScreen(player, configurations);
                             break;
                         case 11:
-                            LoadoutMenu.selectSecondary(player);
+                            LoadoutMenu.selectSecondary(player, configurations);
                             break;
                         default:
                             break;
                     }
                 case "Select primary":
-                    if(slot == 0) {
+                    if (slot == 0) {
                         LoadoutMenu.loadoutStartScreen(player);
-                    } else if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
+                    } else {
                         player.changePrimaryGun(clickedItemName);
                     }
                     break;
                 case "Select secondary":
-                    if(slot == 0) {
+                    if (slot == 0) {
                         LoadoutMenu.loadoutStartScreen(player);
-                    }else if(player.getOwnedSecondaryGuns().contains(clickedItemName)) {
+                    } else {
                         player.changeSecondaryGun(clickedItemName);
                     }
                     break;

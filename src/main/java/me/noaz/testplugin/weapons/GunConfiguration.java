@@ -6,7 +6,6 @@ import org.bukkit.Sound;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Holds information about a weapon, the same instance is used by all players who uses the same gun.
@@ -14,7 +13,8 @@ import java.util.Random;
  * @author Noa Zetterman
  * @version 2019-12-13
  */
-public class WeaponConfiguration {
+public class GunConfiguration {
+    public final int gunId;
     public final String name;
     public final List<String> weaponLore;
     public final String weaponType;
@@ -73,11 +73,12 @@ public class WeaponConfiguration {
      * @param fireWhileReloadingSound The sound this gun makes when trying to fire a bullet while reloading
      * @param fireWithoutAmmoSound The sound this gun maks when trying to fire a bullet without any ammo.
      */
-    public WeaponConfiguration(String name, String gunMaterial, String weaponType, String fireType, double accuracyNotScoped,
-                                double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
-                                int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
-                               int clipSize, int loadoutSlot, int unlockLevel, int costToBuy,
-                               String fireBulletSound, String fireWhileReloadingSound, String fireWithoutAmmoSound) {
+    public GunConfiguration(int gunId, String name, String gunMaterial, String weaponType, String fireType, double accuracyNotScoped,
+                            double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
+                            int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
+                            int clipSize, int loadoutSlot, int unlockLevel, int costToBuy,
+                            String fireBulletSound, String fireWhileReloadingSound, String fireWithoutAmmoSound) {
+        this.gunId = gunId;
         this.name = name;
         this.gunMaterial = Material.getMaterial(gunMaterial);
         this.weaponType = weaponType;

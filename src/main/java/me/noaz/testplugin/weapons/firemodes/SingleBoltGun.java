@@ -5,7 +5,7 @@ import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Weapon;
-import me.noaz.testplugin.weapons.WeaponConfiguration;
+import me.noaz.testplugin.weapons.GunConfiguration;
 
 /**
  * A gun that does not take into account holding down rightclick, but may fire faster when clicking the mouse fast
@@ -17,7 +17,7 @@ public class SingleBoltGun extends Weapon {
      * @param statistics That players statistics
      * @param config     The configuration of this weapon
      */
-    public SingleBoltGun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, WeaponConfiguration config) {
+    public SingleBoltGun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, GunConfiguration config) {
         super(plugin, player, statistics, config);
     }
 

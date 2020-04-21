@@ -45,7 +45,7 @@ public class LogInOutEvents implements Listener {
             @Override
             public void run() {
                 try {
-                    PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT IGNORE INTO test.player (player_uuid) VALUES (?)");
+                    PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT IGNORE INTO test.player (uuid) VALUES (?)");
                     createPlayerIfNotExist.setString(1, event.getPlayer().getUniqueId().toString());
                     createPlayerIfNotExist.execute();
                 } catch (SQLException e) {

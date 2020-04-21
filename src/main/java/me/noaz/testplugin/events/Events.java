@@ -65,7 +65,8 @@ public class Events implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() &&
                 event.getClickedInventory() != null && event.getAction() != InventoryAction.NOTHING)
-            LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()));
+            LoadoutGUI.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()),
+                    gameController.getGunConfigurations());
         event.setCancelled(true);
     }
 
@@ -86,10 +87,10 @@ public class Events implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event){
         //Reload when pressing drop button (Q)
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
-        if(player.getPrimaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            player.reloadWeapon(player.getPrimaryWeapon());
-        } else if (player.getSecondaryWeapon().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            player.reloadWeapon(player.getSecondaryWeapon());
+        if(player.getPrimaryGun().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
+            player.reloadWeapon(player.getPrimaryGun());
+        } else if (player.getSecondaryGun().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
+            player.reloadWeapon(player.getSecondaryGun());
         }
 
         event.setCancelled(true);
@@ -112,8 +113,8 @@ public class Events implements Listener {
     public void onChangeMainHand(PlayerItemHeldEvent event) {
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
 
-        player.getPrimaryWeapon().stopShooting();
-        player.getSecondaryWeapon().stopShooting();
+        player.getPrimaryGun().stopShooting();
+        player.getSecondaryGun().stopShooting();
         gameController.getPlayerExtension(event.getPlayer()).unScope();
         player.updateActionBar();
     }

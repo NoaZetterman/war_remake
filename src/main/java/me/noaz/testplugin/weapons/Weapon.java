@@ -21,7 +21,7 @@ public abstract class Weapon {
     protected TestPlugin plugin;
     protected PlayerExtension player;
     protected PlayerStatistic statistics;
-    protected WeaponConfiguration config;
+    protected GunConfiguration config;
 
     protected int currentClip;
     protected int currentBullets;
@@ -42,7 +42,7 @@ public abstract class Weapon {
      * @param statistics That players statistics
      * @param config The configuration of this weapon
      */
-    protected Weapon(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, WeaponConfiguration config) {
+    protected Weapon(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, GunConfiguration config) {
         this.plugin = plugin;
         this.player = player;
         this.statistics = statistics;

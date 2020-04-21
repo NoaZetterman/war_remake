@@ -10,7 +10,7 @@ import me.noaz.testplugin.gamemodes.FreeForAll;
 import me.noaz.testplugin.gamemodes.Game;
 import me.noaz.testplugin.gamemodes.TeamDeathMatch;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.weapons.WeaponConfiguration;
+import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
 import org.bukkit.boss.BarColor;
@@ -47,7 +47,7 @@ public class GameController {
     private BossBar bar;
     private List<String> mapNames = new ArrayList<>();
     private HashMap<String, HashMap<String, List<Location>>> maps = new HashMap<>(); //A bit ugly xd
-    private HashMap<String, WeaponConfiguration> gunConfigurations = new HashMap<>();
+    private List<GunConfiguration> gunConfigurations = new ArrayList<>();
     private HashMap<Player, PlayerExtension> playerExtensions = new HashMap<>();
     private String nextMapName = "";
     private String previousMapName = "";
@@ -79,6 +79,7 @@ public class GameController {
                     ResultSet result = getGunConfigurationsFromDatabase.executeQuery();
 
                     while(result.next()) {
+                        int gunId = result.getInt("gun_id");
                         String name = result.getString("gun_name");
                         String gunMaterial = result.getString("gun_material");
                         String weaponType = result.getString("weapon_type");
@@ -102,7 +103,7 @@ public class GameController {
                         String fireWhileReloadingSound = result.getString("fire_while_reloading_sound");
                         String fireWithoutAmmoSound = result.getString("fire_without_ammo_sound");
 
-                        gunConfigurations.put(name, new WeaponConfiguration(name, gunMaterial, weaponType,
+                        gunConfigurations.add(new GunConfiguration(gunId, name, gunMaterial, weaponType,
                                 fireType, accuracyNotScoped, accuracyScoped, bodyDamage, headDamage,
                                 bulletSpeed, gunRange, reloadTimeInMs, burstDelayInMs, bulletsPerBurst,
                                 bulletsPerClick, startingBullets, clipSize, loadoutSlot, unlockLevel,
@@ -153,7 +154,6 @@ WHERE player_own_gun.player_id=5
                 clip_size, loadout_slot, unlock_level, cost_to_buy, fire_bullet_sound, fire_while_reloading_sound, fire_without_ammo_sound) VALUES
                 ('Skullcrusher', 'GOLD_INGOT', 'Automatic', 'burst', 2.0, 100, 7.2, 7.5, 4, 76, 4000, 400, 3, 1, 72, 24, 13, 6, 300, 'ENTITY_SKELETON_HURT',
                         'ENTITY_ZOMBIE_BREAK_WOODEN_DOOR', 'ENTITY_GHAST_SHOOT');*/
-        //One sound is quiet
         /*gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", "STONE_AXE",
                 "Sniper", "single",
                 2.0, 100.0, 11.4, 20.0, 4,
@@ -459,7 +459,7 @@ WHERE player_own_gun.player_id=5
     /**
      * @return All gun configurations as a HashMap, with gun name as key and a WeaponConfiguration object as value
      */
-    public HashMap<String, WeaponConfiguration> getGunConfigurations() {
+    public List<GunConfiguration> getGunConfigurations() {
         return gunConfigurations;
 
     }

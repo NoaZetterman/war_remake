@@ -5,6 +5,7 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,11 +50,28 @@ public class Events implements Listener {
         PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
 
+
         if(player.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
             player.getWeaponInMainHand().shoot();
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
             LoadoutMenu.loadoutStartScreen(player);
             //player.getOwnedWeapons();
+        } else if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            switch(event.getClickedBlock().getType()) {
+                case CRAFTING_TABLE:
+                case FLOWER_POT:
+                case FURNACE:
+                case FURNACE_MINECART:
+                case CHEST:
+                case CHEST_MINECART:
+                case ENDER_CHEST:
+                case TRAPPED_CHEST:
+                case NOTE_BLOCK:
+                case CAULDRON: {
+                    event.setCancelled(true);
+                    break;
+                }
+            }
         }
     }
 

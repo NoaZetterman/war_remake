@@ -16,6 +16,10 @@ import java.util.List;
 public class LoadoutMenu {
     private static int inventorySize = 36;
     private static Material goBackArrow = Material.LAVA_BUCKET;
+    private final static String loadoutStartScreenTitle = "Loadout Selection";
+    private final static String buyGunScreenTitle = "Buy gun";
+    private final static String primaryGunScreenTitle = "Select primary";
+    private final static String secondaryGunScreenTitle = "Select secondary";
 
     /**
      * React to a player clicking on a slot in the loadout, select a weapon if a weapon is clicked etc.
@@ -31,7 +35,7 @@ public class LoadoutMenu {
 
 
             switch (inventoryName) {
-                case "Loadout Selection":
+                case loadoutStartScreenTitle:
                     switch (slot) {
                         case 10:
                             selectPrimaryScreen(player, gunConfigurations);
@@ -42,7 +46,7 @@ public class LoadoutMenu {
                         default:
                             break;
                     }
-                case "Select primary":
+                case primaryGunScreenTitle:
                     if (slot == 0) {
                         loadoutStartScreen(player);
                     } else {
@@ -50,7 +54,7 @@ public class LoadoutMenu {
                             if(gun.name.equals(clickedItemName)) {
                                 if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
                                     player.changePrimaryGun(gun);
-                                } else if(gun.costToBuy < player.getCredits()) {
+                                } else if(gun.costToBuy <= player.getCredits()) {
                                     buyGun(player, gun);
                                     //Take player to other screen of buying gun
                                 }
@@ -58,21 +62,31 @@ public class LoadoutMenu {
                         }
                     }
                     break;
-                case "Select secondary":
+                case secondaryGunScreenTitle:
                     if (slot == 0) {
                         loadoutStartScreen(player);
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
                             if(gun.name.equals(clickedItemName)) {
                                 if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
-                                    player.changePrimaryGun(gun);
-                                } else if(gun.costToBuy < player.getCredits()) {
-                                    //Take player to other screen of buying gun
+                                    player.changeSecondaryGun(gun);
+                                } else if(gun.costToBuy <= player.getCredits()) {
+                                    buyGun(player, gun);
                                 }
                             }
                         }
                     }
                     break;
+                case buyGunScreenTitle:
+                    if(clickedItemName.equals("Cancel")) {
+                        loadoutStartScreen(player);
+                    } else if(clickedItemName.equals("Buy")) {
+                        String gunName = inventory.getItem(22).getItemMeta().getDisplayName();
+
+                        player.buyGun(gunName);
+                        loadoutStartScreen(player);
+                    }
+
                 default:
                     break;
             }
@@ -85,7 +99,7 @@ public class LoadoutMenu {
      * @param player The player who opens the loadout
      */
     public static void loadoutStartScreen(PlayerExtension player) {
-        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Loadout Selection");
+        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, loadoutStartScreenTitle);
 
         ItemStack[] items = new ItemStack[inventorySize];
 
@@ -117,25 +131,25 @@ public class LoadoutMenu {
 
     private static void buyGun(PlayerExtension player, GunConfiguration gunToBuy) {
         int inventorySize = 45;
-        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Buy gun");
+        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, buyGunScreenTitle);
         ItemStack[] items = new ItemStack[inventorySize];
 
-        //Maybe no goback arrow?
-        items[0] = new ItemStack(goBackArrow);
+        //Maybe hve a go back arrow?
+        //items[0] = new ItemStack(goBackArrow);
 
         for(int i = 10; i < 10+3*9; i+=9) {
             for(int j = 0; j < 3; j++) {
-                items[i+j] = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+                items[i+j] = createGunBuyNoOption();
             }
         }
 
         for(int i = 14; i < 14+3*9; i+=9) {
             for(int j = 0; j < 3; j++) {
-                items[i+j] = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+                items[i+j] = createGunBuyYesOption();
             }
         }
 
-        items[22] = new ItemStack(gunToBuy.gunMaterial);
+        items[22] = createUnlockedWeaponItem(gunToBuy);
 
         inventory.setStorageContents(items);
         player.getPlayer().openInventory(inventory);
@@ -147,7 +161,7 @@ public class LoadoutMenu {
      * @param player The players playerExtension who should get the inventory
      */
     private static void selectPrimaryScreen(PlayerExtension player, List<GunConfiguration> configurations) {
-        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select primary");
+        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, primaryGunScreenTitle);
         ItemStack[] items = new ItemStack[inventorySize];
 
         items[0] = new ItemStack(goBackArrow);
@@ -183,7 +197,7 @@ public class LoadoutMenu {
      * @param player The players playerExtension who should get the inventory
      */
     private static void selectSecondary(PlayerExtension player, List<GunConfiguration> configurations) {
-        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Select secondary");
+        Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, secondaryGunScreenTitle);
         ItemStack[] items = new ItemStack[inventorySize];
 
 
@@ -291,6 +305,32 @@ public class LoadoutMenu {
 
         item.setItemMeta(meta);
 
+        return item;
+    }
+
+    private static ItemStack createGunBuyYesOption() {
+        ItemStack item = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName("Buy");
+        //TODO: Add some explanation as to what/how much it costs to buy this
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack createGunBuyNoOption() {
+        ItemStack item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName("Cancel");
+        //TODO: Add some extra explanation
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
+
+        item.setItemMeta(meta);
         return item;
     }
 }

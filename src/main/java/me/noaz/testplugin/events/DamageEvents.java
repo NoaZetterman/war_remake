@@ -57,12 +57,12 @@ public class DamageEvents implements Listener {
                     if(isHeadshot) {
                         shooterExtension.addHeadshotKill();
                         shooterExtension.addXp(35);
-                        shooterExtension.addCredits(2);
+                        shooterExtension.changeCredits(2);
                         ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter);
                         ChatMessage.playerHeadshotKilled(shooter, hitPlayer);
                     } else {
                         shooterExtension.addXp(25);
-                        shooterExtension.addCredits(1);
+                        shooterExtension.changeCredits(1);
                         shooterExtension.addKill();
                         ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
                         ChatMessage.playerShotKilled(shooter, hitPlayer);
@@ -110,7 +110,7 @@ public class DamageEvents implements Listener {
             PlayerExtension killerExtension = gameController.getPlayerExtension(killer);
 
             killerExtension.addXp(25);
-            killerExtension.addCredits(1);
+            killerExtension.changeCredits(1);
             killerExtension.addKill();
         }
     }
@@ -145,7 +145,7 @@ public class DamageEvents implements Listener {
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
 
-                damagerExtension.addCredits(1);
+                damagerExtension.changeCredits(1);
                 damagerExtension.addKill();
                 damagerExtension.addXp(25);
 

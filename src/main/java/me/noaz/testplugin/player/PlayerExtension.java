@@ -40,6 +40,7 @@ public class PlayerExtension {
     private TestPlugin plugin;
     private Player player;
     private int playerId;
+    private Connection connection;
     private Gun primaryGun;
     private Gun secondaryGun;
     private PlayerStatistic statistics;
@@ -63,6 +64,7 @@ public class PlayerExtension {
                            List<GunConfiguration> gunConfigurations, Connection connection) {
         this.plugin = plugin;
         this.player = player;
+        this.connection = connection;
         this.gunConfigurations = gunConfigurations;
         statistics = new PlayerStatistic(player, scoreManager, connection, plugin);
 
@@ -74,21 +76,19 @@ public class PlayerExtension {
                 try {
                     PreparedStatement getPlayerId = connection.prepareStatement("SELECT player.id FROM test.player WHERE player.uuid=?");
                     getPlayerId.setString(1, player.getUniqueId().toString());
-                    ResultSet playerId = getPlayerId.executeQuery();
-                    int id = 0;
-                    while(playerId.next()) {
-                        id = playerId.getInt("id");
+                    ResultSet resultId = getPlayerId.executeQuery();
+                    playerId = 0;
+                    while(resultId.next()) {
+                        playerId = resultId.getInt("id");
                     }
 
-                    System.out.println(id);
-
-                    if(id != 0) {
+                    if(playerId != 0) {
                         PreparedStatement getPlayerGuns = connection.prepareStatement("SELECT test.gun_configuration.gun_name FROM test.gun_configuration " +
                                 "INNER JOIN test.player_own_gun " +
                                 "ON test.gun_configuration.gun_id = test.player_own_gun.gun_id  " +
                                 "WHERE test.player_own_gun.player_id = ?");
 
-                        getPlayerGuns.setInt(1, id);
+                        getPlayerGuns.setInt(1, playerId);
                         ResultSet playerGuns = getPlayerGuns.executeQuery();
 
                         List<String> ownedGuns = new ArrayList<>();
@@ -238,7 +238,11 @@ public class PlayerExtension {
         statistics.addXP(amount);
     }
 
-    public void addCredits(int amount) {
+    /**
+     * Changes the credits, may be both negative and positive.
+     * @param amount The amount to change with.
+     */
+    public void changeCredits(int amount) {
         statistics.addCredits(amount);
     }
 
@@ -410,6 +414,39 @@ public class PlayerExtension {
      */
     public void changeSecondaryGun(GunConfiguration gun) {
         secondaryGun = createNewGun(gun);
+    }
+
+    public void buyGun(String gunName) {
+        for(GunConfiguration gun: gunConfigurations) {
+            if(gun.name.equals(gunName)) {
+                changeCredits(-gun.costToBuy);
+
+                if(gun.weaponType.equals("Secondary")) {
+                    ownedSecondaryGuns.add(gunName);
+                } else {
+                    ownedPrimaryGuns.add(gunName);
+                }
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            PreparedStatement addGunToPlayer = connection.prepareStatement("INSERT INTO test.player_own_gun " +
+                            "(player_id, gun_id) VALUES (?,?)");
+
+                            addGunToPlayer.setInt(1, playerId);
+                            addGunToPlayer.setInt(2, gun.gunId);
+
+                            addGunToPlayer.execute();
+
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.runTaskAsynchronously(plugin);
+
+            }
+        }
     }
 
     private Gun createNewGun(GunConfiguration configuration) {

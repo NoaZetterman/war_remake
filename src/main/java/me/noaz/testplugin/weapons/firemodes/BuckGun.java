@@ -4,14 +4,14 @@ import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Weapon;
+import me.noaz.testplugin.weapons.Gun;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * A gun that fires multiple bullets at once such as a shotgun, may be in bursts
  */
-public class BuckGun extends Weapon {
+public class BuckGun extends Gun {
     private BukkitRunnable fireAsIfPlayerHoldsRightClick;
 
     /**

@@ -4,14 +4,14 @@ import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Weapon;
+import me.noaz.testplugin.weapons.Gun;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Used for guns that fires one bullet at a time at any speed.
  */
-public class FullyAutomaticGun extends Weapon {
+public class FullyAutomaticGun extends Gun {
     private BukkitRunnable fireAsIfPlayerHoldsRightClick;
 
     /**

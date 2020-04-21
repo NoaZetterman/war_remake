@@ -17,7 +17,7 @@ import java.util.List;
  * @author Noa Zetterman
  * @version 2019-12-16
  */
-public abstract class Weapon {
+public abstract class Gun {
     protected TestPlugin plugin;
     protected PlayerExtension player;
     protected PlayerStatistic statistics;
@@ -42,7 +42,7 @@ public abstract class Weapon {
      * @param statistics That players statistics
      * @param config The configuration of this weapon
      */
-    protected Weapon(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, GunConfiguration config) {
+    protected Gun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, GunConfiguration config) {
         this.plugin = plugin;
         this.player = player;
         this.statistics = statistics;

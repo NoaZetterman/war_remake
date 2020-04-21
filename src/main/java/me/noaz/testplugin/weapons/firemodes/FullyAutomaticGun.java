@@ -34,6 +34,7 @@ public class FullyAutomaticGun extends Weapon {
             isShooting = true;
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
         } else {
+            playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
         }
     }
@@ -73,6 +74,8 @@ public class FullyAutomaticGun extends Weapon {
             } else if(isNextBulletReady && !isReloading) {
                 fireBullet();
                 startBurstDelay();
+            } else if(isReloading) {
+                playFireWhileReloadingSound();
             }
         }
     }

@@ -31,7 +31,7 @@ public class BuckGun extends Weapon {
      * one bullet off the clip.
      */
     public void shoot() {
-        if(currentBullets != 0 && !isReloading) {
+        if(currentBullets > 0 && !isReloading) {
             if(isShooting) {
                 fireAsIfPlayerHoldsRightClick.cancel();
             }
@@ -40,7 +40,10 @@ public class BuckGun extends Weapon {
             isShooting = true;
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
         } else if(currentBullets <= 0) {
+            playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
+        } else {
+            playFireWhileReloadingSound();
         }
     }
 
@@ -63,7 +66,7 @@ public class BuckGun extends Weapon {
      */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
-        int bulletsInBurst = config.getBulletsPerBurst();
+        int bulletsInBurst = config.bulletsPerBurst;
         int firedBulletsInBurst = 0;
 
         @Override
@@ -85,44 +88,10 @@ public class BuckGun extends Weapon {
                     end();
                 }
             }
-
-
-            /*if(firedBulletsInBurst < bulletsInBurst && currentClip > 0 && isNextBulletReady && !isReloading) {
-                fireBullet();
-                firedBulletsInBurst++;
-            } else {
-                if(currentClip <= 0) {
-                    reload();
-                } else {
-                    startBurstDelay();
-                }
-
-                //Dont stop mid burst if it goes over time, but then what if .cancel()?
-                //Stop if going to reload
-                //Stop if time is over and not mid burst
-                //Othwerwise keep shooting
-
-                firedBulletsInBurst = 0;
-
-                if(i >= 6) {
-                    isShooting = false;
-                    this.cancel();
-                }
-            }
-
-            //Is this going to work? No.
-            /*if((i >= 6 && bulletsInBurst <= 0) || currentClip <= 0 || bulletsInBurst <= 0) {
-                if (currentClip <= 0) {
-                    reload();
-                } else {
-                    startBurstDelay();
-                }
-                isShooting = false;
-                this.cancel();
-            }*/
         }
+
         private void end() {
-            bulletsInBurst = config.getBulletsPerBurst();
+            bulletsInBurst = config.bulletsPerBurst;
             isShooting = false;
             this.cancel();
         }

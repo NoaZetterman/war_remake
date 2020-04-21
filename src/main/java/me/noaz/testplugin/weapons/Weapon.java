@@ -47,10 +47,10 @@ public abstract class Weapon {
         this.player = player;
         this.statistics = statistics;
         this.config = config;
-        this.currentClip = config.getClipSize();
-        this.currentBullets = config.getStartingBullets();
+        this.currentClip = config.clipSize;
+        this.currentBullets = config.startingBullets;
 
-        itemSlot = config.getWeaponType().equals("Secondary") ? 2 : 1;
+        itemSlot = config.weaponType.equals("Secondary") ? 2 : 1;
 
 
         //They have to be initialised now to not cause errors
@@ -79,7 +79,7 @@ public abstract class Weapon {
      */
     public void reload() {
         justStartedReloading = true;
-        if(!isReloading && currentClip != config.getClipSize() && currentClip != currentBullets) {
+        if(!isReloading && currentClip != config.clipSize && currentClip != currentBullets) {
             isReloading = true;
 
             reloadTask = new BukkitRunnable() {
@@ -88,13 +88,13 @@ public abstract class Weapon {
                 @Override
                 public void run() {
                     i++;
-                    if (i >= config.getReloadTime()) {
-                        currentClip = Math.min(config.getClipSize(), currentBullets);
+                    if (i >= config.reloadTime) {
+                        currentClip = Math.min(config.clipSize, currentBullets);
                         isReloading = false;
                         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                         cancel();
                     } else {
-                        ActionBarMessage.reload(config.getReloadTime(), i, player, itemSlot);
+                        ActionBarMessage.reload(config.reloadTime, i, player, itemSlot);
                     }
 
                 }
@@ -122,7 +122,7 @@ public abstract class Weapon {
             @Override
             public void run() {
                 i++;
-                if(i >= config.getBurstDelay()) {
+                if(i >= config.burstDelay) {
                     isNextBulletReady = true;
                     this.cancel();
                 }
@@ -145,7 +145,7 @@ public abstract class Weapon {
         velocity.rotateAroundZ(0.5*calculateAccuracy(accuracy));
 
         velocity.normalize();
-        velocity.multiply(config.getBulletSpeed());
+        velocity.multiply(config.bulletSpeed);
         return velocity;
     }
 
@@ -167,8 +167,8 @@ public abstract class Weapon {
             burstDelayTask.cancel();
         isReloading = false;
         isNextBulletReady = true;
-        currentBullets = config.getStartingBullets();
-        currentClip = config.getClipSize();
+        currentBullets = config.startingBullets;
+        currentClip = config.clipSize;
 
         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
     }
@@ -190,18 +190,18 @@ public abstract class Weapon {
      * @param bulletDirection The bullets direction
      */
     protected void fireBullet(Vector bulletDirection) {
-        playShootSound();
+        playFireBulletSound();
 
-        for(int i = 0; i < config.getBulletsPerClick(); i++) {
-            new Bullet(player.getPlayer(), plugin, bulletDirection, config.getBulletSpeed(),
-                    config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+        for(int i = 0; i < config.bulletsPerClick; i++) {
+            new Bullet(player.getPlayer(), plugin, bulletDirection, config.bulletSpeed,
+                    config.range, config.bodyDamage, config.headDamage);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
         }
 
         currentClip--;
         currentBullets--;
 
-        statistics.addBulletsShot(config.getBulletsPerClick());
+        statistics.addBulletsShot(config.bulletsPerClick);
 
         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
     }
@@ -212,19 +212,19 @@ public abstract class Weapon {
      * Each bullet is fired in a different direction, but more accurate when scoping.
      */
     protected void fireBullet() {
-        playShootSound();
-        double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
+        playFireBulletSound();
+        double accuracy = player.isScoping() ? config.accuracyScoped : config.accuracyNotScoped;
 
-        for(int i = 0; i < config.getBulletsPerClick(); i++) {
+        for(int i = 0; i < config.bulletsPerClick; i++) {
             Vector velocity = calculateBulletDirection(accuracy);
-            new Bullet(player.getPlayer(), plugin, velocity, config.getBulletSpeed(),
-                    config.getRange(), config.getBodyDamage(), config.getHeadDamage());
+            new Bullet(player.getPlayer(), plugin, velocity, config.bulletSpeed,
+                    config.range, config.bodyDamage, config.headDamage);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
         }
 
         currentClip--;
         currentBullets--;
-        statistics.addBulletsShot(config.getBulletsPerClick());
+        statistics.addBulletsShot(config.bulletsPerClick);
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
@@ -235,27 +235,35 @@ public abstract class Weapon {
      * @return The material type of this weapon
      */
     public Material getMaterialType() {
-        return config.getGunMaterial();
+        return config.gunMaterial;
     }
 
     /**
      * @return The material of this gun as an item stack
      */
     public ItemStack getMaterialAsItemStack() {
-        return new ItemStack(config.getGunMaterial());
+        return new ItemStack(config.gunMaterial);
     }
 
     public List<String> getLore() {
-        return config.getWeaponLore();
+        return config.weaponLore;
     }
 
     @Override
     public String toString() {
-        return config.getName();
+        return config.name;
     }
 
-    protected void playShootSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.getSound(), 5, 1);
+    protected void playFireBulletSound() {
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireBulletSound, 1, 1);
+    }
+
+    protected void playFireWhileReloadingSound() {
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWhileReloadingSound, 1, 1);
+    }
+
+    protected void playFireWithoutAmmoSound() {
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWithoutAmmoSound, 1, 1);
     }
 
     public void addBullets(int amount) {
@@ -263,7 +271,7 @@ public abstract class Weapon {
     }
 
     public int getStartingBullets() {
-        return config.getStartingBullets();
+        return config.startingBullets;
     }
 
     public boolean justStartedReloading() {

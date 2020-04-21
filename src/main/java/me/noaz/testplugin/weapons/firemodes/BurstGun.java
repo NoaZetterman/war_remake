@@ -23,9 +23,9 @@ public class BurstGun extends Weapon {
     public void shoot() {
         if(!isReloading && currentBullets != 0 && isNextBulletReady && !isShooting) {
             isShooting = true;
-            int totalBulletsInCurrentBurst = Math.min(currentClip, config.getBulletsPerBurst());
+            int totalBulletsInCurrentBurst = Math.min(currentClip, config.bulletsPerBurst);
 
-            double accuracy = player.isScoping() ? config.getAccuracyScoped() : config.getAccuracyNotScoped();
+            double accuracy = player.isScoping() ? config.accuracyScoped : config.accuracyNotScoped;
             Vector velocity = calculateBulletDirection(accuracy);
 
             BukkitRunnable task = new BukkitRunnable() {
@@ -51,7 +51,10 @@ public class BurstGun extends Weapon {
             task.runTaskTimer(plugin, 0L, 1L);
 
         } else if(currentBullets == 0){
+            playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
+        } else if(isReloading) {
+            playFireWhileReloadingSound();
         }
     }
 }

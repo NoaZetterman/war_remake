@@ -121,18 +121,6 @@ public class GameController {
         //Should grab the information for all guns from database later on
 
         // http://puttyland.com/share/TTYWy1vN.txt
-        /*gunConfigurations.put("Skullcrusher", new WeaponConfiguration("Skullcrusher", "GOLD_INGOT",
-                "Automatic", "burst",
-                2.0, 100.0, 7.2,7.5,4,
-                76,4000, 400,3, 1,72,24,
-                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT},
-                6, 13));
-
-        gunConfigurations.put("Python", new WeaponConfiguration("Python", "GOLDEN_SHOVEL",
-                "Secondary", "single",
-                2.0, 100.0, 10.0, 15.0, 4,
-                48, 3500, 300, 1, 1,50, 9,
-                new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR}, 1, 18));
 
         /*
         SELECT * FROM test.player WHERE player_uuid=uuid;
@@ -154,52 +142,8 @@ WHERE player_own_gun.player_id=5
                 clip_size, loadout_slot, unlock_level, cost_to_buy, fire_bullet_sound, fire_while_reloading_sound, fire_without_ammo_sound) VALUES
                 ('Skullcrusher', 'GOLD_INGOT', 'Automatic', 'burst', 2.0, 100, 7.2, 7.5, 4, 76, 4000, 400, 3, 1, 72, 24, 13, 6, 300, 'ENTITY_SKELETON_HURT',
                         'ENTITY_ZOMBIE_BREAK_WOODEN_DOOR', 'ENTITY_GHAST_SHOOT');*/
-        /*gunConfigurations.put("Dragunov", new WeaponConfiguration("Dragunov", "STONE_AXE",
-                "Sniper", "single",
-                2.0, 100.0, 11.4, 20.0, 4,
-                400, 4250, 500, 1, 1,32, 7,
-                new Sound[] {Sound.ENTITY_IRON_GOLEM_ATTACK, Sound.ENTITY_WITHER_SHOOT}, 1, 19));
 
-        gunConfigurations.put("L120 Isolator", new WeaponConfiguration("L120 Isolator", "BOWL",
-                "Sniper", "single",
-                2.0, 100.0, 21.4, 25.0, 4,
-                400, 5000, 900, 1, 1,60, 4,
-                new Sound[] {Sound.ENTITY_IRON_GOLEM_ATTACK, Sound.ENTITY_WITHER_SHOOT}, 2, 20));
-
-        gunConfigurations.put("AA12", new WeaponConfiguration("AA12", "IRON_PICKAXE",
-                "Shotgun", "buck", 1.0, 3.0, 7,
-                9, 4, 18, 1500, 450, 1,
-                6, 32, 20, new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_GENERIC_EXPLODE},
-                1, 28));
-
-        gunConfigurations.put("Typhoid", new WeaponConfiguration("Typhoid", "BRICK", "Shotgun",
-                "buck", 1.0,3.0, 3.6, 4.0, 4,
-                13, 3500, 500, 3, 4, 32, 12,
-                new Sound[] {Sound.ENTITY_GHAST_SHOOT, Sound.ENTITY_GENERIC_EXPLODE}, 3, 29));
-                //10 or 11 or 24 tick delay?
-
-        gunConfigurations.put("AK-47", new WeaponConfiguration("AK-47", "IRON_HOE",
-                "Automatic", "automatic", 3, 100.0,
-                4.4, 6, 4, 76, 1500, 150,
-                1, 1,100, 30,
-                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT},
-                9, 10));
-
-        gunConfigurations.put("Lemantation", new WeaponConfiguration("Lemantation", "IRON_INGOT",
-                "Automatic", "automatic", 3, 100.0,
-                3.6, 4.5, 4, 76, 4000, 100,
-                1, 1,100, 50,
-                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT},
-                7, 12));
-
-        gunConfigurations.put("Famas", new WeaponConfiguration("Famas", "DIAMOND_HOE",
-                "Automatic", "burst", 3,100.0,
-                5.8, 6.3, 4, 48, 3750, 300,
-                3, 1, 64, 30,
-                new Sound[] {Sound.BLOCK_NOTE_BLOCK_SNARE, Sound.ENTITY_ITEM_BREAK, Sound.ENTITY_GHAST_SHOOT},
-                5, 11));
-
-        gunConfigurations.put("Minigun", new WeaponConfiguration("Minigun", "DIAMOND",
+        /*gunConfigurations.put("Minigun", new WeaponConfiguration("Minigun", "DIAMOND",
                 "Automatic", "buck", 3, 10,
                 3.6, 4.5, 4, 128, 100, 50,
                 1, 2, 64, 64,

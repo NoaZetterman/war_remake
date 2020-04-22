@@ -277,4 +277,8 @@ public abstract class Gun {
     public boolean justStartedReloading() {
         return justStartedReloading;
     }
+
+    public GunConfiguration getConfiguration() {
+        return config;
+    }
 }

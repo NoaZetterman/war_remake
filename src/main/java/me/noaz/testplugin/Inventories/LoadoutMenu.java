@@ -41,11 +41,12 @@ public class LoadoutMenu {
                             selectPrimaryScreen(player, gunConfigurations);
                             break;
                         case 11:
-                            selectSecondary(player, gunConfigurations);
+                            selectSecondaryScreen(player, gunConfigurations);
                             break;
                         default:
                             break;
                     }
+                    break;
                 case primaryGunScreenTitle:
                     if (slot == 0) {
                         loadoutStartScreen(player);
@@ -83,10 +84,10 @@ public class LoadoutMenu {
                     } else if(clickedItemName.equals("Buy")) {
                         String gunName = inventory.getItem(22).getItemMeta().getDisplayName();
 
-                        player.buyGun(gunName);
+                        player.buyGun(gunName, gunConfigurations);
                         loadoutStartScreen(player);
                     }
-
+                    break;
                 default:
                     break;
             }
@@ -103,16 +104,8 @@ public class LoadoutMenu {
 
         ItemStack[] items = new ItemStack[inventorySize];
 
-        /*for(WeaponConfiguration configuration : configurations) {
-            if(configuration.getUnlockLevel() > player.getLevel()) {
-                items[configuration.getLoadoutSlot()] = createLockedWeaponItem(configuration);
-            } else {
-                items[configuration.getLoadoutSlot()] = createUnlockedWeaponItem(configuration);
-            }
-        }*/
-
-        items[10] = player.getPrimaryGun().getMaterialAsItemStack();
-        items[11] = player.getSecondaryGun().getMaterialAsItemStack();
+        items[10] = createUnlockedWeaponItem(player.getPrimaryGun().getConfiguration());
+        items[11] = createUnlockedWeaponItem(player.getSecondaryGun().getConfiguration());
 
         /*
         items[13] = lethal item
@@ -123,6 +116,8 @@ public class LoadoutMenu {
         items[28] = first ks
         items[29] = second ks
         items[30] = third ks (= always nuke so ignore?)
+
+        //Some knife stuff?
          */
 
         inventory.setStorageContents(items);
@@ -196,7 +191,7 @@ public class LoadoutMenu {
      *
      * @param player The players playerExtension who should get the inventory
      */
-    private static void selectSecondary(PlayerExtension player, List<GunConfiguration> configurations) {
+    private static void selectSecondaryScreen(PlayerExtension player, List<GunConfiguration> configurations) {
         Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, secondaryGunScreenTitle);
         ItemStack[] items = new ItemStack[inventorySize];
 

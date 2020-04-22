@@ -220,8 +220,8 @@ public class PlayerStatistic {
                             "level=?, credits=?, xp_on_level=?, headshots=? " +
                             "WHERE uuid=?");
 
-                    updatePlayerData.setInt(1, kills);
-                    updatePlayerData.setInt(2, deaths);
+                    updatePlayerData.setInt(1, totalKills);
+                    updatePlayerData.setInt(2, totalDeaths);
                     updatePlayerData.setInt(3, totalFiredBullets);
                     updatePlayerData.setInt(4, totalFiredBulletsThatHitEnemy);
                     updatePlayerData.setInt(5, level);
@@ -229,6 +229,8 @@ public class PlayerStatistic {
                     updatePlayerData.setInt(7, xpOnCurrentLevel);
                     updatePlayerData.setInt(8, totalHeadshotKills);
                     updatePlayerData.setString(9, playerUUID.toString());
+
+                    updatePlayerData.execute();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -255,8 +257,8 @@ public class PlayerStatistic {
                     "level=?, credits=?, xp_on_level=?, headshots=? " +
                     "WHERE uuid=?");
 
-            updatePlayerData.setInt(1, kills);
-            updatePlayerData.setInt(2, deaths);
+            updatePlayerData.setInt(1, totalKills);
+            updatePlayerData.setInt(2, totalDeaths);
             updatePlayerData.setInt(3, totalFiredBullets);
             updatePlayerData.setInt(4, totalFiredBulletsThatHitEnemy);
             updatePlayerData.setInt(5, level);
@@ -264,6 +266,8 @@ public class PlayerStatistic {
             updatePlayerData.setInt(7, xpOnCurrentLevel);
             updatePlayerData.setInt(8, totalHeadshotKills);
             updatePlayerData.setString(9, playerUUID.toString());
+
+            updatePlayerData.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }

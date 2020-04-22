@@ -495,8 +495,8 @@ WHERE player_own_gun.player_id=5
     }
 
     public void removePlayer(Player player) {
-        if(game != null)
-            getGame().leave(playerExtensions.get(player));
+        leaveGame(player);
+        playerExtensions.get(player).saveCurrentLoadout(false);
         playerExtensions.remove(player);
     }
 

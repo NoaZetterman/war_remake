@@ -15,6 +15,8 @@ import java.util.List;
 
 public class LoadoutMenu {
     private static int inventorySize = 36;
+
+    //TODO: Rename goBackArrow so it says GoBack
     private static Material goBackArrow = Material.LAVA_BUCKET;
     private final static String loadoutStartScreenTitle = "Loadout Selection";
     private final static String buyGunScreenTitle = "Buy gun";
@@ -69,7 +71,7 @@ public class LoadoutMenu {
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
                             if(gun.name.equals(clickedItemName)) {
-                                if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
+                                if(player.getOwnedSecondaryGuns().contains(clickedItemName)) {
                                     player.changeSecondaryGun(gun);
                                 } else if(gun.costToBuy <= player.getCredits()) {
                                     buyGun(player, gun);
@@ -245,6 +247,7 @@ public class LoadoutMenu {
         String name = configuration.name;
         List<String> lore = new ArrayList<>();
         lore.add("Locked");
+        lore.add("Unlock level: " + configuration.unlockLevel);
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -262,10 +265,11 @@ public class LoadoutMenu {
     }
 
     private static ItemStack createLockedVisibleGreenItem(GunConfiguration configuration) {
-        Material material = configuration.gunMaterial;
+        Material material = Material.GREEN_STAINED_GLASS_PANE;
         String name = configuration.name;
         List<String> lore = new ArrayList<>();
         lore.add("Buy by clicking");
+        lore.add("Cost: " + configuration.costToBuy);
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -283,10 +287,11 @@ public class LoadoutMenu {
     }
 
     private static ItemStack createLockedVisibleRedItem(GunConfiguration configuration) {
-        Material material = configuration.gunMaterial;
+        Material material = Material.RED_STAINED_GLASS_PANE;
         String name = configuration.name;
         List<String> lore = new ArrayList<>();
         lore.add("Not enough credits to buy");
+        lore.add("Cost: " + configuration.costToBuy);
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();

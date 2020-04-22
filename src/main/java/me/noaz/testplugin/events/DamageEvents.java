@@ -55,21 +55,29 @@ public class DamageEvents implements Listener {
 
                 if(healthLeft <= 0) {
                     if(isHeadshot) {
-                        shooterExtension.addHeadshotKill();
-                        shooterExtension.addXp(35);
-                        shooterExtension.changeCredits(2);
                         ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter);
                         ChatMessage.playerHeadshotKilled(shooter, hitPlayer);
                     } else {
-                        shooterExtension.addXp(25);
-                        shooterExtension.changeCredits(1);
-                        shooterExtension.addKill();
                         ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
                         ChatMessage.playerShotKilled(shooter, hitPlayer);
                     }
 
                     hitPlayerExtension.addDeath();
                     hitPlayerExtension.respawn(shooter);
+                    //Print death messages before adding the kills to print
+                    //eventual killstreaks after player gets killed,
+                    //And add death before addKill to prevent doublekill with nuke
+
+                    if(isHeadshot) {
+                        shooterExtension.addHeadshotKill();
+                        shooterExtension.addXp(35);
+                        shooterExtension.changeCredits(2);
+                    } else {
+                        shooterExtension.addXp(25);
+                        shooterExtension.changeCredits(1);
+                        shooterExtension.addKill();
+                    }
+
                 } else {
 
                     hitPlayer.damage(0.1, shooter); //To get the damage animation and correct player hit
@@ -144,12 +152,12 @@ public class DamageEvents implements Listener {
             } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
+                damagedPlayerExtension.addDeath();
 
                 damagerExtension.changeCredits(1);
                 damagerExtension.addKill();
                 damagerExtension.addXp(25);
 
-                damagedPlayerExtension.addDeath();
             }
         }
     }

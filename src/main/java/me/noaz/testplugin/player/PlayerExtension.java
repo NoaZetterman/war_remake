@@ -46,7 +46,6 @@ public class PlayerExtension {
     private PlayerStatistic statistics;
     private Team team;
     private Team enemyTeam;
-    private List<GunConfiguration> gunConfigurations;
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
     private String[] actionBarMessage;
@@ -65,7 +64,6 @@ public class PlayerExtension {
         this.plugin = plugin;
         this.player = player;
         this.connection = connection;
-        this.gunConfigurations = gunConfigurations;
         statistics = new PlayerStatistic(player, scoreManager, connection, plugin);
 
         ownedPrimaryGuns = new ArrayList<>();
@@ -74,12 +72,18 @@ public class PlayerExtension {
             @Override
             public void run() {
                 try {
-                    PreparedStatement getPlayerId = connection.prepareStatement("SELECT player.id FROM test.player WHERE player.uuid=?");
-                    getPlayerId.setString(1, player.getUniqueId().toString());
-                    ResultSet resultId = getPlayerId.executeQuery();
+                    PreparedStatement getPlayerInfo = connection.prepareStatement("SELECT player.id, player.selected_primary, player.selected_secondary" +
+                            " FROM test.player WHERE player.uuid=?");
+                    getPlayerInfo.setString(1, player.getUniqueId().toString());
+                    ResultSet info = getPlayerInfo.executeQuery();
                     playerId = 0;
-                    while(resultId.next()) {
-                        playerId = resultId.getInt("id");
+                    int selectedPrimaryGunId = 1;
+                    int selectedSecondaryGunId = 2;
+                    while(info.next()) {
+                        playerId = info.getInt("id");
+                        selectedPrimaryGunId = info.getInt("selected_primary");
+                        selectedSecondaryGunId = info.getInt("selected_secondary");
+
                     }
 
                     if(playerId != 0) {
@@ -99,20 +103,23 @@ public class PlayerExtension {
                         }
 
                         for(GunConfiguration gun : gunConfigurations) {
-                            if(ownedGuns.contains(gun.name)) {
+                            if(ownedGuns.contains(gun.name) || gun.unlockLevel == 0) {
                                 if (gun.weaponType.equals("Secondary")) {
                                     ownedSecondaryGuns.add(gun.name);
+                                    if(gun.gunId == selectedSecondaryGunId) {
+                                        secondaryGun = createNewGun(gun);
+                                    }
                                 } else {
                                     ownedPrimaryGuns.add(gun.name);
+                                    if(gun.gunId == selectedPrimaryGunId) {
+                                        primaryGun = createNewGun(gun);
+                                    }
                                 }
+
                             }
                         }
 
-                        primaryGun = createNewGun(gunConfigurations.get(0));
-                        secondaryGun = createNewGun(gunConfigurations.get(1));
-
                     } else {
-                        //TODO: Put this somewhere else, and maybe more error messages
                         player.sendMessage("Something went wrong when loading stats, try to rejoin, if that doesn't work " +
                                 "please contact server admins");
                     }
@@ -250,7 +257,7 @@ public class PlayerExtension {
      * Makes this player start playing a game at given location with correct equipment
      */
     public void startPlayingGame() {
-        statistics.setGameScoreboard();
+        statistics.updateGameScoreboard();
 
         player.teleport(team.getSpawnPoint());
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
@@ -293,6 +300,7 @@ public class PlayerExtension {
         primaryGun.reset();
         secondaryGun.reset();
         statistics.forceUpdateScore();
+        saveCurrentLoadout(true);
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
     }
 
@@ -416,7 +424,7 @@ public class PlayerExtension {
         secondaryGun = createNewGun(gun);
     }
 
-    public void buyGun(String gunName) {
+    public void buyGun(String gunName, List<GunConfiguration> gunConfigurations) {
         for(GunConfiguration gun: gunConfigurations) {
             if(gun.name.equals(gunName)) {
                 changeCredits(-gun.costToBuy);
@@ -472,6 +480,36 @@ public class PlayerExtension {
         }
 
         return gunToChange;
+    }
+
+    /**
+     * Saves the players current loadout, so that it will be remembered for when the player joins next time.
+     * @param force True if this should be done during shutdown, false otherwise
+     */
+    public void saveCurrentLoadout(boolean force) {
+        if(force) {
+            saveLoadout();
+        } else {
+            new BukkitRunnable() {
+                public void run() {
+                    saveLoadout();
+                }
+            }.runTaskAsynchronously(plugin);
+        }
+    }
+
+    private void saveLoadout() {
+        try {
+            PreparedStatement saveLoadout = connection.prepareStatement("UPDATE test.player SET " +
+                    "selected_primary=?, selected_secondary=? WHERE id=?");
+
+            saveLoadout.setInt(1, primaryGun.getConfiguration().gunId);
+            saveLoadout.setInt(2, secondaryGun.getConfiguration().gunId);
+            saveLoadout.setInt(3, playerId);
+            saveLoadout.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -188,15 +188,19 @@ public class PlayerStatistic {
     }
 
     /**
-     * Give a game scoreboard
+     * Resets the stats from last game, and updates the overall stats accordingly
      */
-    public void setGameScoreboard() {
+    public void resetGameScoreboard() {
+        totalKills += kills;
+        totalDeaths += deaths;
+        totalFiredBullets += firedBullets;
+        totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
+
         kills = 0;
         deaths = 0;
         killstreak = 0;
         firedBullets = 0;
         firedBulletsThatHitEnemy = 0;
-        updateGameScoreboard();
     }
 
     /**
@@ -204,11 +208,7 @@ public class PlayerStatistic {
      * Updates database with new score as well.
      */
     public void updateTotalScore() {
-        totalKills += kills;
-        totalDeaths += deaths;
-        totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
-        totalFiredBullets += firedBullets;
-
+        resetGameScoreboard();
         updateLobbyScoreboard();
 
         BukkitRunnable runnable = new BukkitRunnable() {
@@ -246,10 +246,7 @@ public class PlayerStatistic {
      * register new tasks during shutdown)
      */
     public void forceUpdateScore() {
-        totalKills += kills;
-        totalDeaths += deaths;
-        totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
-        totalFiredBullets += firedBullets;
+        resetGameScoreboard();
 
         try {
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
@@ -282,7 +279,7 @@ public class PlayerStatistic {
 
     }
 
-    private void updateGameScoreboard() {
+    public void updateGameScoreboard() {
         scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, credits, xpOnCurrentLevel,
                                         totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
     }

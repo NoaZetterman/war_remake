@@ -97,11 +97,13 @@ public abstract class Game {
      * @param forceEnd True if the game should force end (used for server shutdown), otherwise false
      */
     public void end(boolean forceEnd) {
-        for(PlayerExtension player : players.values()) {
-            if(forceEnd) {
-                player.forceEndGame();
-            } else {
-                player.endGame();
+        for (Team team : teams) {
+            for (PlayerExtension player : team.getPlayers()) {
+                if (forceEnd) {
+                    player.forceEndGame();
+                } else {
+                    player.endGame();
+                }
             }
         }
     }

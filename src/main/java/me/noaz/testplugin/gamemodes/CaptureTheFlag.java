@@ -72,7 +72,6 @@ public class CaptureTheFlag extends Game {
         blueFlag.stop();
         redFlag.stop();
 
-        System.out.println(players.size());
         super.end(forceEnd);
 
         //replace below with captures

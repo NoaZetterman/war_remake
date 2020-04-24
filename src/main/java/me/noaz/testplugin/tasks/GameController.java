@@ -170,6 +170,7 @@ WHERE player_own_gun.player_id=5
                     gameWorld.setAmbientSpawnLimit(0);
                     gameWorld.setAnimalSpawnLimit(0);
                     gameWorld.setMonsterSpawnLimit(0);
+                    gameWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
                     gameWorld.setWaterAnimalSpawnLimit(0);
                     gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                     gameWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);

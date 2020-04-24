@@ -91,6 +91,12 @@ public class Events implements Listener {
                 case POTTED_SPRUCE_SAPLING:
                 case POTTED_WHITE_TULIP:
                 case POTTED_WITHER_ROSE:
+                case HOPPER:
+                case HOPPER_MINECART:
+                case ANVIL:
+                case LEVER:
+                case CHIPPED_ANVIL:
+                case DAMAGED_ANVIL:
                     event.setCancelled(true);
                     break;
             }

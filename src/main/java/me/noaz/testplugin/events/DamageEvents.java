@@ -25,6 +25,7 @@ public class DamageEvents implements Listener {
 /*        Location snowballLocation = event.getEntity().getLocation();
         Player hitPlayer = (Player)event.getHitEntity();
         hitPlayer.getLocation().getY*/
+
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
             Player hitPlayer = (Player) event.getHitEntity();
             Player shooter = (Player) event.getEntity().getShooter();
@@ -153,6 +154,9 @@ public class DamageEvents implements Listener {
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
+
+                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager);
+                ChatMessage.playerKnifeKilled(damagedPlayer, damager);
 
                 damagerExtension.changeCredits(1);
                 damagerExtension.addKill();

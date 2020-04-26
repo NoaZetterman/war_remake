@@ -12,6 +12,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import javax.xml.bind.ValidationEventLocator;
+
 public class DamageEvents implements Listener {
     private GameController gameController;
 
@@ -172,14 +174,20 @@ public class DamageEvents implements Listener {
             Player damagedPlayer = (Player) event.getEntity();
             PlayerExtension damagedPlayerExtension = gameController.getPlayerExtension(damagedPlayer);
 
+            System.out.println(event.getCause());
+
 
             switch(event.getCause()) {
                 case VOID:
-                    if (damagedPlayerExtension.isPlayingGame()) {
-                        damagedPlayerExtension.addDeath();
-                        damagedPlayerExtension.respawn(null);
-                    } else {
-                        damagedPlayer.teleport(damagedPlayer.getWorld().getSpawnLocation());
+                    if(!damagedPlayerExtension.isDead()) {
+                        if (damagedPlayerExtension.isPlayingGame()) {
+                            //SOMETIMES DONE MORE THAN ONCE
+                            damagedPlayerExtension.addDeath();
+                            damagedPlayerExtension.respawn(null);
+                        } else {
+                            damagedPlayer.teleport(damagedPlayer.getWorld().getSpawnLocation());
+                            damagedPlayer.setVelocity(new Vector(0, 0, 0));
+                        }
                     }
 
                     event.setCancelled(true);

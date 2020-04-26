@@ -55,7 +55,9 @@ public class Events implements Listener {
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
             LoadoutMenu.loadoutStartScreen(player);
             //player.getOwnedWeapons();
-        } else if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
+        }
+
+        if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
             switch(event.getClickedBlock().getType()) {
                 case CRAFTING_TABLE:
                 case FLOWER_POT:

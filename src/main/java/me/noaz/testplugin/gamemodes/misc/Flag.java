@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes.misc;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.player.PlayerExtension;
@@ -33,7 +34,7 @@ public class Flag {
 
     private Item flag;
 
-    private String worldName;
+    private GameMap map;
     private int captures = 0;
 
     /**
@@ -41,14 +42,14 @@ public class Flag {
      * @param color The color of the team
      * @param flagPoleLocation The location of the teams flag
      * @param enemyFlagPoleLocation The location of the enemy teams flag
-     * @param worldName The name of the map
+     * @param map The map
      * @param plugin This plugin.
      */
-    public Flag(Color color, Location flagPoleLocation, Location enemyFlagPoleLocation, String worldName, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
+    public Flag(Color color, Location flagPoleLocation, Location enemyFlagPoleLocation, GameMap map, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
         this.flagColor = color;
         this.flagPoleLocation = flagPoleLocation.clone();
         this.enemyFlagPoleLocation = enemyFlagPoleLocation.clone();
-        this.worldName = worldName;
+        this.map = map;
         this.plugin = plugin;
         this.players = players;
 
@@ -150,7 +151,7 @@ public class Flag {
             flagItemStack = new ItemStack(Material.BLUE_WOOL);
         }
 
-        flag = plugin.getServer().getWorld(worldName).dropItem(flagPoleLocation.add(0.5,0.5,0.5), flagItemStack);
+        flag = map.getWorld().dropItem(flagPoleLocation.add(0.5,0.5,0.5), flagItemStack);
         flag.setGravity(false);
         flag.setVelocity(new Vector(0,0,0));
         flag.setPickupDelay(10000);
@@ -201,7 +202,7 @@ public class Flag {
 
             private void spawnFlag(Location flagLocation) {
                 flag.remove();
-                flag = plugin.getServer().getWorld(worldName).dropItem(flagLocation, flagItemStack);
+                flag = map.getWorld().dropItem(flagLocation, flagItemStack);
                 flag.setGravity(false);
                 flag.setVelocity(new Vector(0,0,0));
                 flag.setPickupDelay(10000);

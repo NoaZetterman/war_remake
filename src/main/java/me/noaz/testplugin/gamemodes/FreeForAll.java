@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
@@ -7,19 +8,18 @@ import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class FreeForAll extends Game {
-    public FreeForAll(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> players) {
+    public FreeForAll(GameMap map, HashMap<Player, PlayerExtension> players) {
         this.players = players;
+        this.map = map;
 
         teams = new Team[] {new Team(Color.fromRGB(255,85,255), ChatColor.LIGHT_PURPLE)};
 
-        teams[0].setSpawnPoints(locations.get("ffaspawn"));
+        teams[0].setSpawnPoints(map.getLocationsByName("ffaspawn"));
 
         init(players);
     }

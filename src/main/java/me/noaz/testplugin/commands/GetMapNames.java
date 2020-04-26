@@ -1,10 +1,13 @@
 package me.noaz.testplugin.commands;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public class GetMapNames implements CommandExecutor {
     private TestPlugin plugin;
@@ -18,8 +21,10 @@ public class GetMapNames implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String[] maps = gameController.getMaps();
-        sender.sendMessage(maps);
+        List<GameMap> maps = gameController.getMaps();
+        for(GameMap map : maps) {
+            sender.sendMessage(map.getName());
+        }
 
         return true;
     }

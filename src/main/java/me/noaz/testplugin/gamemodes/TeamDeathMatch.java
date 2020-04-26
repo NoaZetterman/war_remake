@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
@@ -7,21 +8,20 @@ import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 public class TeamDeathMatch extends Game {
-    public TeamDeathMatch(String worldName, HashMap<String, List<Location>> locations, HashMap<Player, PlayerExtension> players) {
+    public TeamDeathMatch(GameMap map, HashMap<Player, PlayerExtension> players) {
         this.players = players;
+        this.map = map;
 
         teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
 
-        teams[0].setSpawnPoints(locations.get("redspawn"));
-        teams[1].setSpawnPoints(locations.get("bluespawn"));
+        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
+        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
         init(players);
     }

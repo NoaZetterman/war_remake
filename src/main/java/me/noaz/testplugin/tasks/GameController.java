@@ -1,5 +1,7 @@
 package me.noaz.testplugin.tasks;
 
+import me.noaz.testplugin.Maps.CustomLocation;
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.BossBarMessage;
@@ -19,8 +21,11 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,14 +50,16 @@ public class GameController {
     private BukkitRunnable updatePlayerActionBars;
 
     private BossBar bar;
-    private List<String> mapNames = new ArrayList<>();
-    private HashMap<String, HashMap<String, List<Location>>> maps = new HashMap<>(); //A bit ugly xd
+    private List<GameMap> maps = new ArrayList<>();
     private List<GunConfiguration> gunConfigurations = new ArrayList<>();
     private HashMap<Player, PlayerExtension> playerExtensions = new HashMap<>();
-    private String nextMapName = "";
-    private String previousMapName = "";
-    private String gamemode = "tdm";
+    private GameMap nextMap = null;
+    private GameMap previousMap = null;
+    private String currentGamemode = "tdm";
     private String[] gamemodes = {"tdm", "ctf", "ffa"};
+    private final String pathToNewMaps = "C:\\Users\\Noa\\MinecraftBukkitServer\\newMaps";
+    private final String pathToSavedMapsWithSigns = "C:\\Users\\Noa\\MinecraftBukkitServer\\mapsWithLocationSigns";
+    private final String pathToPlayableMaps = "C:\\Users\\Noa\\MinecraftBukkitServer\\maps";
 
     //Bluespawn etc should probably be constants
 
@@ -66,7 +73,7 @@ public class GameController {
     public GameController(TestPlugin plugin, Connection connection) {
         this.plugin = plugin;
         createGunConfigurations(connection);
-        loadMaps();
+        loadMaps(connection);
         runTasks();
     }
 
@@ -143,6 +150,7 @@ WHERE player_own_gun.player_id=5
                 ('Skullcrusher', 'GOLD_INGOT', 'Automatic', 'burst', 2.0, 100, 7.2, 7.5, 4, 76, 4000, 400, 3, 1, 72, 24, 13, 6, 300, 'ENTITY_SKELETON_HURT',
                         'ENTITY_ZOMBIE_BREAK_WOODEN_DOOR', 'ENTITY_GHAST_SHOOT');*/
 
+
         /*gunConfigurations.put("Minigun", new WeaponConfiguration("Minigun", "DIAMOND",
                 "Automatic", "buck", 3, 10,
                 3.6, 4.5, 4, 128, 100, 50,
@@ -151,130 +159,229 @@ WHERE player_own_gun.player_id=5
                 10, 35));*/
     }
 
-    private void loadMaps() {
-        //For loop with all map worlds??
-        System.out.println("Loading maps");
+    private void loadMaps(Connection connection) {
+        File newMapFile = new File(pathToNewMaps);
 
-        File f = plugin.getServer().getWorldContainer();
-        String[] mapNameList = f.list();
+        String[] newMaps = newMapFile.list();
 
-        for(String mapName : mapNameList) {
-            //Right now all files are under */maps, none-maps should not be there.
-            if(!mapName.equals("world") && !mapName.equals("world_the_end")) {
-                System.out.println("Loading " + mapName);
-                //get from file /maps, all files in there should be maps with names corresponding.
-                WorldCreator creator = new WorldCreator(mapName);
-                World gameWorld = plugin.getServer().createWorld(creator);
-                if(gameWorld != null) {
-                    gameWorld.setDifficulty(Difficulty.PEACEFUL);
-                    gameWorld.setAmbientSpawnLimit(0);
-                    gameWorld.setAnimalSpawnLimit(0);
-                    gameWorld.setMonsterSpawnLimit(0);
-                    gameWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-                    gameWorld.setWaterAnimalSpawnLimit(0);
-                    gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                    gameWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-                    gameWorld.setTime(6000);
-                    gameWorld.setGameRule(GameRule.NATURAL_REGENERATION, true);
+        for(String mapName : newMaps) {
+            addMap(mapName, connection);
+        }
 
-                    gameWorld.setAutoSave(false);
+        try {
+            PreparedStatement getExistingMaps = connection.prepareStatement("SELECT * FROM test.map");
 
-                    List<Location> blueSpawnLocations = new ArrayList<>();
-                    List<Location> redSpawnLocations = new ArrayList<>();
-                    List<Location> ffaSpawnLocations = new ArrayList<>();
+            ResultSet existingMaps = getExistingMaps.executeQuery();
 
-                    Location redFlag = null;
-                    Location blueFlag = null;
+            while(existingMaps.next()) {
+                int id = existingMaps.getInt("id");
+                String name = existingMaps.getString("name");
+                boolean hasTdm = existingMaps.getBoolean("has_tdm");
+                boolean hasCtf = existingMaps.getBoolean("has_ctf");
+                boolean hasFfa = existingMaps.getBoolean("has_ffa");
+                boolean hasInfect = existingMaps.getBoolean("has_infect");
+                String mapCreator = existingMaps.getString("creator");
+                String mediaOfCreator = existingMaps.getString("media_of_creator");
+                String mapRemaker = existingMaps.getString("remaker");
+                String mediaOfRemaker = existingMaps.getString("media_of_remaker");
 
-                    //Add more such as location of something else
+                PreparedStatement getMapLocations = connection.prepareStatement("SELECT * FROM test.map_location " +
+                        "WHERE map_id=?");
+                getMapLocations.setInt(1, id);
 
-                    HashMap<String, List<Location>> locations = new HashMap<>();
+                ResultSet mapLocations = getMapLocations.executeQuery();
 
-                    Sign mapSize = (Sign) gameWorld.getBlockAt(gameWorld.getSpawnLocation()).getState();
-                    gameWorld.getBlockAt(gameWorld.getSpawnLocation()).setType(Material.AIR);
+                List<CustomLocation> locations = new ArrayList<>();
 
-                    String mostNegativeCornerLocation = mapSize.getLine(0);
-                    String[] lowestCoordinate = mostNegativeCornerLocation.split(",");
-                    int lowestX = Integer.parseInt(lowestCoordinate[0]);
-                    int lowestY = Integer.parseInt(lowestCoordinate[1]);
-                    int lowestZ = Integer.parseInt(lowestCoordinate[2]);
+                while(mapLocations.next()) {
+                    locations.add(new CustomLocation(mapLocations.getString("location_type"),
+                            mapLocations.getInt("x_location"),
+                            mapLocations.getInt("y_location"),
+                            mapLocations.getInt("z_location")));
+                }
 
-                    String mostPositiveCornerLocation = mapSize.getLine(1);
-                    String[] highestCoordinate = mostPositiveCornerLocation.split(",");
-                    int highestX = Integer.parseInt(highestCoordinate[0]);
-                    int highestY = Integer.parseInt(highestCoordinate[1]);
-                    int highestZ = Integer.parseInt(highestCoordinate[2]);
+                maps.add(new GameMap(name, locations, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator,
+                        mediaOfCreator, mapRemaker, mediaOfRemaker));
 
-                    for (int x = lowestX; x < highestX; x++) {
-                        for (int z = lowestZ; z < highestZ; z++) {
-                            for (int y = lowestY; y < highestY; y++) {
-                                if (gameWorld.getBlockAt(x, y, z).getState() instanceof Sign) {
-                                    Location signLocation = new Location(gameWorld, x, y, z);
-                                    Sign sign = (Sign) gameWorld.getBlockAt(x, y, z).getState();
-                                    String eventualSpawnOrConfig = sign.getLine(0);
-                                    boolean isConfigSign = true;
+                System.out.println("Successfully configured map: " + name);
 
-                                    switch (eventualSpawnOrConfig) {
-                                        case "bluespawn":
-                                            blueSpawnLocations.add(signLocation);
-                                            break;
-                                        case "redspawn":
-                                            redSpawnLocations.add(signLocation);
-                                            break;
-                                        case "ffaspawn":
-                                            ffaSpawnLocations.add(signLocation);
-                                            break;
-                                        case "redflag":
-                                            redFlag = signLocation;
-                                            break;
-                                        case "blueflag":
-                                            blueFlag = signLocation;
-                                            break;
-                                        default:
-                                            isConfigSign = false;
-                                    }
+            }
 
-                                    if (isConfigSign) {
-                                        signLocation.getBlock().setType(Material.AIR);
-                                    }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
 
-                                }
-                            }
+        nextMap = maps.get(new Random().nextInt(maps.size()));
+        nextMap.loadMap();
+    }
+
+    /**
+     * Copes given file/directory and all underdirectories
+     * @param src The source file
+     * @param target The target file
+     */
+    private void copyRecursive(File src, File target) throws IOException {
+        if(src.isDirectory()) {
+            if (!target.exists())
+            {
+                target.mkdirs();
+            }
+
+            File[] files = src.listFiles();
+            for(File f : files) {
+                copyRecursive(f, new File(target, f.getName()));
+            }
+        } else {
+            Files.copy(src.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+
+    }
+
+    private void addMap(String mapName, Connection connection) {
+        File src = new File(pathToNewMaps + "\\" + mapName);
+        File target = new File(pathToSavedMapsWithSigns + "\\" + mapName);
+
+        try {
+            copyRecursive(src, target);
+
+            Files.move(Paths.get(pathToNewMaps + "\\" + mapName), Paths.get(pathToPlayableMaps + "\\" + mapName),
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Saving new Map: " + mapName);
+
+        World gameWorld = plugin.getServer().createWorld(new WorldCreator(mapName));
+
+
+        gameWorld.setDifficulty(Difficulty.PEACEFUL);
+        gameWorld.setAmbientSpawnLimit(0);
+        gameWorld.setAnimalSpawnLimit(0);
+        gameWorld.setMonsterSpawnLimit(0);
+        gameWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        gameWorld.setWaterAnimalSpawnLimit(0);
+        gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        gameWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        gameWorld.setGameRule(GameRule.NATURAL_REGENERATION, true);
+        gameWorld.setTime(6000);
+
+        gameWorld.setAutoSave(false);
+
+        List<CustomLocation> locations = new ArrayList<>();
+
+        boolean hasTdm = false;
+        boolean hasCtf = false;
+        boolean hasFfa = false;
+        boolean hasInfect = false;
+
+        Sign mapSize = (Sign) gameWorld.getBlockAt(gameWorld.getSpawnLocation()).getState();
+        gameWorld.getBlockAt(gameWorld.getSpawnLocation()).setType(Material.AIR);
+
+        String mostNegativeCornerLocation = mapSize.getLine(0);
+        String[] lowestCoordinate = mostNegativeCornerLocation.split(",");
+        int lowestX = Integer.parseInt(lowestCoordinate[0]);
+        int lowestY = Integer.parseInt(lowestCoordinate[1]);
+        int lowestZ = Integer.parseInt(lowestCoordinate[2]);
+
+        String mostPositiveCornerLocation = mapSize.getLine(1);
+        String[] highestCoordinate = mostPositiveCornerLocation.split(",");
+        int highestX = Integer.parseInt(highestCoordinate[0]);
+        int highestY = Integer.parseInt(highestCoordinate[1]);
+        int highestZ = Integer.parseInt(highestCoordinate[2]);
+
+        for (int x = lowestX; x < highestX; x++) {
+            for (int z = lowestZ; z < highestZ; z++) {
+                for (int y = lowestY; y < highestY; y++) {
+                    if (gameWorld.getBlockAt(x, y, z).getState() instanceof Sign) {
+                        Location signLocation = new Location(gameWorld,  x, y, z);
+                        Sign sign = (Sign) gameWorld.getBlockAt(x, y, z).getState();
+                        String eventualSpawnOrConfig = sign.getLine(0);
+
+                        //+0.5 makes the player spawn at the center of a block, instead of in the corner
+                        signLocation.add(0.5,0,0.5);
+                        boolean isConfigSign = true;
+
+                        switch (eventualSpawnOrConfig) {
+                            case "bluespawn":
+                            case "redspawn":
+                                hasTdm = true;
+                                hasInfect = true;
+                                break;
+                            case "ffaspawn":
+                                hasFfa = true;
+                                break;
+                            case "redflag":
+                            case "blueflag":
+                                hasCtf = true;
+                                break;
+                            default:
+                                isConfigSign = false;
+                                break;
+                        }
+
+                        if (isConfigSign) {
+                            signLocation.getBlock().setType(Material.AIR);
+                            locations.add(new CustomLocation(eventualSpawnOrConfig,
+                                    signLocation.getX(), signLocation.getY(), signLocation.getZ()));
                         }
                     }
-
-                    System.out.println("Gamemodes:");
-                    if (blueSpawnLocations.size() != 0 && redSpawnLocations.size() != 0) {
-                        locations.put("bluespawn", blueSpawnLocations);
-                        locations.put("redspawn", redSpawnLocations);
-                        System.out.println("TDM");
-                        if (redFlag != null && blueFlag != null) {
-                            List<Location> l = new ArrayList<>(2);
-                            l.add(redFlag);
-                            l.add(blueFlag);
-                            locations.put("flags", l);
-                            System.out.println("CTF");
-                        }
-                    }
-
-                    if (ffaSpawnLocations.size() != 0) {
-                        locations.put("ffaspawn", ffaSpawnLocations);
-                        System.out.println("FFA");
-                    }
-
-                    //Come up with something fun about flags and more xd
-
-                    maps.put(mapName, locations);
-                    mapNames.add(mapName);
                 }
             }
         }
 
-        nextMapName = mapNames.get(new Random().nextInt(mapNames.size()));
+        try {
+            PreparedStatement createMap = connection.prepareStatement("REPLACE INTO test.map" +
+                    "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?)");
+            createMap.setString(1, mapName);
+            createMap.setBoolean(2, hasTdm);
+            createMap.setBoolean(3, hasCtf);
+            createMap.setBoolean(4, hasFfa);
+            createMap.setBoolean(5, hasInfect);
+            createMap.execute();
+
+            PreparedStatement getMapId = connection.prepareStatement("SELECT id FROM test.map " +
+                    "WHERE name=?");
+
+            getMapId.setString(1, mapName);
+            ResultSet resultId = getMapId.executeQuery();
+            int id = 0;
+
+            while(resultId.next()) {
+                id = resultId.getInt("id");
+            }
+
+            PreparedStatement removePreviousSigns = connection.prepareStatement("DELETE FROM test.map_location " +
+                    "WHERE map_id=?");
+            removePreviousSigns.setInt(1, id);
+            removePreviousSigns.execute();
+
+            for(CustomLocation location : locations) {
+                PreparedStatement insertMapLocation = connection.prepareStatement("INSERT INTO test.map_location" +
+                        "(map_id, location_type, x_location, y_location, z_location) VALUES (?,?,?,?,?)");
+
+                insertMapLocation.setInt(1, id);
+                insertMapLocation.setString(2, location.getLocationType());
+                insertMapLocation.setDouble(3, location.getX());
+                insertMapLocation.setDouble(4, location.getY());
+                insertMapLocation.setDouble(5, location.getZ());
+
+                insertMapLocation.execute();
+            }
+
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        maps.add(new GameMap(mapName, locations, hasTdm, hasCtf, hasFfa, hasInfect, "", "", "", ""));
+
+        //Saves the world without the location signs.
+        plugin.getServer().unloadWorld(gameWorld, true);
     }
 
     /**
-     * Creates a BukkitRunnable task that takes counts time until next game and during a game, and starts games
+     * Creates a BukkitRunnable task that counts time until next game and during a game, and starts games
      */
     private void runTasks() {
         createVisibleTimer();
@@ -282,25 +389,25 @@ WHERE player_own_gun.player_id=5
         //Task that is used to count timer and take care of game start/end
         mainGameTask = new BukkitRunnable() {
             public void run() {
-            if (timeUntilNextGame == 0) {
-                if(timeUntilGameEnds == -1) {
-                    startGame();
-                    timeUntilGameEnds = game.getLength();
-                } else if(timeUntilGameEnds == 0) {
-                    endGame();
-                }
-                timeUntilGameEnds--;
-                BossBarMessage.timeUntilGameEnds(bar, timeUntilGameEnds);
-            } else {
-                timeUntilNextGame--;
-                BossBarMessage.timeUntilNextGame(bar, timeUntilNextGame);
+                if (timeUntilNextGame == 0) {
+                    if(timeUntilGameEnds == -1) {
+                        startGame();
+                        timeUntilGameEnds = game.getLength();
+                    } else if(timeUntilGameEnds == 0) {
+                        endGame();
+                    }
+                    timeUntilGameEnds--;
+                    BossBarMessage.timeUntilGameEnds(bar, timeUntilGameEnds);
+                } else {
+                    timeUntilNextGame--;
+                    BossBarMessage.timeUntilNextGame(bar, timeUntilNextGame);
 
-                if(timeUntilNextGame % 10 == 0) {
-                    BroadcastMessage.timeLeftUntilGameStarts(timeUntilNextGame, plugin.getServer());
-                } else if(timeUntilNextGame % 10 == 5) {
-                    BroadcastMessage.gameAndGamemode(nextMapName, gamemode, plugin.getServer());
+                    if(timeUntilNextGame % 10 == 0) {
+                        BroadcastMessage.timeLeftUntilGameStarts(timeUntilNextGame, plugin.getServer());
+                    } else if(timeUntilNextGame % 10 == 5) {
+                        BroadcastMessage.gameAndGamemode(nextMap.getName(), currentGamemode, plugin.getServer());
+                    }
                 }
-            }
             }
         };
 
@@ -311,7 +418,7 @@ WHERE player_own_gun.player_id=5
             public void run() {
 
                 updatePlayerList();
-                //TODO: (after release) Redo below to be more efficient
+
                 for(PlayerExtension player : playerExtensions.values()) {
                     player.updateActionBar();
                 }
@@ -354,8 +461,9 @@ WHERE player_own_gun.player_id=5
         return game.leave(playerExtensions.get(player));
     }
 
-    public String[] getMaps() {
-        return mapNames.toArray(new String[0]);
+    public List<GameMap> getMaps() {
+        return maps;
+
     }
 
     /**
@@ -373,13 +481,8 @@ WHERE player_own_gun.player_id=5
 
         System.out.println("Resetting maps:");
 
-        File f = plugin.getServer().getWorldContainer();
-        String[] mapNames = f.list();
-
-        for(String mapName : mapNames) {
-            System.out.println(mapName);
-            plugin.getServer().unloadWorld(plugin.getServer().getWorld(mapName), false);
-            plugin.getServer().getWorld(mapName);
+        for(GameMap map : maps) {
+            map.unloadMap();
         }
     }
 
@@ -390,15 +493,37 @@ WHERE player_own_gun.player_id=5
      * @return True if the map and gamemode was set, False otherwise.
      */
     public boolean pickNextMapAndGamemode(String mapName, String gamemode) {
-        if(!mapNames.contains(mapName))
-            return false;
+        for(GameMap map : maps) {
+            if(map.getName().equals(mapName) && map.hasGamemode(gamemode)) {
+                previousMap = nextMap;
+                nextMap = map;
+                currentGamemode = gamemode;
 
-        if(!isValidGamemode(mapName, gamemode))
-            return false;
+                previousMap.unloadMap();
+                nextMap.loadMap();
 
-        nextMapName = mapName;
-        this.gamemode = gamemode;
-        return true;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Picks next map and gamemode randomly, will not be same map as previously.
+     * But may be same gamemode.
+     */
+    public void pickNextMapAndGamemode() {
+        Random random = new Random();
+
+        while(nextMap.getName().equals(previousMap.getName())) {
+            nextMap = maps.get(random.nextInt(maps.size()));
+        }
+
+        //Note: This does not work when there's only one map.
+        previousMap.unloadMap();
+        nextMap.loadMap();
+        currentGamemode = nextMap.getGamemode();
     }
 
     /**
@@ -410,56 +535,20 @@ WHERE player_own_gun.player_id=5
     }
 
     /**
-     * Picks next map and gamemode randomly, will not be same map as previously.
-     * But may be same gamemode.
-     */
-    public void pickNextMapAndGamemode() {
-        Random random = new Random();
-
-        //Note: This does not work when there's only one map.
-        while(nextMapName.equals(previousMapName)) {
-            nextMapName = mapNames.get(random.nextInt(mapNames.size()));
-        }
-
-        do {
-            gamemode = gamemodes[random.nextInt(gamemodes.length)];
-        } while(!isValidGamemode(nextMapName, gamemode));
-    }
-
-    private boolean isValidGamemode(String mapName, String gamemode) {
-        switch(gamemode) {
-            case "tdm":
-                if(!maps.get(mapName).containsKey("bluespawn"))
-                    return false;
-                break;
-            case "ctf":
-                if(!maps.get(mapName).containsKey("bluespawn") || !maps.get(mapName).containsKey("flags"))
-                    return false;
-                break;
-            case "ffa":
-                if(!maps.get(mapName).containsKey("ffaspawn"))
-                    return false;
-                break;
-            default:
-                return false;
-        }
-        return true;
-    }
-
-    /**
      * Start a game with the current settings for game and gamemode.
      */
     public void startGame() {
         if(game == null) {
-            switch(gamemode) {
+            switch(currentGamemode) {
                 case "tdm":
-                    game = new TeamDeathMatch(nextMapName, maps.get(nextMapName), playerExtensions);
+                    //Send the map in instead of locations etc
+                    game = new TeamDeathMatch(nextMap, playerExtensions);
                     break;
                 case "ctf":
-                    game = new CaptureTheFlag(nextMapName, maps.get(nextMapName), plugin, playerExtensions);
+                    game = new CaptureTheFlag(nextMap, plugin, playerExtensions);
                     break;
                 case "ffa":
-                    game = new FreeForAll(nextMapName, maps.get(nextMapName), playerExtensions);
+                    game = new FreeForAll(nextMap, playerExtensions);
                     break;
             }
 
@@ -478,8 +567,9 @@ WHERE player_own_gun.player_id=5
 
             game.end(false);
             game = null;
-            previousMapName = nextMapName;
+            previousMap = nextMap;
             pickNextMapAndGamemode();
+            //reloadMap(previousMapName);
             timeUntilNextGame = 60;
             timeUntilGameEnds = 0;
         }
@@ -508,7 +598,7 @@ WHERE player_own_gun.player_id=5
     private void updatePlayerList() {
         if(game == null) {
             for(Player player : playerExtensions.keySet()) {
-                PlayerListMessage.setLobbyHeader(player, gamemode, nextMapName);
+                PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName());
             }
         } else  {
             game.updatePlayerList();

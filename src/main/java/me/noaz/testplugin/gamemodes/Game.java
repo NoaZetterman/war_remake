@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.entity.Player;
@@ -11,6 +12,7 @@ import java.util.HashMap;
  */
 public abstract class Game {
     Team[] teams;
+    GameMap map;
     HashMap<Player,PlayerExtension> players;
     private int gameLength = 360;
 

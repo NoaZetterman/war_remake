@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
@@ -13,24 +14,26 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 public class CaptureTheFlag extends Game {
     private Flag blueFlag;
     private Flag redFlag;
 
-    public CaptureTheFlag(String worldName, HashMap<String, List<Location>> locations, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
+    public CaptureTheFlag(GameMap map, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
         this.players = players;
-        teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
-        teams[0].setSpawnPoints(locations.get("redspawn"));
-        teams[1].setSpawnPoints(locations.get("bluespawn"));
+        this.map = map;
 
-        List<Location> flags = locations.get("flags");
+        teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
+        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
+        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
+
+        Location redFlagLocation = map.getRedFlagLocation();
+        Location blueFlagLocation = map.getBlueFlagLocation();
 
         //Flag position 0 is always red and pos 1 is always blue.
-        redFlag = new Flag(Color.RED, flags.get(0), flags.get(1), worldName, plugin, players);
-        blueFlag = new Flag(Color.BLUE, flags.get(1), flags.get(0), worldName, plugin, players);
+        redFlag = new Flag(Color.RED, redFlagLocation, blueFlagLocation, map, plugin, players);
+        blueFlag = new Flag(Color.BLUE, blueFlagLocation, redFlagLocation, map, plugin, players);
 
         init(players);
     }

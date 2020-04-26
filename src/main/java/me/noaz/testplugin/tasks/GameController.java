@@ -21,11 +21,11 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,9 +57,9 @@ public class GameController {
     private GameMap previousMap = null;
     private String currentGamemode = "tdm";
     private String[] gamemodes = {"tdm", "ctf", "ffa"};
-    private final String pathToNewMaps = "C:\\Users\\Noa\\MinecraftBukkitServer\\newMaps";
-    private final String pathToSavedMapsWithSigns = "C:\\Users\\Noa\\MinecraftBukkitServer\\mapsWithLocationSigns";
-    private final String pathToPlayableMaps = "C:\\Users\\Noa\\MinecraftBukkitServer\\maps";
+    private final String pathToNewMaps = "C:/Users/Noa/MinecraftBukkitServer/newMaps";
+    private final String pathToSavedMapsWithSigns = "C:/Users/Noa/MinecraftBukkitServer/mapsWithLocationSigns";
+    private final String pathToPlayableMaps = "C:/Users/Noa/MinecraftBukkitServer/maps";
 
     //Bluespawn etc should probably be constants
 
@@ -224,7 +224,7 @@ WHERE player_own_gun.player_id=5
         if(src.isDirectory()) {
             if (!target.exists())
             {
-                target.mkdirs();
+                target.mkdir();
             }
 
             File[] files = src.listFiles();
@@ -237,14 +237,32 @@ WHERE player_own_gun.player_id=5
 
     }
 
+    private void deleteFile(Path directory) throws IOException {
+        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+           @Override
+           public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+               Files.delete(file);
+               return FileVisitResult.CONTINUE;
+           }
+
+           @Override
+           public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+               Files.delete(dir);
+               return FileVisitResult.CONTINUE;
+           }
+        });
+    }
+
     private void addMap(String mapName, Connection connection) {
-        File src = new File(pathToNewMaps + "\\" + mapName);
-        File target = new File(pathToSavedMapsWithSigns + "\\" + mapName);
+        File src = new File(pathToNewMaps + "/" + mapName);
+        File target = new File(pathToSavedMapsWithSigns + "/" + mapName);
 
         try {
             copyRecursive(src, target);
 
-            Files.move(Paths.get(pathToNewMaps + "\\" + mapName), Paths.get(pathToPlayableMaps + "\\" + mapName),
+            deleteFile(Paths.get(pathToPlayableMaps + "/" + mapName));
+
+            Files.move(Paths.get(pathToNewMaps + "/" + mapName), Paths.get(pathToPlayableMaps + "/" + mapName),
                     StandardCopyOption.REPLACE_EXISTING);
         } catch(IOException e) {
             e.printStackTrace();
@@ -252,7 +270,8 @@ WHERE player_own_gun.player_id=5
 
         System.out.println("Saving new Map: " + mapName);
 
-        World gameWorld = plugin.getServer().createWorld(new WorldCreator(mapName));
+        WorldCreator creator = new WorldCreator(mapName);
+        World gameWorld = plugin.getServer().createWorld(creator);
 
 
         gameWorld.setDifficulty(Difficulty.PEACEFUL);
@@ -266,7 +285,7 @@ WHERE player_own_gun.player_id=5
         gameWorld.setGameRule(GameRule.NATURAL_REGENERATION, true);
         gameWorld.setTime(6000);
 
-        gameWorld.setAutoSave(false);
+        gameWorld.setAutoSave(true);
 
         List<CustomLocation> locations = new ArrayList<>();
 
@@ -368,16 +387,13 @@ WHERE player_own_gun.player_id=5
 
                 insertMapLocation.execute();
             }
-
-
         } catch(SQLException e) {
             e.printStackTrace();
         }
 
-        maps.add(new GameMap(mapName, locations, hasTdm, hasCtf, hasFfa, hasInfect, "", "", "", ""));
-
         //Saves the world without the location signs.
         plugin.getServer().unloadWorld(gameWorld, true);
+        System.out.println("Map saved: " + mapName);
     }
 
     /**
@@ -479,11 +495,7 @@ WHERE player_own_gun.player_id=5
         mainGameTask.cancel();
         updatePlayerActionBars.cancel();
 
-        System.out.println("Resetting maps:");
-
-        for(GameMap map : maps) {
-            map.unloadMap();
-        }
+        nextMap.unloadMap();
     }
 
     /**

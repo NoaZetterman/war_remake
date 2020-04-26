@@ -174,9 +174,6 @@ public class DamageEvents implements Listener {
             Player damagedPlayer = (Player) event.getEntity();
             PlayerExtension damagedPlayerExtension = gameController.getPlayerExtension(damagedPlayer);
 
-            System.out.println(event.getCause());
-
-
             switch(event.getCause()) {
                 case VOID:
                     if(!damagedPlayerExtension.isDead()) {
@@ -186,7 +183,6 @@ public class DamageEvents implements Listener {
                             damagedPlayerExtension.respawn(null);
                         } else {
                             damagedPlayer.teleport(damagedPlayer.getWorld().getSpawnLocation());
-                            damagedPlayer.setVelocity(new Vector(0, 0, 0));
                         }
                     }
 
@@ -196,6 +192,17 @@ public class DamageEvents implements Listener {
                     //TODO: Get last damage that wasn't void
                     break;
                 //Add more cases(?)
+                case FALL:
+                    if(event.getDamage() > damagedPlayer.getHealth()) {
+                        if(damagedPlayerExtension.isPlayingGame()) {
+                            damagedPlayerExtension.addDeath();
+                            damagedPlayerExtension.respawn(null);
+                        } else {
+                            damagedPlayer.teleport(damagedPlayer.getWorld().getSpawnLocation());
+                        }
+                        event.setCancelled(true);
+                    }
+                    break;
                 default:
                     break;
             }

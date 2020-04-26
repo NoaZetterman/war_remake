@@ -1,9 +1,6 @@
 package me.noaz.testplugin.Maps;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +42,8 @@ public class GameMap {
         if(world == null) {
             //Typ?
             world = Bukkit.getServer().createWorld(new WorldCreator(name));
+            System.out.println(world.getDifficulty());
+            world.setDifficulty(Difficulty.PEACEFUL);
             System.out.println("Map loaded: " + name);
         }
     }

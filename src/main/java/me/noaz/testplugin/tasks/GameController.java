@@ -260,7 +260,9 @@ WHERE player_own_gun.player_id=5
         try {
             copyRecursive(src, target);
 
-            deleteFile(Paths.get(pathToPlayableMaps + "/" + mapName));
+            if(new File(pathToPlayableMaps + "/" + mapName).exists()) {
+                deleteFile(Paths.get(pathToPlayableMaps + "/" + mapName));
+            }
 
             Files.move(Paths.get(pathToNewMaps + "/" + mapName), Paths.get(pathToPlayableMaps + "/" + mapName),
                     StandardCopyOption.REPLACE_EXISTING);

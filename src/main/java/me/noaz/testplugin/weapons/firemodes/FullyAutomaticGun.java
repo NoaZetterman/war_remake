@@ -25,7 +25,7 @@ public class FullyAutomaticGun extends Gun {
     }
 
     public void shoot() {
-        if(currentBullets != 0) {
+        if(currentClip != 0) {
             if(isShooting) {
                 fireAsIfPlayerHoldsRightClick.cancel();
             }

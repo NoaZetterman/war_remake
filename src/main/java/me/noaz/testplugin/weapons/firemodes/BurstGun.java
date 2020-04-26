@@ -21,7 +21,7 @@ public class BurstGun extends Gun {
     }
 
     public void shoot() {
-        if(!isReloading && currentBullets != 0 && isNextBulletReady && !isShooting) {
+        if(!isReloading && currentClip != 0 && isNextBulletReady && !isShooting) {
             isShooting = true;
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.bulletsPerBurst);
 

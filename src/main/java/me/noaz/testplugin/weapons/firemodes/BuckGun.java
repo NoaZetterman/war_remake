@@ -31,7 +31,7 @@ public class BuckGun extends Gun {
      * one bullet off the clip.
      */
     public void shoot() {
-        if(currentBullets > 0 && !isReloading) {
+        if(currentClip != 0 && !isReloading) {
             if(isShooting) {
                 fireAsIfPlayerHoldsRightClick.cancel();
             }
@@ -39,7 +39,7 @@ public class BuckGun extends Gun {
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
             isShooting = true;
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
-        } else if(currentBullets <= 0) {
+        } else if(currentBullets == 0) {
             playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
         } else {

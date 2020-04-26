@@ -48,7 +48,7 @@ public abstract class Gun {
         this.statistics = statistics;
         this.config = config;
         this.currentClip = config.clipSize;
-        this.currentBullets = config.startingBullets;
+        this.currentBullets = config.startingBullets-currentClip;
 
         itemSlot = config.weaponType.equals("Secondary") ? 2 : 1;
 
@@ -72,14 +72,13 @@ public abstract class Gun {
      * Tries to shoot one burst of bullets, does not shoot when player should not be able to shoot (eg reloading)
      */
     public abstract void shoot();
-    //TODO: Add sounds
 
     /**
      * Reloads the gun
      */
     public void reload() {
         justStartedReloading = true;
-        if(!isReloading && currentClip != config.clipSize && currentClip != currentBullets) {
+        if(!isReloading && currentClip != config.clipSize && currentBullets != 0) {
             isReloading = true;
 
             reloadTask = new BukkitRunnable() {
@@ -90,6 +89,8 @@ public abstract class Gun {
                     i++;
                     if (i >= config.reloadTime) {
                         currentClip = Math.min(config.clipSize, currentBullets);
+                        currentBullets -= currentClip;
+
                         isReloading = false;
                         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
                         cancel();
@@ -199,7 +200,6 @@ public abstract class Gun {
         }
 
         currentClip--;
-        currentBullets--;
 
         statistics.addBulletsShot(config.bulletsPerClick);
 
@@ -223,7 +223,6 @@ public abstract class Gun {
         }
 
         currentClip--;
-        currentBullets--;
         statistics.addBulletsShot(config.bulletsPerClick);
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));

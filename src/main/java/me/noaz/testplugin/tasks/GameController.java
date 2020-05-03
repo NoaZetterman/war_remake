@@ -352,13 +352,23 @@ WHERE player_own_gun.player_id=5
         }
 
         try {
+            /*
             PreparedStatement createMap = connection.prepareStatement("REPLACE INTO test.map" +
-                    "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?)");
+                    "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?)");*/
+            PreparedStatement createMap = connection.prepareStatement("INSERT INTO test.map" +
+                    "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?) " +
+                    "ON DUPLICATE KEY UPDATE name=?, has_tdm=?, has_ctf=?, has_ffa=?, has_infect=?");
             createMap.setString(1, mapName);
             createMap.setBoolean(2, hasTdm);
             createMap.setBoolean(3, hasCtf);
             createMap.setBoolean(4, hasFfa);
             createMap.setBoolean(5, hasInfect);
+
+            createMap.setString(6, mapName);
+            createMap.setBoolean(7, hasTdm);
+            createMap.setBoolean(8, hasCtf);
+            createMap.setBoolean(9, hasFfa);
+            createMap.setBoolean(10, hasInfect);
             createMap.execute();
 
             PreparedStatement getMapId = connection.prepareStatement("SELECT id FROM test.map " +

@@ -4,6 +4,7 @@ import org.bukkit.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameMap {
     private final String name;
@@ -13,17 +14,13 @@ public class GameMap {
     private final boolean hasFfa;
     private final boolean hasInfect;
 
-    private final String mapCreator;
-    private final String mediaOfCreator;
-
-    //Remaker of the map, if that is a thing
-    private final String mapRemaker;
-    private final String mediaOfRemaker;
+    private final String mapCreators;
+    private final String creatorInformation;
 
     private World world;
 
     public GameMap(String name, List<CustomLocation> locations, boolean hasTdm, boolean hasCtf, boolean hasFfa, boolean hasInfect,
-                   String mapCreator, String mediaOfCreator, String mapremaker, String mediaOfRemaker) {
+                   String mapCreators, String creatorInformation) {
         this.name = name;
         this.locations = locations;
         this.hasTdm = hasTdm;
@@ -31,14 +28,18 @@ public class GameMap {
         this.hasFfa = hasFfa;
         this.hasInfect = hasInfect;
 
-        this.mapCreator = mapCreator;
-        this.mediaOfCreator = mediaOfCreator;
-        this.mapRemaker = mapremaker;
-        this.mediaOfRemaker = mediaOfRemaker;
+        this.mapCreators = mapCreators;
+
+        if(creatorInformation == null) {
+            this.creatorInformation = "";
+        } else {
+            this.creatorInformation = creatorInformation;
+        }
         //Maybe create different lists of locations for different type of locations
     }
 
     public void loadMap() {
+        //TODO: Load the map on a different thread to prevent lagspike
         if(world == null) {
             //Typ?
             world = Bukkit.getServer().createWorld(new WorldCreator(name));
@@ -74,8 +75,34 @@ public class GameMap {
      * @return Returns a random gamemode of the playable gamemodes.
      */
     public String getGamemode() {
-        //TODO: Rework this to be random
-        return "tdm";
+        Random random = new Random();
+
+        //Make this better
+        while(true) {
+            random.nextInt(4);
+            switch(random.nextInt(4)) {
+                case 0:
+                    if(hasTdm) {
+                        return "tdm";
+                    }
+                    break;
+                case 1:
+                    if(hasCtf) {
+                        return "ctf";
+                    }
+                    break;
+                case 2:
+                    if(hasInfect) {
+                        return "infect";
+                    }
+                    break;
+                case 3:
+                    if(hasFfa) {
+                        return "ffa";
+                    }
+                    break;
+            }
+        }
     }
 
     public Location getRedFlagLocation() {
@@ -109,5 +136,13 @@ public class GameMap {
 
     public World getWorld() {
         return world;
+    }
+
+    public String getMapCreators() {
+        return mapCreators;
+    }
+
+    public String getCreatorInformation() {
+        return creatorInformation;
     }
 }

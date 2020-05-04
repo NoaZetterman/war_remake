@@ -49,11 +49,17 @@ public class PlayerListMessage {
                 "Leader: " + leader + " with " + kills);
     }
 
-    public static void setLobbyHeader(Player player, String nextGamemode, String nextMap) {
+    /**
+     * @param player The player to set the header on
+     * @param nextGamemode The (short) name of the next gamemode
+     * @param nextMap Name of the next map
+     * @param mapCreator The name of the map creator/creators
+     * @param creatorInfo Additional information about the creator such as youtube channel.
+     */
+    public static void setLobbyHeader(Player player, String nextGamemode, String nextMap, String mapCreator, String creatorInfo) {
         player.setPlayerListHeader("Next Game: " + nextGamemode + "\n" +
                 "Next Map: " + nextMap + "\n" +
-                "─────────────────────────────────" + "\n" +
-                "Map creator: {name or alias of mapcreator} (YT/Twitter/whatever to map creator)");
+                "Map by: " + mapCreator + " " + creatorInfo);
     }
 
     public static void setFooter(Player player) {

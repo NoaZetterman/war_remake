@@ -181,7 +181,7 @@ WHERE player_own_gun.player_id=5
                 boolean hasFfa = existingMaps.getBoolean("has_ffa");
                 boolean hasInfect = existingMaps.getBoolean("has_infect");
                 String mapCreator = existingMaps.getString("creator");
-                String mediaOfCreator = existingMaps.getString("media_of_creator");
+                String creatorInformation = existingMaps.getString("media_of_creator");
                 String mapRemaker = existingMaps.getString("remaker");
                 String mediaOfRemaker = existingMaps.getString("media_of_remaker");
 
@@ -201,7 +201,7 @@ WHERE player_own_gun.player_id=5
                 }
 
                 maps.add(new GameMap(name, locations, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator,
-                        mediaOfCreator, mapRemaker, mediaOfRemaker));
+                        creatorInformation));
 
                 System.out.println("Successfully configured map: " + name);
 
@@ -622,7 +622,8 @@ WHERE player_own_gun.player_id=5
     private void updatePlayerList() {
         if(game == null) {
             for(Player player : playerExtensions.keySet()) {
-                PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName());
+                PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName(),
+                        nextMap.getMapCreators(), nextMap.getCreatorInformation());
             }
         } else  {
             game.updatePlayerList();

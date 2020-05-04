@@ -16,7 +16,9 @@ public class BossBarMessage {
      * @param timeUntilGameEnds The time until the game ends
      */
     public static void timeUntilGameEnds(BossBar bar, int timeUntilGameEnds) {
-        bar.setTitle("Time until game ends: " + timeUntilGameEnds);
+        int minutes = timeUntilGameEnds % 60;
+        int seconds = timeUntilGameEnds - minutes*60;
+        bar.setTitle("Time until game ends: " + minutes + ":" + seconds);
     }
 
     /**
@@ -25,6 +27,8 @@ public class BossBarMessage {
      * @param timeUntilNextGame The time until the next game
      */
     public static void timeUntilNextGame(BossBar bar, int timeUntilNextGame) {
-        bar.setTitle("Time until next game: " + timeUntilNextGame);
+        int minutes = timeUntilNextGame % 60;
+        int seconds = timeUntilNextGame - minutes*60;
+        bar.setTitle("Time until next game: " + minutes + ":" + seconds);
     }
 }

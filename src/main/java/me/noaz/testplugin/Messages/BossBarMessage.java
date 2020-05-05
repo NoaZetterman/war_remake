@@ -36,7 +36,7 @@ public class BossBarMessage {
         int seconds = timeInSeconds % 60;
         int minutes = (timeInSeconds-seconds)/60;
         time += minutes + ":";
-        if(seconds > 10) {
+        if(seconds >= 10) {
             time += seconds;
         } else if(seconds > 0){
             time += "0" + seconds;

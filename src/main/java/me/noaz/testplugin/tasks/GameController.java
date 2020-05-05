@@ -191,9 +191,9 @@ WHERE player_own_gun.player_id=5
 
                 while(mapLocations.next()) {
                     locations.add(new CustomLocation(mapLocations.getString("location_type"),
-                            mapLocations.getInt("x_location"),
-                            mapLocations.getInt("y_location"),
-                            mapLocations.getInt("z_location")));
+                            mapLocations.getDouble("x_location"),
+                            mapLocations.getDouble("y_location"),
+                            mapLocations.getDouble("z_location")));
                 }
 
                 maps.add(new GameMap(name, locations, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator));

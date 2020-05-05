@@ -56,7 +56,6 @@ public class GameController {
     private GameMap nextMap = null;
     private GameMap previousMap = null;
     private String currentGamemode = "tdm";
-    private String[] gamemodes = {"tdm", "ctf", "ffa"};
     private final String pathToNewMaps = "C:/Users/Noa/MinecraftBukkitServer/newMaps";
     private final String pathToSavedMapsWithSigns = "C:/Users/Noa/MinecraftBukkitServer/mapsWithLocationSigns";
     private final String pathToPlayableMaps = "C:/Users/Noa/MinecraftBukkitServer/maps";
@@ -181,9 +180,7 @@ WHERE player_own_gun.player_id=5
                 boolean hasFfa = existingMaps.getBoolean("has_ffa");
                 boolean hasInfect = existingMaps.getBoolean("has_infect");
                 String mapCreator = existingMaps.getString("creator");
-                String creatorInformation = existingMaps.getString("media_of_creator");
-                String mapRemaker = existingMaps.getString("remaker");
-                String mediaOfRemaker = existingMaps.getString("media_of_remaker");
+                String creatorInformation = existingMaps.getString("creator_information");
 
                 PreparedStatement getMapLocations = connection.prepareStatement("SELECT * FROM test.map_location " +
                         "WHERE map_id=?");
@@ -491,7 +488,15 @@ WHERE player_own_gun.player_id=5
 
     public List<GameMap> getMaps() {
         return maps;
+    }
 
+    public List<String> getMapNames() {
+        List<String> names = new ArrayList<>();
+        for(GameMap map : maps) {
+            names.add(map.getName());
+        }
+
+        return names;
     }
 
     /**

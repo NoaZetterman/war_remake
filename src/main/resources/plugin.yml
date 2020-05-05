@@ -12,29 +12,27 @@ commands:
     description: This command is regarding games.
   cg:
     aliases: [changeGame]
-    permission: TestPlugin.cg
+    permission: TestPlugin.admin
     description: Change current game and gamemode
   maps:
-    permission: TestPlugin.maps
+    permission: TestPlugin.admin
     description: List all playable maps
+  update:
+    permission: TestPlugin.admin
+    description: Allows to update various database information such as map creator and guns.
   profile:
     permission: TestPlugin.profile
     descrtion: Displays a players stats
   ping:
     permission: TestPlugin.ping
     description: Displays players ping
+
 permissions:
   TestPlugin.game:
     description: Allows to join and leave games
     default: true
-  TestPlugin.cg:
-    description: Allows to change game and gamemode
-    default: op
-  TestPlugin.maps:
-    description: Allows to see all playable maps
-    default: op
-  TestPlugin.op:
-    description: Access to everything
+  TestPlugin.admin:
+    description: Grants access to all administrative commands
     default: op
   TestPlugin.profile:
     description: Allows to check another players profile

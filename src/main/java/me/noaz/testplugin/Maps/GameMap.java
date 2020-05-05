@@ -28,7 +28,11 @@ public class GameMap {
         this.hasFfa = hasFfa;
         this.hasInfect = hasInfect;
 
-        this.mapCreators = mapCreators;
+        if(mapCreators == null) {
+            this.mapCreators = "";
+        } else {
+            this.mapCreators = mapCreators;
+        }
 
         if(creatorInformation == null) {
             this.creatorInformation = "";

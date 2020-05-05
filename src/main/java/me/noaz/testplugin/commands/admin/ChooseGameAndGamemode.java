@@ -1,4 +1,4 @@
-package me.noaz.testplugin.commands;
+package me.noaz.testplugin.commands.admin;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.tasks.GameController;

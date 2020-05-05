@@ -16,9 +16,8 @@ public class BossBarMessage {
      * @param timeUntilGameEnds The time until the game ends
      */
     public static void timeUntilGameEnds(BossBar bar, int timeUntilGameEnds) {
-        int minutes = timeUntilGameEnds % 60;
-        int seconds = timeUntilGameEnds - minutes*60;
-        bar.setTitle("Time until game ends: " + minutes + ":" + seconds);
+        String time = getTimeInClockFormat(timeUntilGameEnds);
+        bar.setTitle("Time until game ends: " + time);
     }
 
     /**
@@ -27,8 +26,22 @@ public class BossBarMessage {
      * @param timeUntilNextGame The time until the next game
      */
     public static void timeUntilNextGame(BossBar bar, int timeUntilNextGame) {
-        int minutes = timeUntilNextGame % 60;
-        int seconds = timeUntilNextGame - minutes*60;
-        bar.setTitle("Time until next game: " + minutes + ":" + seconds);
+        String time = getTimeInClockFormat(timeUntilNextGame);
+        bar.setTitle("Time until next game: " + time);
+    }
+
+    private static String getTimeInClockFormat(int timeInSeconds) {
+        String time = "";
+
+        int seconds = timeInSeconds % 60;
+        int minutes = (timeInSeconds-seconds)/60;
+        time += minutes + ":";
+        if(seconds < 10) {
+            time += "0" + seconds;
+        } else {
+            time += seconds;
+        }
+
+        return time;
     }
 }

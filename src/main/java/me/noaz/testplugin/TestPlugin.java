@@ -44,7 +44,7 @@ public final class TestPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Events(gameController), this);
         getServer().getPluginManager().registerEvents(new DamageEvents(gameController), this);
 
-        new Command(this, gameController);
+        new Command(this, gameController, connection);
     }
 
     @Override

@@ -28,8 +28,8 @@ public class CaptureTheFlag extends Game {
         teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
         teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
-        Location redFlagLocation = map.getRedFlagLocation();
-        Location blueFlagLocation = map.getBlueFlagLocation();
+        Location redFlagLocation = map.getLocationsByName("redflag").get(0);
+        Location blueFlagLocation = map.getLocationsByName("blueflag").get(0);
 
         //Flag position 0 is always red and pos 1 is always blue.
         redFlag = new Flag(Color.RED, redFlagLocation, blueFlagLocation, map, plugin, players);

@@ -3,6 +3,7 @@ package me.noaz.testplugin.commands;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.commands.admin.ChooseGameAndGamemode;
 import me.noaz.testplugin.commands.admin.GetMapNames;
+import me.noaz.testplugin.commands.admin.TabCompleteForUpdateCommands;
 import me.noaz.testplugin.commands.admin.UpdateCommands;
 import me.noaz.testplugin.tasks.GameController;
 
@@ -17,6 +18,8 @@ public class Command {
         new GameCommands(plugin, gameController);
         new GetMapNames(plugin, gameController);
         new UpdateCommands(plugin, gameController, connection);
+
+        plugin.getServer().getPluginCommand("update").setTabCompleter(new TabCompleteForUpdateCommands(gameController));
 
         new Profile(plugin);
         new Ping(plugin);

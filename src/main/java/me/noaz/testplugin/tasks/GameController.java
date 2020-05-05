@@ -180,7 +180,6 @@ WHERE player_own_gun.player_id=5
                 boolean hasFfa = existingMaps.getBoolean("has_ffa");
                 boolean hasInfect = existingMaps.getBoolean("has_infect");
                 String mapCreator = existingMaps.getString("creator");
-                String creatorInformation = existingMaps.getString("creator_information");
 
                 PreparedStatement getMapLocations = connection.prepareStatement("SELECT * FROM test.map_location " +
                         "WHERE map_id=?");
@@ -197,8 +196,7 @@ WHERE player_own_gun.player_id=5
                             mapLocations.getInt("z_location")));
                 }
 
-                maps.add(new GameMap(name, locations, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator,
-                        creatorInformation));
+                maps.add(new GameMap(name, locations, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator));
 
                 System.out.println("Successfully configured map: " + name);
 
@@ -563,6 +561,15 @@ WHERE player_own_gun.player_id=5
 
     }
 
+    public List<String> getGunNames() {
+        List<String> gunNames = new ArrayList<>();
+        for(GunConfiguration configuration: gunConfigurations) {
+            gunNames.add(configuration.name);
+        }
+
+        return gunNames;
+    }
+
     /**
      * Start a game with the current settings for game and gamemode.
      */
@@ -628,7 +635,7 @@ WHERE player_own_gun.player_id=5
         if(game == null) {
             for(Player player : playerExtensions.keySet()) {
                 PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName(),
-                        nextMap.getMapCreators(), nextMap.getCreatorInformation());
+                        nextMap.getMapCreators());
             }
         } else  {
             game.updatePlayerList();

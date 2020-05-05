@@ -1,6 +1,5 @@
 package me.noaz.testplugin.commands.admin;
 
-import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.command.Command;
@@ -10,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 public class UpdateCommands implements CommandExecutor {
     GameController gameController;
@@ -29,7 +27,6 @@ public class UpdateCommands implements CommandExecutor {
         if(args[0] != null && args[1] != null && args[2] != null) {
             switch(args[0].toLowerCase()) {
                 case "map":
-                case "maps":
                     if(gameController.getMapNames().contains(args[1])) {
                         try {
                             PreparedStatement updateMap;

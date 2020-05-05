@@ -151,7 +151,7 @@ public class Flag {
             flagItemStack = new ItemStack(Material.BLUE_WOOL);
         }
 
-        flag = map.getWorld().dropItem(flagPoleLocation.add(0.5,0.5,0.5), flagItemStack);
+        flag = map.getWorld().dropItem(flagPoleLocation.add(0,0.5,0), flagItemStack);
         flag.setGravity(false);
         flag.setVelocity(new Vector(0,0,0));
         flag.setPickupDelay(10000);

@@ -15,12 +15,11 @@ public class GameMap {
     private final boolean hasInfect;
 
     private final String mapCreators;
-    private final String creatorInformation;
 
     private World world;
 
     public GameMap(String name, List<CustomLocation> locations, boolean hasTdm, boolean hasCtf, boolean hasFfa, boolean hasInfect,
-                   String mapCreators, String creatorInformation) {
+                   String mapCreators) {
         this.name = name;
         this.locations = locations;
         this.hasTdm = hasTdm;
@@ -33,13 +32,6 @@ public class GameMap {
         } else {
             this.mapCreators = mapCreators;
         }
-
-        if(creatorInformation == null) {
-            this.creatorInformation = "";
-        } else {
-            this.creatorInformation = creatorInformation;
-        }
-        //Maybe create different lists of locations for different type of locations
     }
 
     public void loadMap() {
@@ -69,7 +61,8 @@ public class GameMap {
             case "ffa":
                     return hasFfa;
             case "infect":
-                return hasInfect;
+                //return hasInfect;
+                return false;
             default:
                 return false;
         }
@@ -96,9 +89,10 @@ public class GameMap {
                     }
                     break;
                 case 2:
+                    /*
                     if(hasInfect) {
                         return "infect";
-                    }
+                    }*/
                     break;
                 case 3:
                     if(hasFfa) {
@@ -107,14 +101,6 @@ public class GameMap {
                     break;
             }
         }
-    }
-
-    public Location getRedFlagLocation() {
-        return locations.get(1).getLocation(world);
-    }
-
-    public Location getBlueFlagLocation() {
-        return locations.get(1).getLocation(world);
     }
 
     /**
@@ -144,9 +130,5 @@ public class GameMap {
 
     public String getMapCreators() {
         return mapCreators;
-    }
-
-    public String getCreatorInformation() {
-        return creatorInformation;
     }
 }

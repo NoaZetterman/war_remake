@@ -2,6 +2,7 @@ package me.noaz.testplugin.Messages;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 
 /**
  * A class containing static methods to broadcast messages in the chat.
@@ -64,6 +65,10 @@ public class BroadcastMessage {
 
     public static void launchNuke(String playerName, Server server) {
         server.broadcastMessage(playerName + " launched a Nuke");
+    }
+
+    public static void infectKill(String killedPlayer, Server server) {
+        server.broadcastMessage(killedPlayer + " was infected");
     }
 
 }

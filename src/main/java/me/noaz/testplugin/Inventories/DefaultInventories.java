@@ -47,14 +47,25 @@ public class DefaultInventories {
         inventory.clear();
         setArmor(inventory, teamColor);
 
-        // Yikes... gotta be able to set some stuff like dia armor and all types of grenades etc. Ok
-        //That shouldn't be hard, just make a class leathal or tactial.
         inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
         inventory.setItem(1, customItemName(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
         inventory.setItem(2, customItemName(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
     }
 
-    public static void setArmor(PlayerInventory inventory, Color teamColor) {
+    /**
+     * Gives the player the correct loadout for a game.
+     *
+     * @param inventory The players inventory
+     * @param teamColor The color of the players team
+     */
+    public static void giveInfectedInventory(PlayerInventory inventory, Color teamColor) {
+        inventory.clear();
+        setArmor(inventory, teamColor);
+
+        inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
+    }
+
+    private static void setArmor(PlayerInventory inventory, Color teamColor) {
         /*ItemStack helmet;
         if(teamColor == Color.RED) {
             helmet = new ItemStack(Material.RED_WOOL);

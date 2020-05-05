@@ -152,6 +152,10 @@ public class PlayerExtension {
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
 
+        player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
+        //TODO: Make a separate class for display name stuff
+        player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+
         if(killer != null) {
             player.setSpectatorTarget(killer);
         } else {
@@ -175,7 +179,11 @@ public class PlayerExtension {
                     isDead = false;
                     player.setHealth(20D);
 
-                    DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+                    if(team.getTeamColor() == Color.GREEN) {
+                        DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
+                    } else {
+                        DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+                    }
 
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
@@ -268,6 +276,11 @@ public class PlayerExtension {
         secondaryGun.reset();
 
         //Replace with transparent wep corresponding to wep name/id/whatever
+        if(team.getTeamColor() == Color.GREEN) {
+            DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
+        } else {
+            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+        }
         DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
         player.setHealth(20D);
     }

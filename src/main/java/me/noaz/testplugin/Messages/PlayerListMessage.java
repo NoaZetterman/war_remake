@@ -49,6 +49,14 @@ public class PlayerListMessage {
                 "Leader: " + leader + " with " + kills);
     }
 
+    public static void setInfectHeader(Player player, int survivors) {
+        player.setPlayerListHeader("Infection" + "\n" +
+                "Zombies vs Humans - Stay alive" + "\n" +
+                "─────────────────────────────────" + "\n" +
+                "Survivors left: " + survivors);
+
+    }
+
     /**
      * @param player The player to set the header on
      * @param nextGamemode The (short) name of the next gamemode

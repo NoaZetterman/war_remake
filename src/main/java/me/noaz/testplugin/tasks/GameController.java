@@ -7,10 +7,7 @@ import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.BossBarMessage;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
-import me.noaz.testplugin.gamemodes.CaptureTheFlag;
-import me.noaz.testplugin.gamemodes.FreeForAll;
-import me.noaz.testplugin.gamemodes.Game;
-import me.noaz.testplugin.gamemodes.TeamDeathMatch;
+import me.noaz.testplugin.gamemodes.*;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.*;
@@ -586,6 +583,8 @@ WHERE player_own_gun.player_id=5
                 case "ffa":
                     game = new FreeForAll(nextMap, playerExtensions);
                     break;
+                case "infect":
+                    game = new Infect(nextMap, playerExtensions);
             }
 
             timeUntilNextGame = 0;
@@ -640,5 +639,9 @@ WHERE player_own_gun.player_id=5
         } else  {
             game.updatePlayerList();
         }
+    }
+
+    public String getCurrentGamemode() {
+        return currentGamemode;
     }
 }

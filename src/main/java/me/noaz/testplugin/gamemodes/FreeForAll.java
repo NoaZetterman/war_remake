@@ -21,7 +21,7 @@ public class FreeForAll extends Game {
 
         teams[0].setSpawnPoints(map.getLocationsByName("ffaspawn"));
 
-        init(players);
+        assignTeamToAllPlayers(players);
     }
 
     @Override

@@ -1,8 +1,11 @@
 package me.noaz.testplugin.events;
 
+import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.tasks.GameController;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -113,16 +116,24 @@ public class DamageEvents implements Listener {
             Player deadPlayer = event.getEntity();
             Player killer = event.getEntity().getKiller();
 
-            ChatMessage.playerWasShotToDeath(deadPlayer, killer);
-            ChatMessage.playerShotKilled(killer, deadPlayer);
-
-            gameController.getPlayerExtension(deadPlayer).addDeath();
-
             PlayerExtension killerExtension = gameController.getPlayerExtension(killer);
+            PlayerExtension deadPlayerExtension = gameController.getPlayerExtension(deadPlayer);
 
-            killerExtension.addXp(25);
-            killerExtension.changeCredits(1);
-            killerExtension.addKill();
+            if(gameController.getCurrentGamemode().equals("infect")) {
+                //Puts the player on the other team if alive
+                gameController.getGame().assignTeam(deadPlayerExtension);
+
+            } else {
+
+
+                ChatMessage.playerWasShotToDeath(deadPlayer, killer);
+                ChatMessage.playerShotKilled(killer, deadPlayer);
+
+
+                killerExtension.addXp(25);
+                killerExtension.changeCredits(1);
+                killerExtension.addKill();
+            }
         }
     }
 
@@ -152,6 +163,21 @@ public class DamageEvents implements Listener {
 
             if(gameController.getGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
                 event.setCancelled(true);
+            } else if(gameController.getCurrentGamemode().equals("infect") && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
+                //Put the player on the zombie team if human
+                gameController.getGame().assignTeam(damagedPlayerExtension);
+                event.setCancelled(true);
+                damagedPlayerExtension.respawn(damager);
+                damagedPlayerExtension.addDeath();
+
+                ChatMessage.playerWasInfectedDeath(damagedPlayer, damager);
+                ChatMessage.playerInfectedKill(damagedPlayer, damager);
+                BroadcastMessage.infectKill(damagedPlayer.getName(), Bukkit.getServer());
+
+                damagerExtension.changeCredits(1);
+                damagerExtension.addKill();
+                damagerExtension.addXp(25);
+
             } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);

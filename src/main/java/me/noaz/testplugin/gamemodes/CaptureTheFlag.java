@@ -35,7 +35,7 @@ public class CaptureTheFlag extends Game {
         redFlag = new Flag(Color.RED, redFlagLocation, blueFlagLocation, map, plugin, players);
         blueFlag = new Flag(Color.BLUE, blueFlagLocation, redFlagLocation, map, plugin, players);
 
-        init(players);
+        assignTeamToAllPlayers(players);
     }
 
     //Handle something for capturing the flag?? End on 3 caps?

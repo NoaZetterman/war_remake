@@ -19,7 +19,7 @@ public abstract class Game {
     /**
      * Assigns each player a team and teleport them into a starting spawnpoint
      */
-    protected void init(HashMap<Player, PlayerExtension> players) {
+    protected void assignTeamToAllPlayers(HashMap<Player, PlayerExtension> players) {
         for(PlayerExtension playerExtension : players.values()) {
             assignTeam(playerExtension);
             playerExtension.startPlayingGame();
@@ -35,7 +35,7 @@ public abstract class Game {
      * Assigns a player to a team
      * @param player The player to assign a team
      */
-    abstract void assignTeam(PlayerExtension player);
+    public abstract void assignTeam(PlayerExtension player);
 
     /**
      * Lets player join the current game

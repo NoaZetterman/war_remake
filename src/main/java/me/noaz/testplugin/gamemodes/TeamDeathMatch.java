@@ -23,7 +23,7 @@ public class TeamDeathMatch extends Game {
         teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
         teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
-        init(players);
+        assignTeamToAllPlayers(players);
     }
 
     /**

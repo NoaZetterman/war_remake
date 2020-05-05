@@ -55,14 +55,13 @@ public class GameMap {
     public boolean hasGamemode(String gamemode) {
         switch(gamemode) {
             case "tdm":
-                    return hasTdm;
+                return hasTdm;
             case "ctf":
-                    return hasCtf;
+                return hasCtf;
             case "ffa":
-                    return hasFfa;
+                return hasFfa;
             case "infect":
-                //return hasInfect;
-                return false;
+                return hasInfect;
             default:
                 return false;
         }
@@ -89,10 +88,9 @@ public class GameMap {
                     }
                     break;
                 case 2:
-                    /*
                     if(hasInfect) {
                         return "infect";
-                    }*/
+                    }
                     break;
                 case 3:
                     if(hasFfa) {

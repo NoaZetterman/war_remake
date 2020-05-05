@@ -1,5 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
@@ -7,44 +8,54 @@ import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
 public class Infect extends Game {
-//TODO: The rest
-    public Infect(String worldName, HashMap<String, List<Location>> locations, HashMap<Player,PlayerExtension> players) {
+    public Infect(GameMap map, HashMap<Player,PlayerExtension> players) {
+        this.map = map;
         this.players = players;
 
-        teams = new Team[] {new Team(Color.GREEN, ChatColor.GREEN), new Team(Color.BLUE, ChatColor.BLUE)};
+        teams = new Team[] {new Team(Color.GREEN, ChatColor.DARK_GREEN), new Team(Color.BLUE, ChatColor.BLUE)};
 
-        teams[0].setSpawnPoints(locations.get("redspawn"));
-        teams[1].setSpawnPoints(locations.get("bluespawn"));
+        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
+        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
-        init(players);
+        for(PlayerExtension player : players.values()) {
+            teams[1].addPlayer(player);
+            player.setTeam(teams[1], teams[0]);
+        }
 
         Random random = new Random();
-        PlayerExtension root = players.get(random.nextInt(players.size()));
+        PlayerExtension root = players.values().toArray(new PlayerExtension[0])[random.nextInt(players.size())];
 
         teams[1].removePlayer(root);
         teams[0].addPlayer(root);
         root.setTeam(teams[0], teams[1]);
+
+        for(PlayerExtension player: players.values()) {
+            player.startPlayingGame();
+        }
         //Also add special root effect stuff I guess
     }
 
 
     @Override
     public void assignTeam(PlayerExtension player) {
-        teams[1].addPlayer(player);
-        player.setTeam(teams[1], teams[0]);
+        if(player.isPlayingGame() && teams[1].playerIsOnTeam(player)) {
+            teams[1].removePlayer(player);
+        }
+
+        teams[0].addPlayer(player);
+
+        player.setTeam(teams[0], teams[1]);
     }
 
     @Override
     public void updatePlayerList() {
-        //TODO: CHange this
         for(Player player : players.keySet()) {
-            PlayerListMessage.setTeamDeathMatchHeader(player, teams[0].getKills(), teams[1].getKills());
+            PlayerListMessage.setInfectHeader(player, teams[1].getTeamSize());
         }
     }
 

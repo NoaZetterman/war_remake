@@ -38,4 +38,12 @@ public class ChatMessage {
     public static void playerKnifeKilled(Player killedPlayer, Player killer) {
         killedPlayer.sendMessage(killer.getName() + " was knife by " + killedPlayer.getName());
     }
+
+    public static void playerInfectedKill(Player killedPlayer, Player killer) {
+        killer.sendMessage(killer.getName() + " infected " + killedPlayer.getName());
+    }
+    public static void playerWasInfectedDeath(Player killedPlayer, Player killer) {
+        killedPlayer.sendMessage(killedPlayer.getName() + " was killed by " + killer.getName());
+    }
+
 }

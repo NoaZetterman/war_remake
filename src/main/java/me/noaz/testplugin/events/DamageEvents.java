@@ -3,7 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.tasks.GameController;
+import me.noaz.testplugin.GameController;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -14,8 +14,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import javax.xml.bind.ValidationEventLocator;
 
 public class DamageEvents implements Listener {
     private GameController gameController;
@@ -172,7 +170,7 @@ public class DamageEvents implements Listener {
 
                 ChatMessage.playerWasInfectedDeath(damagedPlayer, damager);
                 ChatMessage.playerInfectedKill(damagedPlayer, damager);
-                BroadcastMessage.infectKill(damagedPlayer.getName(), Bukkit.getServer());
+                BroadcastMessage.infectKill(damagedPlayer.getName());
 
                 damagerExtension.changeCredits(1);
                 damagerExtension.addKill();

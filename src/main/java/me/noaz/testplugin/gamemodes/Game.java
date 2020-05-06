@@ -1,9 +1,11 @@
 package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.Maps.GameMap;
+import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 
@@ -11,10 +13,12 @@ import java.util.HashMap;
  * Abstract class for a game - Holds the basic components of a gamemode / type of game.
  */
 public abstract class Game {
-    Team[] teams;
-    GameMap map;
-    HashMap<Player,PlayerExtension> players;
-    private int gameLength = 360;
+    protected Team[] teams;
+    protected GameMap map;
+    protected HashMap<Player,PlayerExtension> players;
+    protected int timer = 360;
+    protected BukkitRunnable gameLoop;
+    protected TestPlugin plugin;
 
     /**
      * Assigns each player a team and teleport them into a starting spawnpoint
@@ -26,6 +30,23 @@ public abstract class Game {
         }
     }
 
+    protected void startGameLoop() {
+        gameLoop = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(teamHasWon() || timer <= 0) {
+                    end(false);
+                    this.cancel();
+                } else {
+                    timer--;
+                    updatePlayerList();
+
+                }
+            }
+        };
+
+        gameLoop.runTaskTimerAsynchronously(plugin, 0L, 1L);
+    }
     //Setup at start of game - start the game by removing spawn signs and gather their locations,
     //spawning people at random spawn locations and assigning them teams (in an equal way), or ffa way
     //Then give everyone their correct loadouts etc etc this is a lot...
@@ -36,6 +57,13 @@ public abstract class Game {
      * @param player The player to assign a team
      */
     public abstract void assignTeam(PlayerExtension player);
+
+    /**
+     * Decides if a team has won the current game or not, for example if there are no
+     * survivors in infect or a player have reached max amount of kills in free for all.
+     * @return True if a team has won, false otherwise
+     */
+    public abstract boolean teamHasWon();
 
     /**
      * Lets player join the current game
@@ -89,7 +117,7 @@ public abstract class Game {
      * @return The length of the game in seconds
      */
     public int getLength() {
-        return gameLength; //Differs between gamemodes and may differ depending on player amount (?)
+        return timer; //Differs between gamemodes and may differ depending on player amount (?)
     }
 
     public abstract void updatePlayerList();

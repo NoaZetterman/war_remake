@@ -173,7 +173,7 @@ public class Flag {
 
                                 spawnFlag(flagHolder.getLocation().add(0,1.5,0));
 
-                                BroadcastMessage.pickedUpFlag(flagHolder, plugin.getServer());
+                                BroadcastMessage.pickedUpFlag(flagHolder);
                             }
                         }
                     }
@@ -182,13 +182,13 @@ public class Flag {
                             + Math.pow(enemyFlagPoleLocation.getZ()-flagHolder.getLocation().getZ(),2));
                     if(Math.abs(lengthFromPlayerToFlag) < 0.75 && Math.sqrt(Math.pow(enemyFlagPoleLocation.getY() - flagHolder.getLocation().getY(),2)) < 2) {
                         //Cap the flag
-                        BroadcastMessage.capturedFlag(flagHolder, plugin.getServer());
+                        BroadcastMessage.capturedFlag(flagHolder);
                         captures++;
 
                         flagHolder = null;
                         spawnFlag(flagPoleLocation);
                     } else if(flagHolder.isDead()){
-                        BroadcastMessage.droppedFlag(flagHolder, plugin.getServer());
+                        BroadcastMessage.droppedFlag(flagHolder);
 
                         flagHolder = null;
 

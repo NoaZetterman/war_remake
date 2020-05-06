@@ -1,6 +1,6 @@
 package me.noaz.testplugin.commands.admin;
 
-import me.noaz.testplugin.tasks.GameController;
+import me.noaz.testplugin.GameController;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;

@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 
 public class FreeForAll extends Game {
+    int maxKills = 25;
+
     public FreeForAll(GameMap map, HashMap<Player, PlayerExtension> players) {
         this.players = players;
         this.map = map;
@@ -38,6 +40,17 @@ public class FreeForAll extends Game {
     public void assignTeam(PlayerExtension player) {
         teams[0].addPlayer(player);
         player.setTeam(teams[0], null);
+    }
+
+    @Override
+    public boolean teamHasWon() {
+        for(PlayerExtension player : teams[0].getPlayers()) {
+            int kills = player.getPlayerStatistics().getKillsThisGame();
+            if(kills >= maxKills) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -77,9 +90,9 @@ public class FreeForAll extends Game {
 
         if(leader != null) {
             String leaderName = leader.getName();
-            BroadcastMessage.teamWonGame(leaderName, Bukkit.getServer());
+            BroadcastMessage.teamWonGame(leaderName);
         } else {
-            BroadcastMessage.nooneWonGame(Bukkit.getServer());
+            BroadcastMessage.nooneWonGame();
         }
 
     }

@@ -1,5 +1,10 @@
 package me.noaz.testplugin.Messages;
 
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 
 /**
@@ -9,23 +14,22 @@ import org.bukkit.boss.BossBar;
  * @version 2020-04-09
  */
 public class BossBarMessage {
+    private static final BossBar bar = createVisibleTimer();
 
     /**
      * Changes the bossbar to display a given amount of seconds until the game ends
-     * @param bar The bossbar
      * @param timeUntilGameEnds The time until the game ends
      */
-    public static void timeUntilGameEnds(BossBar bar, int timeUntilGameEnds) {
+    public static void timeUntilGameEnds(int timeUntilGameEnds) {
         String time = getTimeInClockFormat(timeUntilGameEnds);
         bar.setTitle("Time until game ends: " + time);
     }
 
     /**
      * Changes the bossbar to display a given amount of seconds until next game
-     * @param bar The bossbar
      * @param timeUntilNextGame The time until the next game
      */
-    public static void timeUntilNextGame(BossBar bar, int timeUntilNextGame) {
+    public static void timeUntilNextGame(int timeUntilNextGame) {
         String time = getTimeInClockFormat(timeUntilNextGame);
         bar.setTitle("Time until next game: " + time);
     }
@@ -41,9 +45,17 @@ public class BossBarMessage {
         } else if(seconds > 0){
             time += "0" + seconds;
         } else {
-            time = "00";
+            time += "00";
         }
 
         return time;
+    }
+
+    private static BossBar createVisibleTimer() {
+        BossBar bossBar = Bukkit.getServer().createBossBar(NamespacedKey.minecraft("timer"), "", BarColor.PURPLE, BarStyle.SOLID, BarFlag.PLAY_BOSS_MUSIC);
+        bossBar.setVisible(true);
+        bossBar.setProgress(1.0);
+
+        return bossBar;
     }
 }

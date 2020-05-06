@@ -65,6 +65,11 @@ public class CaptureTheFlag extends Game {
     }
 
     @Override
+    public boolean teamHasWon() {
+        return false;
+    }
+
+    @Override
     public void updatePlayerList() {
         for(Player player : players.keySet())
         PlayerListMessage.setCaptureTheFlagHeader(player, blueFlag.getCaptures(), redFlag.getCaptures());
@@ -80,11 +85,11 @@ public class CaptureTheFlag extends Game {
         //replace below with captures
         if(redFlag.getCaptures() < blueFlag.getCaptures()) {
             //Red won by ... caps or something
-            BroadcastMessage.teamWonGame("Red", Bukkit.getServer());
+            BroadcastMessage.teamWonGame("Red");
         } else if(blueFlag.getCaptures() < redFlag.getCaptures()) {
-            BroadcastMessage.teamWonGame("Blue", Bukkit.getServer());
+            BroadcastMessage.teamWonGame("Blue");
         } else {
-            BroadcastMessage.nooneWonGame(Bukkit.getServer());
+            BroadcastMessage.nooneWonGame();
         }
     }
 }

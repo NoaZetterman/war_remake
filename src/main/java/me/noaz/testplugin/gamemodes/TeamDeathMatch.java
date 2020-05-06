@@ -51,6 +51,11 @@ public class TeamDeathMatch extends Game {
     }
 
     @Override
+    public boolean teamHasWon() {
+        return false;
+    }
+
+    @Override
     public void updatePlayerList() {
         for(Player player : players.keySet()) {
             PlayerListMessage.setTeamDeathMatchHeader(player, teams[0].getKills(), teams[1].getKills());
@@ -62,11 +67,11 @@ public class TeamDeathMatch extends Game {
         super.end(forceEnd);
 
         if(teams[0].getKills() > teams[1].getKills()) {
-            BroadcastMessage.teamWonGame("Red", Bukkit.getServer());
+            BroadcastMessage.teamWonGame("Red");
         } else if(teams[0].getKills() < teams[1].getKills()) {
-            BroadcastMessage.teamWonGame("Blue", Bukkit.getServer());
+            BroadcastMessage.teamWonGame("Blue");
         } else {
-            BroadcastMessage.nooneWonGame(Bukkit.getServer());
+            BroadcastMessage.nooneWonGame();
         }
     }
 }

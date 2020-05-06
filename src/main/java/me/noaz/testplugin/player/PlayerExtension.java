@@ -219,7 +219,7 @@ public class PlayerExtension {
                         enemyPlayer.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*15, 4));
                     }
 
-                    BroadcastMessage.launchEmp(player.getName(), plugin.getServer());
+                    BroadcastMessage.launchEmp(player.getName());
                     break;
                 case 21:
                     for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
@@ -232,7 +232,7 @@ public class PlayerExtension {
 
                         }
                     }
-                    BroadcastMessage.launchNuke(player.getName(), plugin.getServer());
+                    BroadcastMessage.launchNuke(player.getName());
                     break;
 
             }

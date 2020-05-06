@@ -3,7 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.PlayerListMessage;
-import me.noaz.testplugin.tasks.GameController;
+import me.noaz.testplugin.GameController;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

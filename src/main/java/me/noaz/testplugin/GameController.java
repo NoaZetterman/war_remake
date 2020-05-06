@@ -1,9 +1,7 @@
-package me.noaz.testplugin.tasks;
+package me.noaz.testplugin;
 
 import me.noaz.testplugin.Maps.CustomLocation;
 import me.noaz.testplugin.Maps.GameMap;
-import me.noaz.testplugin.ScoreManager;
-import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.BossBarMessage;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
@@ -43,8 +41,7 @@ public class GameController {
     private Game game;
     private TestPlugin plugin;
 
-    private BukkitRunnable mainGameTask;
-    private BukkitRunnable updatePlayerActionBars;
+    private BukkitRunnable timerTask;
 
     private BossBar bar;
     private List<GameMap> maps = new ArrayList<>();
@@ -70,7 +67,6 @@ public class GameController {
         this.plugin = plugin;
         createGunConfigurations(connection);
         loadMaps(connection);
-        runTasks();
     }
 
     private void createGunConfigurations(Connection connection) {
@@ -401,55 +397,6 @@ WHERE player_own_gun.player_id=5
     }
 
     /**
-     * Creates a BukkitRunnable task that counts time until next game and during a game, and starts games
-     */
-    private void runTasks() {
-        createVisibleTimer();
-
-        //Task that is used to count timer and take care of game start/end
-        mainGameTask = new BukkitRunnable() {
-            public void run() {
-                if (timeUntilNextGame == 0) {
-                    if(timeUntilGameEnds == -1) {
-                        startGame();
-                        timeUntilGameEnds = game.getLength();
-                    } else if(timeUntilGameEnds == 0) {
-                        endGame();
-                    }
-                    timeUntilGameEnds--;
-                    BossBarMessage.timeUntilGameEnds(bar, timeUntilGameEnds);
-                } else {
-                    timeUntilNextGame--;
-                    BossBarMessage.timeUntilNextGame(bar, timeUntilNextGame);
-
-                    if(timeUntilNextGame % 10 == 0) {
-                        BroadcastMessage.timeLeftUntilGameStarts(timeUntilNextGame, plugin.getServer());
-                    } else if(timeUntilNextGame % 10 == 5) {
-                        BroadcastMessage.gameAndGamemode(nextMap.getName(), currentGamemode, plugin.getServer());
-                    }
-                }
-            }
-        };
-
-        //Task that takes handles player action bars, so that it is always visible
-        updatePlayerActionBars = new BukkitRunnable() {
-
-            @Override
-            public void run() {
-
-                updatePlayerList();
-
-                for(PlayerExtension player : playerExtensions.values()) {
-                    player.updateActionBar();
-                }
-            }
-        };
-
-        updatePlayerActionBars.runTaskTimer(plugin, 0L, 10L);
-        mainGameTask.runTaskTimer(plugin, 0L, 20L);
-    }
-
-    /**
      * @return The current or the upcoming game
      */
     public Game getGame() {
@@ -504,9 +451,6 @@ WHERE player_own_gun.player_id=5
             game.end(true);
         }
 
-        mainGameTask.cancel();
-        updatePlayerActionBars.cancel();
-
         nextMap.unloadMap();
     }
 
@@ -523,7 +467,10 @@ WHERE player_own_gun.player_id=5
                 nextMap = map;
                 currentGamemode = gamemode;
 
-                previousMap.unloadMap();
+                if(previousMap != null) {
+                    previousMap.unloadMap();
+                }
+
                 nextMap.loadMap();
 
                 return true;
@@ -570,7 +517,7 @@ WHERE player_own_gun.player_id=5
     /**
      * Start a game with the current settings for game and gamemode.
      */
-    public void startGame() {
+    public Game startGame() {
         if(game == null) {
             switch(currentGamemode) {
                 case "tdm":
@@ -591,6 +538,7 @@ WHERE player_own_gun.player_id=5
             timeUntilGameEnds = game.getLength();
             System.out.println("Starting game");
         }
+        return game;
     }
 
     /**
@@ -598,7 +546,7 @@ WHERE player_own_gun.player_id=5
      */
     public void endGame() {
         if(game != null) {
-            BroadcastMessage.endGameMessage(plugin.getServer());
+            BroadcastMessage.endGameMessage();
 
             game.end(false);
             game = null;
@@ -607,13 +555,8 @@ WHERE player_own_gun.player_id=5
             //reloadMap(previousMapName);
             timeUntilNextGame = 60;
             timeUntilGameEnds = 0;
+            updateLobbyPlayerList();
         }
-    }
-
-    private void createVisibleTimer() {
-        bar = plugin.getServer().createBossBar(NamespacedKey.minecraft("timer"), "", BarColor.PURPLE, BarStyle.SOLID, BarFlag.PLAY_BOSS_MUSIC);
-        bar.setVisible(true);
-        bar.setProgress(1.0);
     }
 
     public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Connection connection) {
@@ -630,14 +573,10 @@ WHERE player_own_gun.player_id=5
         return playerExtensions.get(player);
     }
 
-    private void updatePlayerList() {
-        if(game == null) {
-            for(Player player : playerExtensions.keySet()) {
-                PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName(),
-                        nextMap.getMapCreators());
-            }
-        } else  {
-            game.updatePlayerList();
+    private void updateLobbyPlayerList() {
+        for(Player player : playerExtensions.keySet()) {
+            PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName(),
+                    nextMap.getMapCreators());
         }
     }
 

@@ -53,6 +53,11 @@ public class Infect extends Game {
     }
 
     @Override
+    public boolean teamHasWon() {
+        return teams[1].getPlayers().size() == 0;
+    }
+
+    @Override
     public void updatePlayerList() {
         for(Player player : players.keySet()) {
             PlayerListMessage.setInfectHeader(player, teams[1].getTeamSize());
@@ -63,9 +68,9 @@ public class Infect extends Game {
         super.end(forceEnd);
 
         if(teams[1].getPlayers().size() == 0) {
-            BroadcastMessage.teamWonGame("Zombies", Bukkit.getServer());
+            BroadcastMessage.teamWonGame("Zombies");
         } else {
-            BroadcastMessage.teamWonGame("Survivors", Bukkit.getServer());
+            BroadcastMessage.teamWonGame("Survivors");
         }
     }
 

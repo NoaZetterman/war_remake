@@ -5,7 +5,7 @@ import me.noaz.testplugin.commands.admin.ChooseGameAndGamemode;
 import me.noaz.testplugin.commands.admin.GetMapNames;
 import me.noaz.testplugin.commands.admin.TabCompleteForUpdateCommands;
 import me.noaz.testplugin.commands.admin.UpdateCommands;
-import me.noaz.testplugin.tasks.GameController;
+import me.noaz.testplugin.GameController;
 
 import java.sql.Connection;
 

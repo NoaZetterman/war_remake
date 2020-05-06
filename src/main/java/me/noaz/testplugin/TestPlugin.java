@@ -4,7 +4,6 @@ import me.noaz.testplugin.commands.Command;
 import me.noaz.testplugin.events.DamageEvents;
 import me.noaz.testplugin.events.Events;
 import me.noaz.testplugin.events.LogInOutEvents;
-import me.noaz.testplugin.tasks.GameController;
 import org.bukkit.GameMode;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +16,7 @@ public final class TestPlugin extends JavaPlugin {
     private String host, database, username, password;
     private int port;
 
+    private GameLoop gameLoop;
     private GameController gameController;
 
     @Override
@@ -36,6 +36,11 @@ public final class TestPlugin extends JavaPlugin {
         this.saveDefaultConfig();
 
         gameController = new GameController(this, connection);
+
+        //TODO: Fix so that next game shows right after startup
+        gameLoop = new GameLoop(gameController);
+        gameLoop.runTaskTimer(this, 20L, 1L);
+
         ScoreManager scoreManager = new ScoreManager(this);
         getServer().setDefaultGameMode(GameMode.ADVENTURE);
         getServer().getWorld("world").setPVP(false);
@@ -49,6 +54,7 @@ public final class TestPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        gameLoop.cancel();
         gameController.stop();
     }
 

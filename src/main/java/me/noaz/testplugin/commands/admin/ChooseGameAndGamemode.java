@@ -1,7 +1,7 @@
 package me.noaz.testplugin.commands.admin;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.tasks.GameController;
+import me.noaz.testplugin.GameController;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

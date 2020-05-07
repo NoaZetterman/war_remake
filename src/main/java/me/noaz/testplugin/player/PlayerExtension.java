@@ -288,21 +288,24 @@ public class PlayerExtension {
     /**
      * Ends the game for this player, teleports the player to spawn and gives spawn inventory, and other spawn configurations
      */
-    public void endGame() {
-        statistics.updateTotalScore();
-        DefaultInventories.setDefaultLobbyInventory(player.getInventory());
-        player.removePotionEffect(PotionEffectType.SLOW);
-        primaryGun.reset();
-        secondaryGun.reset();
+    public void leaveGame() {
+        if(team != null) {
+            statistics.updateTotalScore();
+            DefaultInventories.setDefaultLobbyInventory(player.getInventory());
+            player.removePotionEffect(PotionEffectType.SLOW);
+            primaryGun.reset();
+            secondaryGun.reset();
 
-        Arrays.fill(actionBarMessage, "");
+            Arrays.fill(actionBarMessage, "");
 
-        player.setPlayerListName(player.getName());
-        player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
-        team = null;
-        enemyTeam = null;
+            player.setPlayerListName(player.getName());
+            player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
+            team.removePlayer(this);
+            team = null;
+            enemyTeam = null;
 
-        player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
+            player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ import me.noaz.testplugin.commands.Command;
 import me.noaz.testplugin.events.DamageEvents;
 import me.noaz.testplugin.events.Events;
 import me.noaz.testplugin.events.LogInOutEvents;
+
 import org.bukkit.GameMode;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,7 +18,6 @@ public final class TestPlugin extends JavaPlugin {
     private int port;
 
     private GameLoop gameLoop;
-    private GameController gameController;
 
     @Override
     public void onEnable() {
@@ -35,27 +35,26 @@ public final class TestPlugin extends JavaPlugin {
 
         this.saveDefaultConfig();
 
-        gameController = new GameController(this, connection);
-
         //TODO: Fix so that next game shows right after startup
-        gameLoop = new GameLoop(gameController);
-        gameLoop.runTaskTimer(this, 20L, 1L);
+        GameData data = new GameData(this, connection);
+
+        gameLoop = new GameLoop(data, this);
+        gameLoop.runTaskTimer(this, 120L, 1L);
 
         ScoreManager scoreManager = new ScoreManager(this);
         getServer().setDefaultGameMode(GameMode.ADVENTURE);
         getServer().getWorld("world").setPVP(false);
 
-        getServer().getPluginManager().registerEvents(new LogInOutEvents(this, gameController, scoreManager, connection), this);
-        getServer().getPluginManager().registerEvents(new Events(gameController), this);
-        getServer().getPluginManager().registerEvents(new DamageEvents(gameController), this);
+        getServer().getPluginManager().registerEvents(new LogInOutEvents(this, data, scoreManager, connection), this);
+        getServer().getPluginManager().registerEvents(new Events(data), this);
+        getServer().getPluginManager().registerEvents(new DamageEvents(data, gameLoop), this);
 
-        new Command(this, gameController, connection);
+        new Command(this, gameLoop, data, connection);
     }
 
     @Override
     public void onDisable() {
         gameLoop.cancel();
-        gameController.stop();
     }
 
     /**

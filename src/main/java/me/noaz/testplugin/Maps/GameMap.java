@@ -70,7 +70,7 @@ public class GameMap {
     /**
      * @return Returns a random gamemode of the playable gamemodes.
      */
-    public String getGamemode() {
+    public String getRandomGamemode() {
         Random random = new Random();
 
         //Make this better

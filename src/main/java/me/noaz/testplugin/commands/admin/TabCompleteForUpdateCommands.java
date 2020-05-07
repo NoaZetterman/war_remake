@@ -1,6 +1,6 @@
 package me.noaz.testplugin.commands.admin;
 
-import me.noaz.testplugin.GameController;
+import me.noaz.testplugin.GameData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TabCompleteForUpdateCommands implements TabCompleter {
-    GameController gameController;
+    GameData data;
 
-    public TabCompleteForUpdateCommands(GameController gameController) {
-        this.gameController = gameController;
+    public TabCompleteForUpdateCommands(GameData data) {
+        this.data = data;
     }
 
 
@@ -29,9 +29,9 @@ public class TabCompleteForUpdateCommands implements TabCompleter {
                         break;
                     case 2:
                         if(args[0].toLowerCase().equals("map")) {
-                            list = gameController.getMapNames();
+                            list = data.getMapNames();
                         } else {
-                            list = gameController.getGunNames();
+                            list = data.getGunNames();
                         }
                         break;
                     case 3:

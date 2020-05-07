@@ -1,8 +1,8 @@
 package me.noaz.testplugin.events;
 
+import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.Inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.GameController;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,10 +21,10 @@ import org.bukkit.event.player.*;
  * Contains all events, may be broken up into multiple event classes later.
  */
 public class Events implements Listener {
-    GameController gameController;
+    GameData data;
 
-    public Events(GameController gameController) {
-        this.gameController = gameController;
+    public Events(GameData data) {
+        this.data = data;
     }
     /**
      * Disables players dropping items
@@ -46,7 +46,7 @@ public class Events implements Listener {
 
         //event.getItem()
 
-        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
 
 
@@ -110,10 +110,10 @@ public class Events implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!gameController.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() &&
+        if(!data.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() &&
                 event.getClickedInventory() != null && event.getAction() != InventoryAction.NOTHING)
-            LoadoutMenu.onItemClick(event.getClickedInventory(), event.getSlot(), gameController.getPlayerExtension((Player) event.getWhoClicked()),
-                    gameController.getGunConfigurations());
+            LoadoutMenu.onItemClick(event.getClickedInventory(), event.getSlot(), data.getPlayerExtension((Player) event.getWhoClicked()),
+                    data.getGunConfigurations());
         event.setCancelled(true);
     }
 
@@ -121,7 +121,7 @@ public class Events implements Listener {
     public void onHandSwingEvent(PlayerAnimationEvent event) {
 
         if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
-            PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+            PlayerExtension player = data.getPlayerExtension(event.getPlayer());
 
             if(player.hasWeaponInMainHand() && !player.getWeaponInMainHand().justStartedReloading()) {
                 player.changeScope();
@@ -133,7 +133,7 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
         //Reload when pressing drop button (Q)
-        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         if(player.getPrimaryGun().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
             player.reloadWeapon(player.getPrimaryGun());
         } else if (player.getSecondaryGun().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
@@ -151,19 +151,19 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerLevelChange(PlayerLevelChangeEvent event) {
-        ChatColor color = gameController.getPlayerExtension(event.getPlayer()).getTeamChatColor();
+        ChatColor color = data.getPlayerExtension(event.getPlayer()).getTeamChatColor();
 
         event.getPlayer().setDisplayName("Lvl " + event.getNewLevel() + " " + color + event.getPlayer().getName());
     }
 
     @EventHandler
     public void onChangeMainHand(PlayerItemHeldEvent event) {
-        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
 
         if(player.isPlayingGame()) {
             player.getPrimaryGun().stopShooting();
             player.getSecondaryGun().stopShooting();
-            gameController.getPlayerExtension(event.getPlayer()).unScope();
+            data.getPlayerExtension(event.getPlayer()).unScope();
         }
         player.updateActionBar();
     }

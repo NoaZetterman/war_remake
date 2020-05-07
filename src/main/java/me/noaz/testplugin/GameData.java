@@ -2,18 +2,10 @@ package me.noaz.testplugin;
 
 import me.noaz.testplugin.Maps.CustomLocation;
 import me.noaz.testplugin.Maps.GameMap;
-import me.noaz.testplugin.Messages.BossBarMessage;
-import me.noaz.testplugin.Messages.BroadcastMessage;
-import me.noaz.testplugin.Messages.PlayerListMessage;
-import me.noaz.testplugin.gamemodes.*;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -25,48 +17,130 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
- * This class contains a bukkit runnable that takes care of things that should be done each second, and starting/ending
- * games.
+ * This class contains data from the database that is used frequently.
  *
  * @author Noa Zetterman
  * @version 2020-03-01
  */
-public class GameController {
-    private Game game;
+public class GameData {
     private TestPlugin plugin;
 
-    private BukkitRunnable timerTask;
-
-    private BossBar bar;
     private List<GameMap> maps = new ArrayList<>();
     private List<GunConfiguration> gunConfigurations = new ArrayList<>();
     private HashMap<Player, PlayerExtension> playerExtensions = new HashMap<>();
-    private GameMap nextMap = null;
-    private GameMap previousMap = null;
-    private String currentGamemode = "tdm";
     private final String pathToNewMaps = "C:/Users/Noa/MinecraftBukkitServer/newMaps";
     private final String pathToSavedMapsWithSigns = "C:/Users/Noa/MinecraftBukkitServer/mapsWithLocationSigns";
     private final String pathToPlayableMaps = "C:/Users/Noa/MinecraftBukkitServer/maps";
-
-    //Bluespawn etc should probably be constants
-
-    private int timeUntilGameEnds = -1;
-    private int timeUntilNextGame = 60;
 
     /**
      * Starts the timer.
      * @param plugin This plugin
      */
-    public GameController(TestPlugin plugin, Connection connection) {
+    public GameData(TestPlugin plugin, Connection connection) {
         this.plugin = plugin;
         createGunConfigurations(connection);
-        loadMaps(connection);
+        getMaps(connection);
+    }
+
+    /**
+     * Sets the next game to given input.
+     * @param mapName The name of the map
+     * @param gamemode The gamemode to use
+     * @return True if the map and gamemode was set, False otherwise.
+     */
+    public boolean gameAndGamemodeExists(String mapName, String gamemode) {
+        for(GameMap map : maps) {
+            if(map.getName().equals(mapName) && map.hasGamemode(gamemode)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Picks next map and gamemode randomly, will not be same map as previously.
+     * But may be same gamemode.
+     * @param previousMap The previous map, this will not be selected
+     */
+    public GameMap getNewGameMap(GameMap previousMap) {
+        Random random = new Random();
+
+        GameMap nextMap = previousMap;
+        if(previousMap != null) {
+
+            while(nextMap.getName().equals(previousMap.getName())) {
+                nextMap = maps.get(random.nextInt(maps.size()));
+            }
+        } else {
+            nextMap = maps.get(random.nextInt(maps.size()));
+        }
+
+        return nextMap;
+    }
+
+    public GameMap getGameMap(String mapName) {
+        for(GameMap map : maps) {
+            if(map.getName().equals(mapName)) {
+                return map;
+            }
+        }
+        return null;
+    }
+
+    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Connection connection) {
+        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations(), connection));
+    }
+
+    public void removePlayer(Player player) {
+        playerExtensions.get(player).saveCurrentLoadout(false);
+        playerExtensions.get(player).leaveGame();
+        playerExtensions.remove(player);
+    }
+
+    public List<GameMap> getMaps() {
+        return maps;
+    }
+
+    public List<String> getMapNames() {
+        List<String> names = new ArrayList<>();
+        for(GameMap map : maps) {
+            names.add(map.getName());
+        }
+
+        return names;
+    }
+
+    /**
+     * @return All gun configurations as a HashMap, with gun name as key and a WeaponConfiguration object as value
+     */
+    public List<GunConfiguration> getGunConfigurations() {
+        return gunConfigurations;
+
+    }
+
+    public List<String> getGunNames() {
+        List<String> gunNames = new ArrayList<>();
+        for(GunConfiguration configuration: gunConfigurations) {
+            gunNames.add(configuration.name);
+        }
+
+        return gunNames;
+    }
+
+    public PlayerExtension getPlayerExtension(Player player) {
+        return playerExtensions.get(player);
+    }
+
+    public Set<Player> getPlayers() {
+        return playerExtensions.keySet();
+    }
+
+    public HashMap<Player,PlayerExtension> getPlayerExtensionHashMap() {
+        return playerExtensions;
     }
 
     private void createGunConfigurations(Connection connection) {
@@ -151,7 +225,7 @@ WHERE player_own_gun.player_id=5
                 10, 35));*/
     }
 
-    private void loadMaps(Connection connection) {
+    private void getMaps(Connection connection) {
         File newMapFile = new File(pathToNewMaps);
 
         String[] newMaps = newMapFile.list();
@@ -198,9 +272,6 @@ WHERE player_own_gun.player_id=5
         } catch(SQLException e) {
             e.printStackTrace();
         }
-
-        nextMap = maps.get(new Random().nextInt(maps.size()));
-        nextMap.loadMap();
     }
 
     /**
@@ -227,17 +298,17 @@ WHERE player_own_gun.player_id=5
 
     private void deleteFile(Path directory) throws IOException {
         Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
-           @Override
-           public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-               Files.delete(file);
-               return FileVisitResult.CONTINUE;
-           }
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
 
-           @Override
-           public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-               Files.delete(dir);
-               return FileVisitResult.CONTINUE;
-           }
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
         });
     }
 
@@ -394,193 +465,5 @@ WHERE player_own_gun.player_id=5
         //Saves the world without the location signs.
         plugin.getServer().unloadWorld(gameWorld, true);
         System.out.println("Map saved: " + mapName);
-    }
-
-    /**
-     * @return The current or the upcoming game
-     */
-    public Game getGame() {
-        return game;
-    }
-
-    /**
-     * Lets the player join the current game
-     * @param player The player that should join the game
-     * @return True if player is in game or joined game, false if there is no game to join
-     */
-    public boolean joinGame(Player player) {
-        if(game == null)
-            return false;
-
-        game.join(playerExtensions.get(player));
-        return true;
-    }
-
-    /**
-     * Tries to leave the current game, if there is one, otherwise it does not
-     * @param player The player that should leave the game
-     * @return True if the player successfully left the game, false if the player is not in a game.
-     */
-    public boolean leaveGame(Player player) {
-        if(game == null)
-            return false;
-
-        return game.leave(playerExtensions.get(player));
-    }
-
-    public List<GameMap> getMaps() {
-        return maps;
-    }
-
-    public List<String> getMapNames() {
-        List<String> names = new ArrayList<>();
-        for(GameMap map : maps) {
-            names.add(map.getName());
-        }
-
-        return names;
-    }
-
-    /**
-     * Stops the current game and saves all maps and player data.
-     * Used for stopping the server safely.
-     */
-    public void stop() {
-        if(game != null) {
-            System.out.println("Ending game and saving player data");
-            game.end(true);
-        }
-
-        nextMap.unloadMap();
-    }
-
-    /**
-     * Sets the next game to given input.
-     * @param mapName The name of the map
-     * @param gamemode The gamemode to use
-     * @return True if the map and gamemode was set, False otherwise.
-     */
-    public boolean pickNextMapAndGamemode(String mapName, String gamemode) {
-        for(GameMap map : maps) {
-            if(map.getName().equals(mapName) && map.hasGamemode(gamemode)) {
-                previousMap = nextMap;
-                nextMap = map;
-                currentGamemode = gamemode;
-
-                if(previousMap != null) {
-                    previousMap.unloadMap();
-                }
-
-                nextMap.loadMap();
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Picks next map and gamemode randomly, will not be same map as previously.
-     * But may be same gamemode.
-     */
-    public void pickNextMapAndGamemode() {
-        Random random = new Random();
-
-        while(nextMap.getName().equals(previousMap.getName())) {
-            nextMap = maps.get(random.nextInt(maps.size()));
-        }
-
-        //Note: This does not work when there's only one map.
-        previousMap.unloadMap();
-        nextMap.loadMap();
-        currentGamemode = nextMap.getGamemode();
-    }
-
-    /**
-     * @return All gun configurations as a HashMap, with gun name as key and a WeaponConfiguration object as value
-     */
-    public List<GunConfiguration> getGunConfigurations() {
-        return gunConfigurations;
-
-    }
-
-    public List<String> getGunNames() {
-        List<String> gunNames = new ArrayList<>();
-        for(GunConfiguration configuration: gunConfigurations) {
-            gunNames.add(configuration.name);
-        }
-
-        return gunNames;
-    }
-
-    /**
-     * Start a game with the current settings for game and gamemode.
-     */
-    public Game startGame() {
-        if(game == null) {
-            switch(currentGamemode) {
-                case "tdm":
-                    //Send the map in instead of locations etc
-                    game = new TeamDeathMatch(nextMap, playerExtensions);
-                    break;
-                case "ctf":
-                    game = new CaptureTheFlag(nextMap, plugin, playerExtensions);
-                    break;
-                case "ffa":
-                    game = new FreeForAll(nextMap, playerExtensions);
-                    break;
-                case "infect":
-                    game = new Infect(nextMap, playerExtensions);
-            }
-
-            timeUntilNextGame = 0;
-            timeUntilGameEnds = game.getLength();
-            System.out.println("Starting game");
-        }
-        return game;
-    }
-
-    /**
-     * End the current game, and start a new one in 60 seconds
-     */
-    public void endGame() {
-        if(game != null) {
-            BroadcastMessage.endGameMessage();
-
-            game.end(false);
-            game = null;
-            previousMap = nextMap;
-            pickNextMapAndGamemode();
-            //reloadMap(previousMapName);
-            timeUntilNextGame = 60;
-            timeUntilGameEnds = 0;
-            updateLobbyPlayerList();
-        }
-    }
-
-    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Connection connection) {
-        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations(), connection));
-    }
-
-    public void removePlayer(Player player) {
-        leaveGame(player);
-        playerExtensions.get(player).saveCurrentLoadout(false);
-        playerExtensions.remove(player);
-    }
-
-    public PlayerExtension getPlayerExtension(Player player) {
-        return playerExtensions.get(player);
-    }
-
-    private void updateLobbyPlayerList() {
-        for(Player player : playerExtensions.keySet()) {
-            PlayerListMessage.setLobbyHeader(player, currentGamemode, nextMap.getName(),
-                    nextMap.getMapCreators());
-        }
-    }
-
-    public String getCurrentGamemode() {
-        return currentGamemode;
     }
 }

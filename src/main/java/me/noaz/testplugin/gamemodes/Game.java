@@ -4,6 +4,7 @@ import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
+
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -91,7 +92,7 @@ public abstract class Game {
         }
 
         if(leftTeam)
-            player.endGame();
+            player.leaveGame();
             //More maybe
 
         return leftTeam;
@@ -132,7 +133,7 @@ public abstract class Game {
                 if (forceEnd) {
                     player.forceEndGame();
                 } else {
-                    player.endGame();
+                    player.leaveGame();
                 }
             }
         }

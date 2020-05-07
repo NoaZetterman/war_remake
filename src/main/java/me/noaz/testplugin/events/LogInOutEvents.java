@@ -1,9 +1,9 @@
 package me.noaz.testplugin.events;
 
+import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.Messages.PlayerListMessage;
-import me.noaz.testplugin.GameController;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,13 +25,13 @@ import java.sql.SQLException;
  */
 public class LogInOutEvents implements Listener {
     private TestPlugin plugin;
-    private GameController gameController;
+    private GameData data;
     private ScoreManager scoreManager;
     private Connection connection;
 
-    public LogInOutEvents(TestPlugin plugin, GameController gameController, ScoreManager scoreManager, Connection connection) {
+    public LogInOutEvents(TestPlugin plugin, GameData data, ScoreManager scoreManager, Connection connection) {
         this.plugin = plugin;
-        this.gameController = gameController;
+        this.data = data;
         this.scoreManager = scoreManager;
         this.connection = connection;
     }
@@ -59,7 +59,7 @@ public class LogInOutEvents implements Listener {
         //Temp
         PlayerListMessage.setFooter(event.getPlayer());
 
-        gameController.addPlayer(plugin, event.getPlayer(), scoreManager, connection);
+        data.addPlayer(plugin, event.getPlayer(), scoreManager, connection);
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).addPlayer(event.getPlayer());
     }
 
@@ -71,6 +71,6 @@ public class LogInOutEvents implements Listener {
         //TODO: Put row below into player extension
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).removePlayer(event.getPlayer());
         event.getPlayer().removePotionEffect(PotionEffectType.SLOW);
-        gameController.removePlayer(event.getPlayer());
+        data.removePlayer(event.getPlayer());
     }
 }

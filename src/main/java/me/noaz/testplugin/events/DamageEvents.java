@@ -1,10 +1,10 @@
 package me.noaz.testplugin.events;
 
+import me.noaz.testplugin.GameData;
+import me.noaz.testplugin.GameLoop;
 import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.GameController;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,10 +16,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class DamageEvents implements Listener {
-    private GameController gameController;
+    private GameData data;
+    private GameLoop gameLoop;
 
-    public DamageEvents(GameController gameController) {
-        this.gameController = gameController;
+    public DamageEvents(GameData data, GameLoop gameLoop) {
+        this.data = data;
+        this.gameLoop = gameLoop;
     }
 
     @EventHandler
@@ -32,10 +34,10 @@ public class DamageEvents implements Listener {
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
             Player hitPlayer = (Player) event.getHitEntity();
             Player shooter = (Player) event.getEntity().getShooter();
-            PlayerExtension hitPlayerExtension = gameController.getPlayerExtension(hitPlayer);
-            PlayerExtension shooterExtension = gameController.getPlayerExtension(shooter);
+            PlayerExtension hitPlayerExtension = data.getPlayerExtension(hitPlayer);
+            PlayerExtension shooterExtension = data.getPlayerExtension(shooter);
 
-            if(!gameController.getGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0) {
+            if(!gameLoop.getCurrentGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0) {
 
                 double damage;
                 double eyeToNeckLength = 0.25;
@@ -114,12 +116,12 @@ public class DamageEvents implements Listener {
             Player deadPlayer = event.getEntity();
             Player killer = event.getEntity().getKiller();
 
-            PlayerExtension killerExtension = gameController.getPlayerExtension(killer);
-            PlayerExtension deadPlayerExtension = gameController.getPlayerExtension(deadPlayer);
+            PlayerExtension killerExtension = data.getPlayerExtension(killer);
+            PlayerExtension deadPlayerExtension = data.getPlayerExtension(deadPlayer);
 
-            if(gameController.getCurrentGamemode().equals("infect")) {
+            if(gameLoop.getCurrentGamemode().equals("infect")) {
                 //Puts the player on the other team if alive
-                gameController.getGame().assignTeam(deadPlayerExtension);
+                gameLoop.getCurrentGame().assignTeam(deadPlayerExtension);
 
             } else {
 
@@ -137,7 +139,7 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onRespawnEvent(PlayerRespawnEvent event) {
-        PlayerExtension player = gameController.getPlayerExtension(event.getPlayer());
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         if(player.isPlayingGame()) {
             player.respawn(event.getPlayer().getKiller());
         }
@@ -156,14 +158,14 @@ public class DamageEvents implements Listener {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player damagedPlayer = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
-            PlayerExtension damagedPlayerExtension = gameController.getPlayerExtension(damagedPlayer);
-            PlayerExtension damagerExtension = gameController.getPlayerExtension(damager);
+            PlayerExtension damagedPlayerExtension = data.getPlayerExtension(damagedPlayer);
+            PlayerExtension damagerExtension = data.getPlayerExtension(damager);
 
-            if(gameController.getGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
+            if(gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
                 event.setCancelled(true);
-            } else if(gameController.getCurrentGamemode().equals("infect") && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
+            } else if(gameLoop.getCurrentGamemode().equals("infect") && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
                 //Put the player on the zombie team if human
-                gameController.getGame().assignTeam(damagedPlayerExtension);
+                gameLoop.getCurrentGame().assignTeam(damagedPlayerExtension);
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
@@ -196,7 +198,7 @@ public class DamageEvents implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if(event.getEntity() instanceof Player) {
             Player damagedPlayer = (Player) event.getEntity();
-            PlayerExtension damagedPlayerExtension = gameController.getPlayerExtension(damagedPlayer);
+            PlayerExtension damagedPlayerExtension = data.getPlayerExtension(damagedPlayer);
 
             switch(event.getCause()) {
                 case VOID:

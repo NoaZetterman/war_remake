@@ -1,18 +1,29 @@
 package me.noaz.testplugin;
 
+import me.noaz.testplugin.Maps.GameMap;
 import me.noaz.testplugin.Messages.BossBarMessage;
 import me.noaz.testplugin.Messages.BroadcastMessage;
-import me.noaz.testplugin.gamemodes.Game;
+import me.noaz.testplugin.Messages.PlayerListMessage;
+import me.noaz.testplugin.gamemodes.*;
+
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class GameLoop extends BukkitRunnable {
+    private GameData data;
+    private TestPlugin plugin;
+
     private Game currentGame;
-    private GameController gameController;
+    private GameMap currentMap;
+    private String currentGamemode;
+
     private int timer = 60;
     private int i = 0;
 
-    public GameLoop(GameController gameController) {
-        this.gameController = gameController;
+    public GameLoop(GameData data, TestPlugin plugin) {
+        this.data = data;
+        this.plugin = plugin;
+        pickNextGame();
     }
 
     @Override
@@ -32,8 +43,7 @@ public class GameLoop extends BukkitRunnable {
         }
 
         if (currentGame.teamHasWon() || timer <= 0) {
-            gameController.endGame();
-            currentGame = null;
+            endGame();
         } else {
             currentGame.updatePlayerList();
 
@@ -47,13 +57,136 @@ public class GameLoop extends BukkitRunnable {
             if (timer % 10 == 0) {
                 BroadcastMessage.timeLeftUntilGameStarts(timer);
             } else if (timer % 10 == 5) {
-                BroadcastMessage.gameAndGamemode("idk", gameController.getCurrentGamemode());
+                BroadcastMessage.gameAndGamemode(currentMap.getName(), currentGamemode);
             }
         }
 
         if(timer <= 0) {
-            currentGame = gameController.startGame();
-            timer = currentGame.getLength();
+            startGame();
         }
+    }
+
+    /**
+     * Lets the player join the current game
+     * @param player The player that should join the game
+     * @return True if player is in game or joined game, false if there is no game to join
+     */
+    public boolean joinGame(Player player) {
+        if(currentGame == null)
+            return false;
+
+        currentGame.join(data.getPlayerExtension(player));
+        return true;
+    }
+
+    /**
+     * Tries to leave the current game, if there is one, otherwise it does not
+     * @param player The player that should leave the game
+     * @return True if the player successfully left the game, false if the player is not in a game.
+     */
+    public boolean leaveGame(Player player) {
+        if(currentGame == null)
+            return false;
+
+        return currentGame.leave(data.getPlayerExtension(player));
+    }
+
+    public Game getCurrentGame() {
+        return currentGame;
+    }
+
+    public String getCurrentGamemode() {
+        return currentGamemode;
+    }
+
+    /**
+     * Start a game with the current settings for game and gamemode.
+     */
+    public void startGame() {
+        if(currentGame == null) {
+            switch(currentGamemode) {
+                case "tdm":
+                    //Send the map in instead of locations etc
+                    currentGame = new TeamDeathMatch(currentMap, data.getPlayerExtensionHashMap());
+                    break;
+                case "ctf":
+                    currentGame = new CaptureTheFlag(currentMap, plugin, data.getPlayerExtensionHashMap());
+                    break;
+                case "ffa":
+                    currentGame = new FreeForAll(currentMap, data.getPlayerExtensionHashMap());
+                    break;
+                case "infect":
+                    currentGame = new Infect(currentMap, data.getPlayerExtensionHashMap());
+                default:
+                    System.out.println("Something went wrong when starting game");
+            }
+
+            timer = currentGame.getLength();
+            System.out.println("Starting game");
+        }
+    }
+
+    /**
+     * End the current game, and start a new one in 60 seconds
+     */
+    public void endGame() {
+        if(currentGame != null) {
+            BroadcastMessage.endGameMessage();
+            currentGame.end(false);
+            currentGame = null;
+            timer = 60;
+
+            pickNextGame();
+            for(Player player : data.getPlayers()) {
+                PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
+                        currentMap.getMapCreators());
+            }
+        }
+    }
+
+    public void pickNextGame() {
+        if(currentMap != null)
+            currentMap.unloadMap();
+
+        currentMap = data.getNewGameMap(currentMap);
+        currentGamemode = currentMap.getRandomGamemode();
+
+        currentMap.loadMap();
+    }
+
+    /**
+     * Picks a game with given map name and gamemode, if the map exists with that gamemode
+     * @param mapName The name of the map
+     * @param gamemode The name of the gamemode (ex: tdm, ctf, ...)
+     * @return True if it was changed successfully, false otherwise
+     */
+    public boolean pickNextGame(String mapName, String gamemode) {
+        if(data.gameAndGamemodeExists(mapName, gamemode)) {
+            if(currentMap != null)
+                currentMap.unloadMap();
+
+            currentMap = data.getGameMap(mapName);
+            currentGamemode = gamemode;
+
+            currentMap.loadMap();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Stops the current game and saves all maps and player data.
+     * Used for stopping the server safely.
+     */
+    @Override
+    public synchronized void cancel() throws IllegalStateException {
+        if(currentGame != null) {
+            System.out.println("Ending game and saving player data");
+            currentGame.end(true);
+        }
+
+        currentMap.unloadMap();
+        super.cancel();
     }
 }

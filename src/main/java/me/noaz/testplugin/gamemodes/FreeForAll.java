@@ -39,7 +39,7 @@ public class FreeForAll extends Game {
     @Override
     public void assignTeam(PlayerExtension player) {
         teams[0].addPlayer(player);
-        player.setTeam(teams[0], null);
+        player.setTeam(teams[0], teams[0]);
     }
 
     @Override
@@ -64,8 +64,6 @@ public class FreeForAll extends Game {
                 leaderName = player.getName();
             }
         }
-
-        //TODO: Handle 0 players / No leader (may be in PlayerListMessage)
 
         for(Player player : players.keySet()) {
             PlayerListMessage.setFreeForAllHeader(player, leaderName, leaderKills);

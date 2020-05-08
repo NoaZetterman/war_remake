@@ -143,6 +143,10 @@ public class GameData {
         return playerExtensions;
     }
 
+    public Collection<PlayerExtension> getPlayerExtensions() {
+        return playerExtensions.values();
+    }
+
     private void createGunConfigurations(Connection connection) {
         new BukkitRunnable() {
             @Override

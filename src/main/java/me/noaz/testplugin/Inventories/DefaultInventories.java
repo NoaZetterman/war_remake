@@ -61,8 +61,6 @@ public class DefaultInventories {
     public static void giveInfectedInventory(PlayerInventory inventory, Color teamColor) {
         inventory.clear();
         setArmor(inventory, teamColor);
-
-        inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
     }
 
     private static void setArmor(PlayerInventory inventory, Color teamColor) {

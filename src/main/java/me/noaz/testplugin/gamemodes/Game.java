@@ -6,7 +6,6 @@ import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 
@@ -17,8 +16,7 @@ public abstract class Game {
     protected Team[] teams;
     protected GameMap map;
     protected HashMap<Player,PlayerExtension> players;
-    protected int timer = 360;
-    protected BukkitRunnable gameLoop;
+    protected int gameLengthInSeconds = 360;
     protected TestPlugin plugin;
 
     /**
@@ -30,28 +28,6 @@ public abstract class Game {
             playerExtension.startPlayingGame();
         }
     }
-
-    protected void startGameLoop() {
-        gameLoop = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(teamHasWon() || timer <= 0) {
-                    end(false);
-                    this.cancel();
-                } else {
-                    timer--;
-                    updatePlayerList();
-
-                }
-            }
-        };
-
-        gameLoop.runTaskTimerAsynchronously(plugin, 0L, 1L);
-    }
-    //Setup at start of game - start the game by removing spawn signs and gather their locations,
-    //spawning people at random spawn locations and assigning them teams (in an equal way), or ffa way
-    //Then give everyone their correct loadouts etc etc this is a lot...
-    //setup scoreboard
 
     /**
      * Assigns a player to a team
@@ -118,7 +94,7 @@ public abstract class Game {
      * @return The length of the game in seconds
      */
     public int getLength() {
-        return timer; //Differs between gamemodes and may differ depending on player amount (?)
+        return gameLengthInSeconds;
     }
 
     public abstract void updatePlayerList();

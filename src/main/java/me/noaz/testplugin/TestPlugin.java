@@ -39,7 +39,6 @@ public final class TestPlugin extends JavaPlugin {
         GameData data = new GameData(this, connection);
 
         gameLoop = new GameLoop(data, this);
-        gameLoop.runTaskTimer(this, 120L, 1L);
 
         ScoreManager scoreManager = new ScoreManager(this);
         getServer().setDefaultGameMode(GameMode.ADVENTURE);
@@ -54,7 +53,7 @@ public final class TestPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        gameLoop.cancel();
+        gameLoop.stop();
     }
 
     /**

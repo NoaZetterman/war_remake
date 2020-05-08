@@ -6,10 +6,11 @@ import me.noaz.testplugin.Messages.BroadcastMessage;
 import me.noaz.testplugin.Messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.*;
 
+import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class GameLoop extends BukkitRunnable {
+public class GameLoop {
     private GameData data;
     private TestPlugin plugin;
 
@@ -17,48 +18,78 @@ public class GameLoop extends BukkitRunnable {
     private GameMap currentMap;
     private String currentGamemode;
 
+    private BukkitRunnable perTickLoop;
+    private BukkitRunnable perSecondLoop;
+
     private int timer = 60;
-    private int i = 0;
 
     public GameLoop(GameData data, TestPlugin plugin) {
         this.data = data;
         this.plugin = plugin;
+        runGameLoop();
         pickNextGame();
     }
 
-    @Override
-    public void run() {
-        i++;
-        if(currentGame != null) {
-            gameAction();
-        } else {
-            lobbyAction();
-        }
+    //Do one with just tick stuff
+    private void runGameLoop() {
+
+        perTickLoop = new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                for (PlayerExtension player : data.getPlayerExtensions()) {
+                    player.updateActionBar();
+                }
+
+                if (currentGame != null) {
+                    gameActionPerTick();
+                } else {
+                    lobbyActionPerTick();
+                }
+            }
+        };
+
+        perTickLoop.runTaskTimerAsynchronously(plugin, 120L, 1L);
+
+        perSecondLoop = new BukkitRunnable() {
+            @Override
+            public void run() {
+                timer--;
+                if (currentGame != null) {
+                    gameActionPerSecond();
+                } else {
+                    lobbyActionPerSecond();
+                }
+
+            }
+        };
+
+        perSecondLoop.runTaskTimer(plugin, 120L, 20L);
+
     }
 
-    private void gameAction() {
-        if(i % 20 == 0) {
-            timer--;
-            BossBarMessage.timeUntilGameEnds(timer);
-        }
 
+    private void gameActionPerTick() {
+        currentGame.updatePlayerList();
+    }
+
+    private void gameActionPerSecond() {
+        BossBarMessage.timeUntilGameEnds(timer);
         if (currentGame.teamHasWon() || timer <= 0) {
             endGame();
-        } else {
-            currentGame.updatePlayerList();
-
         }
     }
 
-    private void lobbyAction() {
-        if(i % 20 == 0) {
-            timer--;
-            BossBarMessage.timeUntilNextGame(timer);
-            if (timer % 10 == 0) {
-                BroadcastMessage.timeLeftUntilGameStarts(timer);
-            } else if (timer % 10 == 5) {
-                BroadcastMessage.gameAndGamemode(currentMap.getName(), currentGamemode);
-            }
+    private void lobbyActionPerTick() {
+
+    }
+
+    private void lobbyActionPerSecond() {
+        BossBarMessage.timeUntilNextGame(timer);
+        if (timer % 10 == 0) {
+            BroadcastMessage.timeLeftUntilGameStarts(timer);
+        } else if (timer % 10 == 5) {
+            BroadcastMessage.gameAndGamemode(currentMap.getName(), currentGamemode);
         }
 
         if(timer <= 0) {
@@ -131,16 +162,14 @@ public class GameLoop extends BukkitRunnable {
      */
     public void endGame() {
         if(currentGame != null) {
-            BroadcastMessage.endGameMessage();
             currentGame.end(false);
             currentGame = null;
+
+            BroadcastMessage.endGameMessage();
+
             timer = 60;
 
             pickNextGame();
-            for(Player player : data.getPlayers()) {
-                PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
-                        currentMap.getMapCreators());
-            }
         }
     }
 
@@ -152,6 +181,11 @@ public class GameLoop extends BukkitRunnable {
         currentGamemode = currentMap.getRandomGamemode();
 
         currentMap.loadMap();
+
+        for(Player player : data.getPlayers()) {
+            PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
+                    currentMap.getMapCreators());
+        }
     }
 
     /**
@@ -161,7 +195,8 @@ public class GameLoop extends BukkitRunnable {
      * @return True if it was changed successfully, false otherwise
      */
     public boolean pickNextGame(String mapName, String gamemode) {
-        if(data.gameAndGamemodeExists(mapName, gamemode)) {
+        //TODO: Fix so that this work when just switching gamemode and not map
+        if(data.gameAndGamemodeExists(mapName, gamemode) && !mapName.equals(currentMap.getName())) {
             if(currentMap != null)
                 currentMap.unloadMap();
 
@@ -169,24 +204,27 @@ public class GameLoop extends BukkitRunnable {
             currentGamemode = gamemode;
 
             currentMap.loadMap();
+
+
+            for(Player player : data.getPlayers()) {
+                PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
+                        currentMap.getMapCreators());
+            }
             return true;
         }
 
         return false;
     }
 
-    /**
-     * Stops the current game and saves all maps and player data.
-     * Used for stopping the server safely.
-     */
-    @Override
-    public synchronized void cancel() throws IllegalStateException {
+    public void stop() {
         if(currentGame != null) {
             System.out.println("Ending game and saving player data");
             currentGame.end(true);
         }
 
+        perSecondLoop.cancel();
+        perTickLoop.cancel();
+
         currentMap.unloadMap();
-        super.cancel();
     }
 }

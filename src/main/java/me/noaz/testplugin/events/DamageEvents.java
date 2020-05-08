@@ -165,18 +165,16 @@ public class DamageEvents implements Listener {
                 event.setCancelled(true);
             } else if(gameLoop.getCurrentGamemode().equals("infect") && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
                 //Put the player on the zombie team if human
-                gameLoop.getCurrentGame().assignTeam(damagedPlayerExtension);
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
 
                 ChatMessage.playerWasInfectedDeath(damagedPlayer, damager);
                 ChatMessage.playerInfectedKill(damagedPlayer, damager);
-                BroadcastMessage.infectKill(damagedPlayer.getName());
 
-                damagerExtension.changeCredits(1);
+                damagerExtension.changeCredits(3);
                 damagerExtension.addKill();
-                damagerExtension.addXp(25);
+                damagerExtension.addXp(35);
 
             } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
                 event.setCancelled(true);

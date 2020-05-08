@@ -152,6 +152,14 @@ public class PlayerExtension {
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
 
+        if(enemyTeam.getTeamColor() == Color.GREEN) {
+            team.removePlayer(this);
+            enemyTeam.addPlayer(this);
+            Team temp = enemyTeam;
+            enemyTeam = team;
+            team = temp;
+            BroadcastMessage.infectKill(getName());
+        }
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
@@ -191,7 +199,7 @@ public class PlayerExtension {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0, 20L);
+        }.runTaskTimer(plugin, 0, 20);
     }
 
     /**
@@ -216,14 +224,17 @@ public class PlayerExtension {
                 case 15:
                     //Launch emp
                     for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
-                        enemyPlayer.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*15, 4));
+                        if(enemyPlayer != this) {
+                            enemyPlayer.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 15, 4));
+                        }
                     }
 
                     BroadcastMessage.launchEmp(player.getName());
                     break;
                 case 21:
                     for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
-                        if(!enemyPlayer.isDead() && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+                        if(!enemyPlayer.isDead() && enemyPlayer != this
+                                && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
                             enemyPlayer.getPlayerStatistics().addDeath();
                             ChatMessage.playerShotKilled(player, enemyPlayer.getPlayer());
                             ChatMessage.playerWasShotToDeath(enemyPlayer.getPlayer(), player);
@@ -281,7 +292,7 @@ public class PlayerExtension {
         } else {
             DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
         }
-        DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+
         player.setHealth(20D);
     }
 
@@ -300,11 +311,10 @@ public class PlayerExtension {
 
             player.setPlayerListName(player.getName());
             player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
-            team.removePlayer(this);
-            team = null;
-            enemyTeam = null;
-
             player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
+
+            enemyTeam = null;
+            team = null;
         }
     }
 

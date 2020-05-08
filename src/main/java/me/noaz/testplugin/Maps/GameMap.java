@@ -1,6 +1,7 @@
 package me.noaz.testplugin.Maps;
 
 import org.bukkit.*;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,11 @@ public class GameMap {
         //TODO: Load the map on a different thread to prevent lagspike
         if(world == null) {
             //Typ?
+            /*Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("TestPlugin"), () -> {
+                world = Bukkit.getServer().createWorld(new WorldCreator(name));
+                world.setDifficulty(Difficulty.PEACEFUL);
+                System.out.println("Map loaded: " + name);
+            });*/
             world = Bukkit.getServer().createWorld(new WorldCreator(name));
             world.setDifficulty(Difficulty.PEACEFUL);
             System.out.println("Map loaded: " + name);
@@ -46,6 +52,11 @@ public class GameMap {
 
     public void unloadMap() {
         if(world != null) {
+            /*Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("TestPlugin"), () -> {
+                Bukkit.getServer().unloadWorld(world, false);
+                System.out.println("Map unloaded: " + name);
+                world = null;
+            });*/
             Bukkit.getServer().unloadWorld(world, false);
             System.out.println("Map unloaded: " + name);
             world = null;

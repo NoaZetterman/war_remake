@@ -43,10 +43,17 @@ public class PlayerListMessage {
     public static void setFreeForAllHeader(Player player, String leader, int kills) {
 
         //TODO: Add nice colors
-        player.setPlayerListHeader("Free for all" + "\n" +
-                "Kill anyone - First to ??? kills wins!" + "\n" +
-                "─────────────────────────────────" + "\n" +
-                "Leader: " + leader + " with " + kills);
+        if(leader == null) {
+            player.setPlayerListHeader("Free for all" + "\n" +
+                    "Kill anyone - First to 25 kills wins!" + "\n" +
+                    "─────────────────────────────────" + "\n" +
+                    "Leader: ");
+        } else {
+            player.setPlayerListHeader("Free for all" + "\n" +
+                    "Kill anyone - First to 25 kills wins!" + "\n" +
+                    "─────────────────────────────────" + "\n" +
+                    "Leader: " + leader + " with " + kills);
+        }
     }
 
     public static void setInfectHeader(Player player, int survivors) {

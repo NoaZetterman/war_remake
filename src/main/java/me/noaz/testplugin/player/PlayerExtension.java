@@ -236,9 +236,11 @@ public class PlayerExtension {
                         if(!enemyPlayer.isDead() && enemyPlayer != this
                                 && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
                             enemyPlayer.getPlayerStatistics().addDeath();
-                            ChatMessage.playerShotKilled(player, enemyPlayer.getPlayer());
-                            ChatMessage.playerWasShotToDeath(enemyPlayer.getPlayer(), player);
+                            ChatMessage.playerShotKilled(player, enemyPlayer.getPlayer(), enemyPlayer.getTeamChatColor());
+                            ChatMessage.playerWasShotToDeath(enemyPlayer.getPlayer(), player, getTeamChatColor());
                             addKill();
+                            addXp(25);
+                            changeCredits(1);
                             enemyPlayer.respawn(player);
 
                         }

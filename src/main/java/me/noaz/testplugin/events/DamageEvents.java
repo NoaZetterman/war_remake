@@ -60,11 +60,11 @@ public class DamageEvents implements Listener {
 
                 if(healthLeft <= 0) {
                     if(isHeadshot) {
-                        ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter);
-                        ChatMessage.playerHeadshotKilled(shooter, hitPlayer);
+                        ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                        ChatMessage.playerHeadshotKilled(shooter, hitPlayer, hitPlayerExtension.getTeamChatColor());
                     } else {
-                        ChatMessage.playerWasShotToDeath(hitPlayer, shooter);
-                        ChatMessage.playerShotKilled(shooter, hitPlayer);
+                        ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                        ChatMessage.playerShotKilled(shooter, hitPlayer, hitPlayerExtension.getTeamChatColor());
                     }
 
                     hitPlayerExtension.addDeath();
@@ -125,8 +125,8 @@ public class DamageEvents implements Listener {
             } else {
 
 
-                ChatMessage.playerWasShotToDeath(deadPlayer, killer);
-                ChatMessage.playerShotKilled(killer, deadPlayer);
+                ChatMessage.playerWasShotToDeath(deadPlayer, killer, killerExtension.getTeamChatColor());
+                ChatMessage.playerShotKilled(killer, deadPlayer, deadPlayerExtension.getTeamChatColor());
 
 
                 killerExtension.addXp(25);
@@ -168,8 +168,8 @@ public class DamageEvents implements Listener {
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
 
-                ChatMessage.playerWasInfectedDeath(damagedPlayer, damager);
-                ChatMessage.playerInfectedKill(damagedPlayer, damager);
+                ChatMessage.playerWasInfectedDeath(damager, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
+                ChatMessage.playerInfectedKill(damagedPlayer, damager, damagerExtension.getTeamChatColor());
 
                 damagerExtension.changeCredits(3);
                 damagerExtension.addKill();
@@ -180,8 +180,8 @@ public class DamageEvents implements Listener {
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
 
-                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager);
-                ChatMessage.playerKnifeKilled(damagedPlayer, damager);
+                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                ChatMessage.playerKnifeKilled(damagedPlayer, damager, damagedPlayerExtension.getTeamChatColor());
 
                 damagerExtension.changeCredits(1);
                 damagerExtension.addKill();

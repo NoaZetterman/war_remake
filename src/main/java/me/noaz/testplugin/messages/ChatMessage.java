@@ -1,6 +1,7 @@
 package me.noaz.testplugin.messages;
 
 import me.noaz.testplugin.player.PlayerExtension;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
@@ -15,35 +16,46 @@ public class ChatMessage {
         player.getPlayer().sendMessage("Out of ammo!");
     }
 
-    public static void playerWasShotToDeath(Player killedPlayer, Player shooter) {
-        killedPlayer.sendMessage(killedPlayer.getName() + " was shot by " + shooter.getName());
+    public static void playerWasShotToDeath(Player killedPlayer, Player shooter, ChatColor shooterColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Shot by " +
+                shooterColor + shooter.getName());
     }
 
-    public static void playerShotKilled(Player shooter, Player killedPlayer) {
-        shooter.sendMessage(shooter.getName() + " shot " + killedPlayer.getName());
+    public static void playerShotKilled(Player shooter, Player killedPlayer, ChatColor killedColor) {
+        shooter.sendMessage(ChatColor.GRAY + "[+] " + ChatColor.GRAY + "Shot " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+25xp +1$");
+
+        //Maybe use below for specials, like the objective
+        /*shooter.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Shot " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+25xp +1$");*/
     }
 
-    public static void playerWasHeadshotToDeath(Player killedPlayer, Player shooter) {
-        killedPlayer.sendMessage(killedPlayer.getName() + " was headshot by " + shooter.getName());
+    public static void playerWasHeadshotToDeath(Player killedPlayer,Player shooter, ChatColor shooterColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Headshot by " +
+                shooterColor + shooter.getName());
     }
 
-    public static void playerHeadshotKilled(Player shooter, Player killedPlayer) {
-        shooter.sendMessage(shooter.getName() + " headshot " + killedPlayer.getName());
+    public static void playerHeadshotKilled(Player shooter, Player killedPlayer, ChatColor killedColor) {
+        shooter.sendMessage(ChatColor.GRAY + "[+] " + ChatColor.GRAY + "Headshot " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+25xp +1$");
     }
 
-    public static void playerWasKnifedToDeath(Player killedPlayer, Player killer) {
+    public static void playerWasKnifedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Knifed by " +
+                killerColor + killer.getName());
+    }
+
+    public static void playerKnifeKilled(Player killer, Player killedPlayer, ChatColor killedColor) {
+        killer.sendMessage(ChatColor.GRAY + "[+] " + ChatColor.GRAY + "Knifed " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+25xp +1$");
         killedPlayer.sendMessage(killer.getName() + " knifed " + killedPlayer.getName());
     }
 
-    public static void playerKnifeKilled(Player killedPlayer, Player killer) {
-        killedPlayer.sendMessage(killer.getName() + " was knife by " + killedPlayer.getName());
+    public static void playerInfectedKill(Player killer, Player killedPlayer, ChatColor killedColor) {
+        killer.sendMessage(ChatColor.GRAY + "[+] " + ChatColor.GRAY + "Infected " + killedColor + killedPlayer.getName());
     }
-
-    public static void playerInfectedKill(Player killedPlayer, Player killer) {
-        killer.sendMessage(killer.getName() + " infected " + killedPlayer.getName());
-    }
-    public static void playerWasInfectedDeath(Player killedPlayer, Player killer) {
-        killedPlayer.sendMessage(killedPlayer.getName() + " was killed by " + killer.getName());
+    public static void playerWasInfectedDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Infected by " + killerColor + killer.getName());
     }
 
 }

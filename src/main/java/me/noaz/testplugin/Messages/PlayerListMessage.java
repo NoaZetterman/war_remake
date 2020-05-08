@@ -47,7 +47,7 @@ public class PlayerListMessage {
             player.setPlayerListHeader("Free for all" + "\n" +
                     "Kill anyone - First to 25 kills wins!" + "\n" +
                     "─────────────────────────────────" + "\n" +
-                    "Leader: ");
+                    "Leader: -");
         } else {
             player.setPlayerListHeader("Free for all" + "\n" +
                     "Kill anyone - First to 25 kills wins!" + "\n" +

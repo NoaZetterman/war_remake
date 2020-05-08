@@ -38,7 +38,6 @@ public class Team {
      */
     public void addPlayer(PlayerExtension player) {
         players.add(player);
-        System.out.println("Adding player to team: " + player.getName());
     }
 
     /**

@@ -205,7 +205,7 @@ public class GameLoop {
 
             currentMap.loadMap();
 
-
+            
             for(Player player : data.getPlayers()) {
                 PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
                         currentMap.getMapCreators());

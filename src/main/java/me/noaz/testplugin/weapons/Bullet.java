@@ -7,7 +7,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 /**
- * Handles the physics of a bullet.
+ * Handles the physics of a bullet. Fires it and stops it after given range.
  *
  * @author Noa Zetterman
  * @version 2019-12-11
@@ -33,7 +33,6 @@ public class Bullet {
 
         bullet.setMetadata("bodyDamage", new FixedMetadataValue(plugin, bodyDamage));
         bullet.setMetadata("headDamage", new FixedMetadataValue(plugin, headDamage));
-        //bullet.getBoundingBox()
 
         Bukkit.getServer().getScheduler().runTaskLater(plugin, new ActivateGravity(bullet), (int) Math.ceil(range/bulletSpeed)); //Delay = range with respect to speed (time=dist/speed)
     }

@@ -74,6 +74,53 @@ public abstract class Gun {
     public abstract void shoot();
 
     /**
+     * Fires as many bullets as should get fired in one click/shot
+     * If multiple bullets are fired at once they will be fired in the same direction
+     * Do not use this for shotguns and alike.
+     *
+     * @param bulletDirection The bullets direction
+     */
+    protected void fireBullet(Vector bulletDirection) {
+        playFireBulletSound();
+
+        for(int i = 0; i < config.bulletsPerClick; i++) {
+            new Bullet(player.getPlayer(), plugin, bulletDirection, config.bulletSpeed,
+                    config.range, config.bodyDamage, config.headDamage);
+            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+        }
+
+        currentClip--;
+
+        statistics.addBulletsShot(config.bulletsPerClick);
+
+        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+    }
+
+    /**
+     * Fires as many bullets as should get fired in one click/shot
+     *
+     * Each bullet is fired in a different direction, but more accurate when scoping.
+     */
+    protected void fireBullet() {
+        playFireBulletSound();
+        double accuracy = player.isScoping() ? config.accuracyScoped : config.accuracyNotScoped;
+
+        for(int i = 0; i < config.bulletsPerClick; i++) {
+            Vector velocity = calculateBulletDirection(accuracy);
+            new Bullet(player.getPlayer(), plugin, velocity, config.bulletSpeed,
+                    config.range, config.bodyDamage, config.headDamage);
+            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+        }
+
+        currentClip--;
+        statistics.addBulletsShot(config.bulletsPerClick);
+
+        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
+
+        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+    }
+
+    /**
      * Reloads the gun
      */
     public void reload() {
@@ -183,51 +230,25 @@ public abstract class Gun {
         //??
     }
 
-    /**
-     * Fires as many bullets as should get fired in one click/shot
-     * If multiple bullets are fired at once they will be fired in the same direction
-     * Do not use this for shotguns and alike.
-     *
-     * @param bulletDirection The bullets direction
-     */
-    protected void fireBullet(Vector bulletDirection) {
-        playFireBulletSound();
+    protected void playFireBulletSound() {
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireBulletSound, 1, 1);
+    }
 
-        for(int i = 0; i < config.bulletsPerClick; i++) {
-            new Bullet(player.getPlayer(), plugin, bulletDirection, config.bulletSpeed,
-                    config.range, config.bodyDamage, config.headDamage);
-            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-        }
+    protected void playFireWhileReloadingSound() {
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWhileReloadingSound, 1, 1);
+    }
 
-        currentClip--;
+    protected void playFireWithoutAmmoSound() {
+        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWithoutAmmoSound, 1, 1);
+    }
 
-        statistics.addBulletsShot(config.bulletsPerClick);
-
+    public void addBullets(int amount) {
+        currentBullets += amount;
         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
     }
 
-    /**
-     * Fires as many bullets as should get fired in one click/shot
-     *
-     * Each bullet is fired in a different direction, but more accurate when scoping.
-     */
-    protected void fireBullet() {
-        playFireBulletSound();
-        double accuracy = player.isScoping() ? config.accuracyScoped : config.accuracyNotScoped;
-
-        for(int i = 0; i < config.bulletsPerClick; i++) {
-            Vector velocity = calculateBulletDirection(accuracy);
-            new Bullet(player.getPlayer(), plugin, velocity, config.bulletSpeed,
-                    config.range, config.bodyDamage, config.headDamage);
-            player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-        }
-
-        currentClip--;
-        statistics.addBulletsShot(config.bulletsPerClick);
-
-        player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-
-        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+    public boolean justStartedReloading() {
+        return justStartedReloading;
     }
 
     /**
@@ -244,40 +265,20 @@ public abstract class Gun {
         return new ItemStack(config.gunMaterial);
     }
 
+    public int getStartingBullets() {
+        return config.startingBullets;
+    }
+
     public List<String> getLore() {
         return config.weaponLore;
+    }
+
+    public GunConfiguration getConfiguration() {
+        return config;
     }
 
     @Override
     public String toString() {
         return config.name;
-    }
-
-    protected void playFireBulletSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireBulletSound, 1, 1);
-    }
-
-    protected void playFireWhileReloadingSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWhileReloadingSound, 1, 1);
-    }
-
-    protected void playFireWithoutAmmoSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWithoutAmmoSound, 1, 1);
-    }
-
-    public void addBullets(int amount) {
-        currentBullets += amount;
-    }
-
-    public int getStartingBullets() {
-        return config.startingBullets;
-    }
-
-    public boolean justStartedReloading() {
-        return justStartedReloading;
-    }
-
-    public GunConfiguration getConfiguration() {
-        return config;
     }
 }

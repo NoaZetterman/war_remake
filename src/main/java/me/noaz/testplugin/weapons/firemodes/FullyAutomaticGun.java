@@ -55,7 +55,7 @@ public class FullyAutomaticGun extends Gun {
     }
 
     /**
-     * Fires the automatic gun for 6 ticks (300ms)
+     * Fires the automatic gun for 6 ticks (300ms), or until it reloads.
      */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;

@@ -1,7 +1,7 @@
 package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.GameData;
-import me.noaz.testplugin.Inventories.LoadoutMenu;
+import me.noaz.testplugin.inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

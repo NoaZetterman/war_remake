@@ -1,4 +1,4 @@
-package me.noaz.testplugin.Inventories;
+package me.noaz.testplugin.inventories;
 
 import me.noaz.testplugin.weapons.Gun;
 import org.bukkit.Material;

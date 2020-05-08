@@ -1,9 +1,8 @@
-package me.noaz.testplugin.Messages;
+package me.noaz.testplugin.messages;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
 
 /**
  * A class containing static methods to broadcast messages in the chat.

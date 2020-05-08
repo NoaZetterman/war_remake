@@ -1,4 +1,4 @@
-package me.noaz.testplugin.Inventories;
+package me.noaz.testplugin.inventories;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;

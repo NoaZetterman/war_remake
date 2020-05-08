@@ -1,7 +1,7 @@
 package me.noaz.testplugin.weapons;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Messages.ActionBarMessage;
+import me.noaz.testplugin.messages.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import org.bukkit.Material;

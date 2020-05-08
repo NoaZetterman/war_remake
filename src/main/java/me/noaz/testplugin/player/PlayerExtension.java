@@ -1,11 +1,11 @@
 package me.noaz.testplugin.player;
 
 import de.Herbystar.TTA.TTA_Methods;
-import me.noaz.testplugin.Inventories.DefaultInventories;
+import me.noaz.testplugin.inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Messages.BroadcastMessage;
-import me.noaz.testplugin.Messages.ChatMessage;
+import me.noaz.testplugin.messages.BroadcastMessage;
+import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;

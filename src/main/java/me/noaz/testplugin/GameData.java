@@ -1,7 +1,7 @@
 package me.noaz.testplugin;
 
-import me.noaz.testplugin.Maps.CustomLocation;
-import me.noaz.testplugin.Maps.GameMap;
+import me.noaz.testplugin.maps.CustomLocation;
+import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import org.bukkit.*;

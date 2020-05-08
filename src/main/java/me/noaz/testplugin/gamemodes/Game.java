@@ -1,6 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
-import me.noaz.testplugin.Maps.GameMap;
+import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.gamemodes.teams.Team;
 import me.noaz.testplugin.player.PlayerExtension;

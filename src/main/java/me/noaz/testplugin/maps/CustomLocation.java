@@ -1,4 +1,4 @@
-package me.noaz.testplugin.Maps;
+package me.noaz.testplugin.maps;
 
 import org.bukkit.Location;
 import org.bukkit.World;

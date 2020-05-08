@@ -1,7 +1,6 @@
-package me.noaz.testplugin.Maps;
+package me.noaz.testplugin.maps;
 
 import org.bukkit.*;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;

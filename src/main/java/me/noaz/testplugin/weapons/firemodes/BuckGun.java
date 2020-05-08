@@ -1,7 +1,7 @@
 package me.noaz.testplugin.weapons.firemodes;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.Messages.ChatMessage;
+import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
 import me.noaz.testplugin.weapons.Gun;

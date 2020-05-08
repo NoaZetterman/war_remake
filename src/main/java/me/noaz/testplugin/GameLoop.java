@@ -1,9 +1,9 @@
 package me.noaz.testplugin;
 
-import me.noaz.testplugin.Maps.GameMap;
-import me.noaz.testplugin.Messages.BossBarMessage;
-import me.noaz.testplugin.Messages.BroadcastMessage;
-import me.noaz.testplugin.Messages.PlayerListMessage;
+import me.noaz.testplugin.maps.GameMap;
+import me.noaz.testplugin.messages.BossBarMessage;
+import me.noaz.testplugin.messages.BroadcastMessage;
+import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.*;
 
 import me.noaz.testplugin.player.PlayerExtension;
@@ -26,12 +26,11 @@ public class GameLoop {
     public GameLoop(GameData data, TestPlugin plugin) {
         this.data = data;
         this.plugin = plugin;
-        runGameLoop();
+        runGameLoops();
         pickNextGame();
     }
 
-    //Do one with just tick stuff
-    private void runGameLoop() {
+    private void runGameLoops() {
 
         perTickLoop = new BukkitRunnable() {
 
@@ -205,7 +204,7 @@ public class GameLoop {
 
             currentMap.loadMap();
 
-            
+
             for(Player player : data.getPlayers()) {
                 PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
                         currentMap.getMapCreators());

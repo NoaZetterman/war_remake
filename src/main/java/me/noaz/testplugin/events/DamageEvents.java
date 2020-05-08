@@ -2,8 +2,7 @@ package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.GameLoop;
-import me.noaz.testplugin.Messages.BroadcastMessage;
-import me.noaz.testplugin.Messages.ChatMessage;
+import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
 import org.bukkit.Material;

@@ -1,7 +1,7 @@
 package me.noaz.testplugin.commands.admin;
 
 import me.noaz.testplugin.GameData;
-import me.noaz.testplugin.Maps.GameMap;
+import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

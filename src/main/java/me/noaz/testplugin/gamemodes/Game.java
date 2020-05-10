@@ -45,12 +45,16 @@ public abstract class Game {
     /**
      * Lets player join the current game
      * @param player the player to join current game
+     * @return True if player joined game, false otherwise (if player is already in game)
      */
-    public void join(PlayerExtension player) {
+    public boolean join(PlayerExtension player) {
         if(!player.isPlayingGame()) {
             assignTeam(player);
             player.startPlayingGame();
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -62,14 +66,10 @@ public abstract class Game {
         boolean leftTeam = false;
         for(Team t : teams) {
             if(t.playerIsOnTeam(player)) {
-                t.removePlayer(player);
+                player.leaveGame();
                 leftTeam = true;
             }
         }
-
-        if(leftTeam)
-            player.leaveGame();
-            //More maybe
 
         return leftTeam;
     }
@@ -104,13 +104,11 @@ public abstract class Game {
      * @param forceEnd True if the game should force end (used for server shutdown), otherwise false
      */
     public void end(boolean forceEnd) {
-        for (Team team : teams) {
-            for (PlayerExtension player : team.getPlayers()) {
-                if (forceEnd) {
-                    player.forceEndGame();
-                } else {
-                    player.leaveGame();
-                }
+        for (PlayerExtension player : players.values()) {
+            if (forceEnd) {
+                player.forceEndGame();
+            } else {
+                player.leaveGame();
             }
         }
     }

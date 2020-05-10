@@ -59,29 +59,38 @@ public class DamageEvents implements Listener {
                 }
 
                 if(healthLeft <= 0) {
-                    if(isHeadshot) {
-                        ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
-                        ChatMessage.playerHeadshotKilled(shooter, hitPlayer, hitPlayerExtension.getTeamChatColor());
-                    } else {
-                        ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
-                        ChatMessage.playerShotKilled(shooter, hitPlayer, hitPlayerExtension.getTeamChatColor());
-                    }
-
                     hitPlayerExtension.addDeath();
                     hitPlayerExtension.respawn(shooter);
+
+                    int xpEarned;
+                    int creditsEarned;
+
+                    if(isHeadshot) {
+                        xpEarned = 35;
+                        creditsEarned = 2;
+
+                        shooterExtension.addHeadshotKill();
+
+                        ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                        ChatMessage.playerHeadshotKilled(shooter, xpEarned, creditsEarned, hitPlayer,
+                                hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                    } else {
+                        xpEarned = 25;
+                        creditsEarned = 1;
+
+                        shooterExtension.addKill();
+
+                        ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                        ChatMessage.playerShotKilled(shooter, xpEarned, creditsEarned, hitPlayer,
+                                hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                    }
+
                     //Print death messages before adding the kills to print
                     //eventual killstreaks after player gets killed,
                     //And add death before addKill to prevent doublekill with nuke
 
-                    if(isHeadshot) {
-                        shooterExtension.addHeadshotKill();
-                        shooterExtension.addXp(35);
-                        shooterExtension.changeCredits(2);
-                    } else {
-                        shooterExtension.addXp(25);
-                        shooterExtension.changeCredits(1);
-                        shooterExtension.addKill();
-                    }
+                    shooterExtension.addXp(xpEarned);
+                    shooterExtension.changeCredits(creditsEarned);
 
                 } else {
 
@@ -124,13 +133,16 @@ public class DamageEvents implements Listener {
 
             } else {
 
+                int xpEarned = 25;
+                int creditsEarned = 1;
 
                 ChatMessage.playerWasShotToDeath(deadPlayer, killer, killerExtension.getTeamChatColor());
-                ChatMessage.playerShotKilled(killer, deadPlayer, deadPlayerExtension.getTeamChatColor());
+                ChatMessage.playerShotKilled(killer, xpEarned, creditsEarned, deadPlayer,
+                        deadPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
 
-                killerExtension.addXp(25);
-                killerExtension.changeCredits(1);
+                killerExtension.addXp(xpEarned);
+                killerExtension.changeCredits(creditsEarned);
                 killerExtension.addKill();
             }
         }
@@ -168,24 +180,31 @@ public class DamageEvents implements Listener {
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
 
-                ChatMessage.playerWasInfectedDeath(damager, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
-                ChatMessage.playerInfectedKill(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                int xpEarned = 35;
+                int creditsEarned = 2;
 
-                damagerExtension.changeCredits(3);
+                ChatMessage.playerWasInfectedDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                ChatMessage.playerInfectedKill(damager, xpEarned, creditsEarned, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
+
+                damagerExtension.addXp(xpEarned);
+                damagerExtension.changeCredits(creditsEarned);
                 damagerExtension.addKill();
-                damagerExtension.addXp(35);
 
             } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
 
-                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
-                ChatMessage.playerKnifeKilled(damagedPlayer, damager, damagedPlayerExtension.getTeamChatColor());
+                int xpEarned = 25;
+                int creditsEarned = 1;
 
-                damagerExtension.changeCredits(1);
+                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                ChatMessage.playerKnifeKilled(damager, xpEarned, creditsEarned, damagedPlayer,
+                        damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+
+                damagerExtension.addXp(xpEarned);
+                damagerExtension.changeCredits(creditsEarned);
                 damagerExtension.addKill();
-                damagerExtension.addXp(25);
 
             }
         }

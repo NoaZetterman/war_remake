@@ -135,8 +135,8 @@ public abstract class Gun {
                 public void run() {
                     i++;
                     if (i >= config.reloadTime) {
+                        currentBullets -= (config.clipSize-currentClip);
                         currentClip = Math.min(config.clipSize, currentBullets);
-                        currentBullets -= currentClip;
 
                         isReloading = false;
                         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);

@@ -27,7 +27,7 @@ public class Flag {
     private Location flagPoleLocation;
     private Location enemyFlagPoleLocation;
     private BukkitRunnable task;
-    private BukkitRunnable test;
+    private BukkitRunnable woolFlagTask;
     private ArmorStand flagPole;
     private PlayerExtension flagHolder = null;
     private HashMap<Player, PlayerExtension> players;
@@ -156,7 +156,7 @@ public class Flag {
         flag.setVelocity(new Vector(0,0,0));
         flag.setPickupDelay(10000);
 
-        test = new BukkitRunnable() {
+        woolFlagTask = new BukkitRunnable() {
             @Override
             public void run() {
                 if(flagHolder == null) {
@@ -209,7 +209,7 @@ public class Flag {
             }
         };
 
-        test.runTaskTimer(plugin, 0L, 1L);
+        woolFlagTask.runTaskTimer(plugin, 0L, 1L);
 
 
     }
@@ -223,7 +223,7 @@ public class Flag {
      * Safely removes the the flag.
      */
     public void stop() {
-        test.cancel();
+        woolFlagTask.cancel();
         //task.cancel();
         //flagPole.remove();
     }

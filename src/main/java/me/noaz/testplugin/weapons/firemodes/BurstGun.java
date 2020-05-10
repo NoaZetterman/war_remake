@@ -50,7 +50,7 @@ public class BurstGun extends Gun {
 
             task.runTaskTimer(plugin, 0L, 1L);
 
-        } else if(currentBullets == 0){
+        } else if(currentBullets == 0 && currentClip == 0){
             playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
         } else if(isReloading) {

@@ -80,7 +80,7 @@ public class GameMap {
     /**
      * @return Returns a random gamemode of the playable gamemodes.
      */
-    public String getRandomGamemode() {
+    public String getRandomGamemode(int playercount) {
         Random random = new Random();
 
         //Make this better
@@ -98,7 +98,7 @@ public class GameMap {
                     }
                     break;
                 case 2:
-                    if(hasInfect) {
+                    if(hasInfect && playercount >= 2) {
                         return "infect";
                     }
                     break;

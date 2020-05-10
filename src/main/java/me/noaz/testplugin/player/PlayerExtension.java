@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -151,6 +152,8 @@ public class PlayerExtension {
         isDead = true;
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
+        player.removePotionEffect(PotionEffectType.SPEED);
+        player.removePotionEffect(PotionEffectType.SLOW);
 
         if(enemyTeam.getTeamColor() == Color.GREEN) {
             team.removePlayer(this);
@@ -189,6 +192,8 @@ public class PlayerExtension {
 
                     if(team.getTeamColor() == Color.GREEN) {
                         DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*60*6, 1));
+                        Arrays.fill(actionBarMessage, "");
                     } else {
                         DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
                     }
@@ -235,12 +240,17 @@ public class PlayerExtension {
                     for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
                         if(!enemyPlayer.isDead() && enemyPlayer != this
                                 && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-                            enemyPlayer.getPlayerStatistics().addDeath();
-                            ChatMessage.playerShotKilled(player, enemyPlayer.getPlayer(), enemyPlayer.getTeamChatColor());
-                            ChatMessage.playerWasShotToDeath(enemyPlayer.getPlayer(), player, getTeamChatColor());
+                            enemyPlayer.addDeath();
+
+                            int xpEarned = 25;
+                            int creditsEarned = 1;
+
+                            ChatMessage.playerNukeKilled(player, xpEarned, creditsEarned, enemyPlayer.getPlayer(),
+                                    enemyPlayer.getTeamChatColor());
+                            ChatMessage.playerWasNukeKilled(enemyPlayer.getPlayer(), player, getTeamChatColor());
                             addKill();
-                            addXp(25);
-                            changeCredits(1);
+                            addXp(xpEarned);
+                            changeCredits(creditsEarned);
                             enemyPlayer.respawn(player);
 
                         }
@@ -291,6 +301,7 @@ public class PlayerExtension {
         //Replace with transparent wep corresponding to wep name/id/whatever
         if(team.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 2));
         } else {
             DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
         }
@@ -309,11 +320,19 @@ public class PlayerExtension {
             primaryGun.reset();
             secondaryGun.reset();
 
+            Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
+
+            for(PotionEffect effect : activeEffects) {
+                player.removePotionEffect(effect.getType());
+            }
+
             Arrays.fill(actionBarMessage, "");
 
             player.setPlayerListName(player.getName());
             player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
             player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
+
+            team.removePlayer(this);
 
             enemyTeam = null;
             team = null;

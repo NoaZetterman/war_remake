@@ -91,6 +91,11 @@ public class GameLoop {
             BroadcastMessage.gameAndGamemode(currentMap.getName(), currentGamemode);
         }
 
+        for(Player player : data.getPlayers()) {
+            PlayerListMessage.setLobbyHeader(player, currentGamemode, currentMap.getName(),
+                    currentMap.getMapCreators());
+        }
+
         if(timer <= 0) {
             startGame();
         }
@@ -105,8 +110,7 @@ public class GameLoop {
         if(currentGame == null)
             return false;
 
-        currentGame.join(data.getPlayerExtension(player));
-        return true;
+        return currentGame.join(data.getPlayerExtension(player));
     }
 
     /**
@@ -177,7 +181,7 @@ public class GameLoop {
             currentMap.unloadMap();
 
         currentMap = data.getNewGameMap(currentMap);
-        currentGamemode = currentMap.getRandomGamemode();
+        currentGamemode = currentMap.getRandomGamemode(data.getPlayercount());
 
         currentMap.loadMap();
 

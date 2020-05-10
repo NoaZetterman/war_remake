@@ -147,6 +147,10 @@ public class GameData {
         return playerExtensions.values();
     }
 
+    public int getPlayercount() {
+        return playerExtensions.size();
+    }
+
     private void createGunConfigurations(Connection connection) {
         new BukkitRunnable() {
             @Override

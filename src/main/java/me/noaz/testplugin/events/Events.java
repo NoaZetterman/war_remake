@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityToggleSwimEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -140,8 +141,10 @@ public class Events implements Listener {
             player.reloadWeapon(player.getSecondaryGun());
         }
 
-        event.setCancelled(true);
         event.getItemDrop().remove();
+        event.setCancelled(true);
+        //@SuppressWarnings()
+        //event.getPlayer().updateInventory();
     }
 
     @EventHandler
@@ -189,5 +192,10 @@ public class Events implements Listener {
     @EventHandler
     public void onXpGain(PlayerExpChangeEvent event) {
         event.setAmount(0);
+    }
+
+    @EventHandler
+    public void onPlayerSwimEvent(EntityToggleSwimEvent event) {
+        //event.setCancelled(true);
     }
 }

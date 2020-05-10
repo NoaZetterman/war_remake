@@ -4,6 +4,7 @@ import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.PlayerListMessage;
+import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,6 +59,8 @@ public class LogInOutEvents implements Listener {
 
         //Temp
         PlayerListMessage.setFooter(event.getPlayer());
+
+        event.getPlayer().setGameMode(GameMode.ADVENTURE);
 
         data.addPlayer(plugin, event.getPlayer(), scoreManager, connection);
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).addPlayer(event.getPlayer());

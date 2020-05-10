@@ -31,7 +31,7 @@ public class SingleBoltGun extends Gun {
                 startBurstDelay();
             }
 
-        } else if(currentBullets == 0) {
+        } else if(currentBullets == 0 && currentClip == 0) {
             playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
         } else if(isReloading) {

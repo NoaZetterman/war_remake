@@ -24,8 +24,12 @@ public class GameCommands implements CommandExecutor {
         }
 
         if(args[0].toLowerCase().equals("join") || args[0].toLowerCase().equals("j")) {
-            if(gameLoop.joinGame((Player)sender)) {
-                sender.sendMessage("Joining game");
+            if(gameLoop.getCurrentGame() != null) {
+                if(gameLoop.joinGame((Player)sender)) {
+                    sender.sendMessage("Joining game");
+                } else {
+                    sender.sendMessage("Already in the game");
+                }
             } else {
                 sender.sendMessage("Game has not yet started");
             }

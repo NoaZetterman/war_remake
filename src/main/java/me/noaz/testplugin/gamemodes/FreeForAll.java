@@ -71,10 +71,6 @@ public class FreeForAll extends Game {
 
     @Override
     public void end(boolean forceEnd) {
-        super.end(forceEnd);
-
-        //Kinda broken
-
         PlayerExtension leader = null;
         int leaderKills = 0;
         for(PlayerExtension player : teams[0].getPlayers()) {
@@ -91,6 +87,8 @@ public class FreeForAll extends Game {
         } else {
             BroadcastMessage.nooneWonGame();
         }
+
+        super.end(forceEnd);
 
     }
 }

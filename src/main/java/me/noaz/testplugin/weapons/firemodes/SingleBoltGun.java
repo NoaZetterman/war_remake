@@ -21,7 +21,7 @@ public class SingleBoltGun extends Gun {
         super(plugin, player, statistics, config);
     }
 
-    public void shoot() {
+    public synchronized void shoot() {
         if(!isReloading && currentClip != 0 && isNextBulletReady) {
             fireBullet();
 

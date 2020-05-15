@@ -30,7 +30,7 @@ public class BuckGun extends Gun {
      * For buck guns, a number of bullets gets fired in different directions at the same time, but only removes
      * one bullet off the clip.
      */
-    public void shoot() {
+    public synchronized void shoot() {
         if(currentClip != 0 && !isReloading) {
             if(isShooting) {
                 fireAsIfPlayerHoldsRightClick.cancel();

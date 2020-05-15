@@ -183,12 +183,14 @@ public class Events implements Listener {
             ((Player) event.getEntity()).setFoodLevel(20);
         }
     }
-
+//BOOK
+    //BRICKS
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         //TODO: Change this, maybe put in ChatMessages?
         event.setFormat("%s" + ChatColor.GOLD + " >" + ChatColor.WHITE + " %s");
     }
+
     @EventHandler
     public void onXpGain(PlayerExpChangeEvent event) {
         event.setAmount(0);
@@ -196,6 +198,6 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerSwimEvent(EntityToggleSwimEvent event) {
-        //event.setCancelled(true);
+        event.setCancelled(true);
     }
 }

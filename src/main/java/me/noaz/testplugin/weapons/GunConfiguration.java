@@ -17,7 +17,7 @@ public class GunConfiguration {
     public final int gunId;
     public final String name;
     public final List<String> weaponLore;
-    public final String weaponType;
+    public final String gunType;
     public final String fireType;
 
     public final double accuracyScoped;
@@ -73,7 +73,7 @@ public class GunConfiguration {
      * @param fireWhileReloadingSound The sound this gun makes when trying to fire a bullet while reloading
      * @param fireWithoutAmmoSound The sound this gun maks when trying to fire a bullet without any ammo.
      */
-    public GunConfiguration(int gunId, String name, String gunMaterial, String weaponType, String fireType, double accuracyNotScoped,
+    public GunConfiguration(int gunId, String name, String gunMaterial, String gunType, String fireType, double accuracyNotScoped,
                             double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
                             int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
                             int clipSize, int loadoutSlot, int unlockLevel, int costToBuy,
@@ -81,7 +81,7 @@ public class GunConfiguration {
         this.gunId = gunId;
         this.name = name;
         this.gunMaterial = Material.getMaterial(gunMaterial);
-        this.weaponType = weaponType;
+        this.gunType = gunType;
         this.fireType = fireType;
         this.accuracyNotScoped = accuracyNotScoped;
         this.accuracyScoped = accuracyScoped;
@@ -106,7 +106,7 @@ public class GunConfiguration {
 
         //Do some logic to show it in a more beautiful way
         weaponLore = new ArrayList<>();
-        weaponLore.add(ChatColor.BLUE + "Type: " + weaponType.toLowerCase());
+        weaponLore.add(ChatColor.BLUE + "Type: " + gunType.toLowerCase());
         weaponLore.add(ChatColor.BLUE + "Hello");
     }
 

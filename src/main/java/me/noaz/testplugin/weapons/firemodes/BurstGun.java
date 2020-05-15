@@ -20,7 +20,7 @@ public class BurstGun extends Gun {
         super(plugin, player, statistics, config);
     }
 
-    public void shoot() {
+    public synchronized void shoot() {
         if(!isReloading && currentClip != 0 && isNextBulletReady && !isShooting) {
             isShooting = true;
             int totalBulletsInCurrentBurst = Math.min(currentClip, config.bulletsPerBurst);

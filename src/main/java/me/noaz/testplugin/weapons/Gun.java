@@ -10,6 +10,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Main class that weapons are built from.
@@ -50,7 +52,7 @@ public abstract class Gun {
         this.currentClip = config.clipSize;
         this.currentBullets = config.startingBullets-currentClip;
 
-        itemSlot = config.weaponType.equals("Secondary") ? 2 : 1;
+        itemSlot = config.gunType.equals("Secondary") ? 2 : 1;
 
 
         //They have to be initialised now to not cause errors
@@ -65,6 +67,9 @@ public abstract class Gun {
             }
         };
 
+        //TODO: Add so that accuracy gets worse over time when spraying
+        //Do this by having a bukkitrunnable that has a counter that goes down by one
+        //each tick, and add some nr to that counter with each bullet fired
 
     }
 
@@ -106,8 +111,7 @@ public abstract class Gun {
         double accuracy = player.isScoping() ? config.accuracyScoped : config.accuracyNotScoped;
 
         for(int i = 0; i < config.bulletsPerClick; i++) {
-            Vector velocity = calculateBulletDirection(accuracy);
-            new Bullet(player.getPlayer(), plugin, velocity, config.bulletSpeed,
+            new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), config.bulletSpeed,
                     config.range, config.bodyDamage, config.headDamage);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
         }
@@ -135,8 +139,9 @@ public abstract class Gun {
                 public void run() {
                     i++;
                     if (i >= config.reloadTime) {
-                        currentBullets -= (config.clipSize-currentClip);
-                        currentClip = Math.min(config.clipSize, currentBullets);
+                        int bulletsToReload = Math.min(config.clipSize-currentClip, currentBullets);
+                        currentClip += bulletsToReload;
+                        currentBullets -= bulletsToReload;
 
                         isReloading = false;
                         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
@@ -149,6 +154,7 @@ public abstract class Gun {
             };
 
             reloadTask.runTaskTimerAsynchronously(plugin, 0L, 1L);
+
         }
 
         new BukkitRunnable() {
@@ -186,23 +192,38 @@ public abstract class Gun {
      * @return A vector containing direction of the bullet
      */
     protected Vector calculateBulletDirection(double accuracy) {
+        accuracy = 1/accuracy;
+
         Vector velocity = player.getLocation().getDirection();
 
-        velocity.rotateAroundX(0.5*calculateAccuracy(accuracy));
-        velocity.rotateAroundY(0.5*calculateAccuracy(accuracy));
-        velocity.rotateAroundZ(0.5*calculateAccuracy(accuracy));
+        Vector perp1;
+        //Use other unit vector to generate perpendicular vector if
+        //the velocity is too close to the unit vector
+        if(velocity.getX() < 0.1 && velocity.getY() < 0.1) {
+            perp1 = new Vector(1,0,0).getCrossProduct(velocity);
+        } else {
+            perp1 = new Vector(0, 0, 1).getCrossProduct(velocity);
+        }
+
+        Vector perp2 = perp1.getCrossProduct(velocity);
+
+        perp1.normalize();
+        perp2.normalize();
+
+
+        Random random = new Random();
+        double length1 = random.nextDouble()*accuracy-accuracy/2;
+        double temp = accuracy - Math.abs(length1); //Max velocity in one direction to make a circle
+
+        double length2 = random.nextDouble()*temp-temp/2;
+
+        velocity.add(perp1.multiply(length1));
+        velocity.add(perp2.multiply(length2));
 
         velocity.normalize();
         velocity.multiply(config.bulletSpeed);
-        return velocity;
-    }
 
-    private double calculateAccuracy(double accuracy) {
-        if(accuracy < 100) {
-            return (Math.random() - 0.5) / accuracy;
-        } else {
-            return 0;
-        }
+        return velocity.clone();
     }
 
     /**
@@ -215,7 +236,7 @@ public abstract class Gun {
             burstDelayTask.cancel();
         isReloading = false;
         isNextBulletReady = true;
-        currentBullets = config.startingBullets;
+        currentBullets = config.startingBullets - config.clipSize;
         currentClip = config.clipSize;
 
         ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);

@@ -7,6 +7,8 @@ import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.teams.Team;
+import me.noaz.testplugin.weapons.Firemode;
+import me.noaz.testplugin.weapons.GunType;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
 import me.noaz.testplugin.weapons.firemodes.BuckGun;
@@ -105,7 +107,7 @@ public class PlayerExtension {
 
                         for(GunConfiguration gun : gunConfigurations) {
                             if(ownedGuns.contains(gun.name) || gun.unlockLevel == 0) {
-                                if (gun.gunType.equals("Secondary")) {
+                                if (gun.gunType == GunType.SECONDARY) {
                                     ownedSecondaryGuns.add(gun.name);
                                     if(gun.gunId == selectedSecondaryGunId) {
                                         secondaryGun = createNewGun(gun);
@@ -474,7 +476,7 @@ public class PlayerExtension {
             if(gun.name.equals(gunName)) {
                 changeCredits(-gun.costToBuy);
 
-                if(gun.gunType.equals("Secondary")) {
+                if(gun.gunType == GunType.SECONDARY) {
                     ownedSecondaryGuns.add(gunName);
                 } else {
                     ownedPrimaryGuns.add(gunName);
@@ -503,21 +505,21 @@ public class PlayerExtension {
     }
 
     private Gun createNewGun(GunConfiguration configuration) {
-        String fireType = configuration.fireType;
+        Firemode firemode = configuration.firemode;
 
         Gun gunToChange;
 
-        switch(fireType) {
-            case "burst":
+        switch(firemode) {
+            case BURST:
                 gunToChange = new BurstGun(plugin, this, statistics, configuration);
                 break;
-            case "single":
+            case SINGLE:
                 gunToChange = new SingleBoltGun(plugin, this, statistics, configuration);
                 break;
-            case "automatic":
+            case AUTOMATIC:
                 gunToChange = new FullyAutomaticGun(plugin, this, statistics, configuration);
                 break;
-            case "buck":
+            case BUCK:
                 gunToChange = new BuckGun(plugin, this, statistics, configuration);
                 break;
             default:

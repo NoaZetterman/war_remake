@@ -72,7 +72,7 @@ public class PlayerListMessage {
      * @param mapCreator The name of the map creator/creators
      */
     public static void setLobbyHeader(Player player, Gamemode nextGamemode, String nextMap, String mapCreator) {
-        player.setPlayerListHeader("Next Game: " + nextGamemode.getGamemodeString() + "\n" +
+        player.setPlayerListHeader("Next Game: " + nextGamemode + "\n" +
                 "Next Map: " + nextMap + "\n" +
                 "Map by: " + mapCreator);
     }

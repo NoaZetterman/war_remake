@@ -17,8 +17,8 @@ public class GunConfiguration {
     public final int gunId;
     public final String name;
     public final List<String> weaponLore;
-    public final String gunType;
-    public final String fireType;
+    public final GunType gunType;
+    public final Firemode firemode;
 
     public final double accuracyScoped;
     public final double accuracyNotScoped;
@@ -73,7 +73,7 @@ public class GunConfiguration {
      * @param fireWhileReloadingSound The sound this gun makes when trying to fire a bullet while reloading
      * @param fireWithoutAmmoSound The sound this gun maks when trying to fire a bullet without any ammo.
      */
-    public GunConfiguration(int gunId, String name, String gunMaterial, String gunType, String fireType, double accuracyNotScoped,
+    public GunConfiguration(int gunId, String name, String gunMaterial, String gunType, String firemode, double accuracyNotScoped,
                             double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
                             int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
                             int clipSize, int loadoutSlot, int unlockLevel, int costToBuy,
@@ -81,8 +81,8 @@ public class GunConfiguration {
         this.gunId = gunId;
         this.name = name;
         this.gunMaterial = Material.getMaterial(gunMaterial);
-        this.gunType = gunType;
-        this.fireType = fireType;
+        this.gunType = GunType.valueOf(gunType);
+        this.firemode = Firemode.valueOf(firemode);
         this.accuracyNotScoped = accuracyNotScoped;
         this.accuracyScoped = accuracyScoped;
         this.bodyDamage = bodyDamage;

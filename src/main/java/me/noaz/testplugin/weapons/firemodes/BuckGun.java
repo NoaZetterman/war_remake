@@ -73,7 +73,13 @@ public class BuckGun extends Gun {
         public void run() {
             i++;
 
+            if(isNextBulletReady && firedBulletsInBurst >= bulletsInBurst) {
+                firedBulletsInBurst = 0;
+            }
+            //FIX
+
             if(!isReloading && isNextBulletReady && firedBulletsInBurst < bulletsInBurst) {
+                System.out.println(i);
                 fireBullet();
                 firedBulletsInBurst++;
             }
@@ -81,9 +87,8 @@ public class BuckGun extends Gun {
             if(currentClip <= 0) {
                 reload();
                 end();
-            } else if(firedBulletsInBurst == bulletsInBurst) {
+            } else if(firedBulletsInBurst >= bulletsInBurst) {
                 startBurstDelay();
-                firedBulletsInBurst = 0;
                 if(i >= 6) {
                     end();
                 }

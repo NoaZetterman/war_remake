@@ -2,6 +2,7 @@ package me.noaz.testplugin.inventories;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
+import me.noaz.testplugin.weapons.GunType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -169,7 +170,7 @@ public class LoadoutMenu {
 
         List<String> ownedPrimaryGuns = player.getOwnedPrimaryGuns();
         for(GunConfiguration gun : configurations) {
-            if(!gun.gunType.equals("Secondary")) {
+            if(gun.gunType != GunType.SECONDARY) {
                 if (!ownedPrimaryGuns.contains(gun.name)) {
                     if(gun.unlockLevel > player.getLevel()) {
                     items[gun.loadoutSlot] = createLockedWeaponItem(gun);
@@ -202,7 +203,7 @@ public class LoadoutMenu {
 
         List<String> ownedSecondaryGuns = player.getOwnedSecondaryGuns();
         for(GunConfiguration gun : configurations) {
-            if(gun.gunType.equals("Secondary")) {
+            if(gun.gunType == GunType.SECONDARY) {
                 if (!ownedSecondaryGuns.contains(gun.name)) {
                     if(gun.unlockLevel > player.getLevel()) {
                         items[gun.loadoutSlot] = createLockedWeaponItem(gun);

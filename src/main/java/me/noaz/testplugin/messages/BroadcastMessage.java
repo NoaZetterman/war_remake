@@ -20,7 +20,7 @@ public class BroadcastMessage {
      * @param gamemode The gamemode that will be played
      */
     public static void gameAndGamemode(String mapName, Gamemode gamemode) {
-        server.broadcastMessage("Next map: " + mapName + " Next gamemode: " + gamemode.getGamemodeString());
+        server.broadcastMessage("Next map: " + mapName + " Next gamemode: " + gamemode);
     }
 
     /**

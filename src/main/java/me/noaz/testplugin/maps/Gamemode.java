@@ -12,7 +12,8 @@ public enum Gamemode {
         this.gamemode = gamemode;
     }
 
-    public String getGamemodeString() {
+    @Override
+    public String toString() {
         return gamemode;
     }
 }

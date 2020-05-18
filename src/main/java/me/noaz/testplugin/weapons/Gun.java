@@ -11,7 +11,6 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Main class that weapons are built from.
@@ -52,7 +51,7 @@ public abstract class Gun {
         this.currentClip = config.clipSize;
         this.currentBullets = config.startingBullets-currentClip;
 
-        itemSlot = config.gunType.equals("Secondary") ? 2 : 1;
+        itemSlot = config.gunType == GunType.SECONDARY ? 2 : 1;
 
 
         //They have to be initialised now to not cause errors
@@ -192,8 +191,6 @@ public abstract class Gun {
      * @return A vector containing direction of the bullet
      */
     protected Vector calculateBulletDirection(double accuracy) {
-        accuracy = 1/accuracy;
-
         Vector velocity = player.getLocation().getDirection();
 
         Vector perp1;

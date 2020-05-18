@@ -58,6 +58,7 @@ public class GameMap {
     }
 
     public boolean hasGamemode(String gamemodeString) {
+        //FIX Below row
         Gamemode gamemode = Gamemode.valueOf(gamemodeString);
 
         switch(gamemode) {

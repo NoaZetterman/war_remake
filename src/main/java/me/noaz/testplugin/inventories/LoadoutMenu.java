@@ -169,7 +169,7 @@ public class LoadoutMenu {
 
         List<String> ownedPrimaryGuns = player.getOwnedPrimaryGuns();
         for(GunConfiguration gun : configurations) {
-            if(!gun.weaponType.equals("Secondary")) {
+            if(!gun.gunType.equals("Secondary")) {
                 if (!ownedPrimaryGuns.contains(gun.name)) {
                     if(gun.unlockLevel > player.getLevel()) {
                     items[gun.loadoutSlot] = createLockedWeaponItem(gun);
@@ -202,7 +202,7 @@ public class LoadoutMenu {
 
         List<String> ownedSecondaryGuns = player.getOwnedSecondaryGuns();
         for(GunConfiguration gun : configurations) {
-            if(gun.weaponType.equals("Secondary")) {
+            if(gun.gunType.equals("Secondary")) {
                 if (!ownedSecondaryGuns.contains(gun.name)) {
                     if(gun.unlockLevel > player.getLevel()) {
                         items[gun.loadoutSlot] = createLockedWeaponItem(gun);

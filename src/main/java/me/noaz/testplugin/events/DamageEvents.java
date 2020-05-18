@@ -6,10 +6,12 @@ import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -249,6 +251,14 @@ public class DamageEvents implements Listener {
                     break;
             }
 
+        }
+    }
+
+    @EventHandler
+    public void onBarrierBlockWalk(PlayerMoveEvent event) {
+        if(event.getTo().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER) {
+            data.getPlayerExtension(event.getPlayer()).addDeath();
+            data.getPlayerExtension(event.getPlayer()).respawn(null);
         }
     }
 }

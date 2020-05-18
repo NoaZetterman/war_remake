@@ -1,5 +1,6 @@
 package me.noaz.testplugin.messages;
 
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,9 +22,9 @@ public class ChatMessage {
                 shooterColor + shooter.getName());
     }
 
-    public static void playerShotKilled(Player shooter, int xp, int credits, Player killedPlayer, ChatColor killedColor, String gamemode) {
+    public static void playerShotKilled(Player shooter, int xp, int credits, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
         String message;
-        if(gamemode.equals("tdm") || gamemode.equals("ffa")) {
+        if(gamemode == Gamemode.TEAM_DEATH_MATCH || gamemode == Gamemode.FREE_FOR_ALL) {
             message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
         } else {
             message = ChatColor.GRAY + "[+] ";
@@ -42,9 +43,9 @@ public class ChatMessage {
                 shooterColor + shooter.getName());
     }
 
-    public static void playerHeadshotKilled(Player shooter, int xp, int credits, Player killedPlayer, ChatColor killedColor, String gamemode) {
+    public static void playerHeadshotKilled(Player shooter, int xp, int credits, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
         String message;
-        if(gamemode.equals("tdm") || gamemode.equals("ffa")) {
+        if(gamemode == Gamemode.TEAM_DEATH_MATCH || gamemode == Gamemode.FREE_FOR_ALL) {
             message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
         } else {
             message = ChatColor.GRAY + "[+] ";
@@ -59,9 +60,9 @@ public class ChatMessage {
                 killerColor + killer.getName());
     }
 
-    public static void playerKnifeKilled(Player killer, int xp, int credits, Player killedPlayer, ChatColor killedColor, String gamemode) {
+    public static void playerKnifeKilled(Player killer, int xp, int credits, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
         String message;
-        if(gamemode.equals("tdm") || gamemode.equals("ffa")) {
+        if(gamemode == Gamemode.TEAM_DEATH_MATCH || gamemode == Gamemode.FREE_FOR_ALL) {
             message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
         } else {
             message = ChatColor.GRAY + "[+] ";

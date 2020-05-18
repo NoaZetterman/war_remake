@@ -105,7 +105,7 @@ public class PlayerExtension {
 
                         for(GunConfiguration gun : gunConfigurations) {
                             if(ownedGuns.contains(gun.name) || gun.unlockLevel == 0) {
-                                if (gun.weaponType.equals("Secondary")) {
+                                if (gun.gunType.equals("Secondary")) {
                                     ownedSecondaryGuns.add(gun.name);
                                     if(gun.gunId == selectedSecondaryGunId) {
                                         secondaryGun = createNewGun(gun);
@@ -474,7 +474,7 @@ public class PlayerExtension {
             if(gun.name.equals(gunName)) {
                 changeCredits(-gun.costToBuy);
 
-                if(gun.weaponType.equals("Secondary")) {
+                if(gun.gunType.equals("Secondary")) {
                     ownedSecondaryGuns.add(gunName);
                 } else {
                     ownedPrimaryGuns.add(gunName);

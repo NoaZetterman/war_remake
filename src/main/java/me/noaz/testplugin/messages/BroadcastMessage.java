@@ -1,5 +1,6 @@
 package me.noaz.testplugin.messages;
 
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -18,8 +19,8 @@ public class BroadcastMessage {
      * @param mapName The name of the map
      * @param gamemode The gamemode that will be played
      */
-    public static void gameAndGamemode(String mapName, String gamemode) {
-        server.broadcastMessage("Next map: " + mapName + " Next gamemode: " + gamemode);
+    public static void gameAndGamemode(String mapName, Gamemode gamemode) {
+        server.broadcastMessage("Next map: " + mapName + " Next gamemode: " + gamemode.getGamemodeString());
     }
 
     /**

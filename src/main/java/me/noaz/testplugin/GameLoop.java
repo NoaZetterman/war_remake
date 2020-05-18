@@ -1,6 +1,7 @@
 package me.noaz.testplugin;
 
 import me.noaz.testplugin.maps.GameMap;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BossBarMessage;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
@@ -16,7 +17,7 @@ public class GameLoop {
 
     private Game currentGame;
     private GameMap currentMap;
-    private String currentGamemode;
+    private Gamemode currentGamemode;
 
     private BukkitRunnable perTickLoop;
     private BukkitRunnable perSecondLoop;
@@ -129,7 +130,7 @@ public class GameLoop {
         return currentGame;
     }
 
-    public String getCurrentGamemode() {
+    public Gamemode getCurrentGamemode() {
         return currentGamemode;
     }
 
@@ -139,17 +140,17 @@ public class GameLoop {
     public void startGame() {
         if(currentGame == null) {
             switch(currentGamemode) {
-                case "tdm":
+                case TEAM_DEATH_MATCH:
                     //Send the map in instead of locations etc
                     currentGame = new TeamDeathMatch(currentMap, data.getPlayerExtensionHashMap());
                     break;
-                case "ctf":
+                case CAPTURE_THE_FLAG:
                     currentGame = new CaptureTheFlag(currentMap, plugin, data.getPlayerExtensionHashMap());
                     break;
-                case "ffa":
+                case FREE_FOR_ALL:
                     currentGame = new FreeForAll(currentMap, data.getPlayerExtensionHashMap());
                     break;
-                case "infect":
+                case INFECT:
                     currentGame = new Infect(currentMap, data.getPlayerExtensionHashMap());
                 default:
                     System.out.println("Something went wrong when starting game");
@@ -204,7 +205,7 @@ public class GameLoop {
                 currentMap.unloadMap();
 
             currentMap = data.getGameMap(mapName);
-            currentGamemode = gamemode;
+            currentGamemode = Gamemode.valueOf(gamemode);
 
             currentMap.loadMap();
 

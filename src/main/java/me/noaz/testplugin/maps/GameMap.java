@@ -9,22 +9,22 @@ import java.util.Random;
 public class GameMap {
     private final String name;
     private final List<CustomLocation> locations;
-    private final boolean hasTdm;
-    private final boolean hasCtf;
-    private final boolean hasFfa;
+    private final boolean hasTeamDeathMatch;
+    private final boolean hasCaptureTheFlag;
+    private final boolean hasFreeForAll;
     private final boolean hasInfect;
 
     private final String mapCreators;
 
     private World world;
 
-    public GameMap(String name, List<CustomLocation> locations, boolean hasTdm, boolean hasCtf, boolean hasFfa, boolean hasInfect,
+    public GameMap(String name, List<CustomLocation> locations, boolean hasTeamDeathMatch, boolean hasCaptureTheFlag, boolean hasFreeForAll, boolean hasInfect,
                    String mapCreators) {
         this.name = name;
         this.locations = locations;
-        this.hasTdm = hasTdm;
-        this.hasCtf = hasCtf;
-        this.hasFfa = hasFfa;
+        this.hasTeamDeathMatch = hasTeamDeathMatch;
+        this.hasCaptureTheFlag = hasCaptureTheFlag;
+        this.hasFreeForAll = hasFreeForAll;
         this.hasInfect = hasInfect;
 
         if(mapCreators == null) {
@@ -51,26 +51,23 @@ public class GameMap {
 
     public void unloadMap() {
         if(world != null) {
-            /*Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("TestPlugin"), () -> {
-                Bukkit.getServer().unloadWorld(world, false);
-                System.out.println("Map unloaded: " + name);
-                world = null;
-            });*/
             Bukkit.getServer().unloadWorld(world, false);
             System.out.println("Map unloaded: " + name);
             world = null;
         }
     }
 
-    public boolean hasGamemode(String gamemode) {
+    public boolean hasGamemode(String gamemodeString) {
+        Gamemode gamemode = Gamemode.valueOf(gamemodeString);
+
         switch(gamemode) {
-            case "tdm":
-                return hasTdm;
-            case "ctf":
-                return hasCtf;
-            case "ffa":
-                return hasFfa;
-            case "infect":
+            case TEAM_DEATH_MATCH:
+                return hasTeamDeathMatch;
+            case CAPTURE_THE_FLAG:
+                return hasCaptureTheFlag;
+            case FREE_FOR_ALL:
+                return hasFreeForAll;
+            case INFECT:
                 return hasInfect;
             default:
                 return false;
@@ -80,31 +77,29 @@ public class GameMap {
     /**
      * @return Returns a random gamemode of the playable gamemodes.
      */
-    public String getRandomGamemode(int playercount) {
+    public Gamemode getRandomGamemode(int playercount) {
         Random random = new Random();
 
-        //Make this better
         while(true) {
-            random.nextInt(4);
-            switch(random.nextInt(4)) {
-                case 0:
-                    if(hasTdm) {
-                        return "tdm";
+            switch(Gamemode.values()[random.nextInt(Gamemode.values().length)]) {
+                case TEAM_DEATH_MATCH:
+                    if(hasTeamDeathMatch) {
+                        return Gamemode.TEAM_DEATH_MATCH;
                     }
                     break;
-                case 1:
-                    if(hasCtf) {
-                        return "ctf";
+                case CAPTURE_THE_FLAG:
+                    if(hasCaptureTheFlag) {
+                        return Gamemode.CAPTURE_THE_FLAG;
                     }
                     break;
-                case 2:
+                case INFECT:
                     if(hasInfect && playercount >= 2) {
-                        return "infect";
+                        return Gamemode.INFECT;
                     }
                     break;
-                case 3:
-                    if(hasFfa) {
-                        return "ffa";
+                case FREE_FOR_ALL:
+                    if(hasFreeForAll) {
+                        return Gamemode.FREE_FOR_ALL;
                     }
                     break;
             }

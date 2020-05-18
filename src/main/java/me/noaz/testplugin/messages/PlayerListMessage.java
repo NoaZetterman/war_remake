@@ -1,5 +1,6 @@
 package me.noaz.testplugin.messages;
 
+import me.noaz.testplugin.maps.Gamemode;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -70,8 +71,8 @@ public class PlayerListMessage {
      * @param nextMap Name of the next map
      * @param mapCreator The name of the map creator/creators
      */
-    public static void setLobbyHeader(Player player, String nextGamemode, String nextMap, String mapCreator) {
-        player.setPlayerListHeader("Next Game: " + nextGamemode + "\n" +
+    public static void setLobbyHeader(Player player, Gamemode nextGamemode, String nextMap, String mapCreator) {
+        player.setPlayerListHeader("Next Game: " + nextGamemode.getGamemodeString() + "\n" +
                 "Next Map: " + nextMap + "\n" +
                 "Map by: " + mapCreator);
     }

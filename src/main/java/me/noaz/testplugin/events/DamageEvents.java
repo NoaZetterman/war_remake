@@ -2,11 +2,13 @@ package me.noaz.testplugin.events;
 
 import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.GameLoop;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -176,7 +178,7 @@ public class DamageEvents implements Listener {
 
             if(gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
                 event.setCancelled(true);
-            } else if(gameLoop.getCurrentGamemode().equals("infect") && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
+            } else if(gameLoop.getCurrentGamemode() == Gamemode.INFECT && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
                 //Put the player on the zombie team if human
                 event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
@@ -209,6 +211,8 @@ public class DamageEvents implements Listener {
                 damagerExtension.addKill();
 
             }
+        } else if(event.getEntity() instanceof ItemFrame) {
+            event.setCancelled(true);
         }
     }
 

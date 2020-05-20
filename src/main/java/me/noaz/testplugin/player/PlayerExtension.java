@@ -6,7 +6,7 @@ import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.ChatMessage;
-import me.noaz.testplugin.gamemodes.teams.Team;
+import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.weapons.Firemode;
 import me.noaz.testplugin.weapons.GunType;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
@@ -120,6 +120,15 @@ public class PlayerExtension {
                                 }
 
                             }
+                        }
+
+                        //TODO: Change this to get certain guns instead
+                        if(primaryGun == null) {
+                            primaryGun = createNewGun(gunConfigurations.get(0));
+                        }
+
+                        if(secondaryGun == null) {
+                            secondaryGun = createNewGun(gunConfigurations.get(0));
                         }
 
                     } else {

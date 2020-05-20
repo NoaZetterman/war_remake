@@ -33,6 +33,7 @@ public class Flag {
     private HashMap<Player, PlayerExtension> players;
 
     private Item flag;
+    private ItemStack flagItemStack;
 
     private GameMap map;
     private int captures = 0;
@@ -53,7 +54,6 @@ public class Flag {
         this.plugin = plugin;
         this.players = players;
 
-        //TODO: remove flag when ending
         createWoolFlag();
     }
 
@@ -144,7 +144,6 @@ public class Flag {
     */
 
     public void createWoolFlag() {
-        ItemStack flagItemStack;
         if(flagColor == Color.RED) {
             flagItemStack = new ItemStack(Material.RED_WOOL);
         } else {
@@ -160,6 +159,7 @@ public class Flag {
             @Override
             public void run() {
                 if(flagHolder == null) {
+                    flag.setTicksLived(1);
                     for(PlayerExtension player : players.values()) {
 
                         double lengthFromPlayerToFlag = Math.sqrt(Math.pow(flagPoleLocation.getX()-player.getLocation().getX(),2)
@@ -199,19 +199,18 @@ public class Flag {
                     }
                 }
             }
-
-            private void spawnFlag(Location flagLocation) {
-                flag.remove();
-                flag = map.getWorld().dropItem(flagLocation, flagItemStack);
-                flag.setGravity(false);
-                flag.setVelocity(new Vector(0,0,0));
-                flag.setPickupDelay(10000);
-            }
         };
 
         woolFlagTask.runTaskTimer(plugin, 0L, 1L);
+    }
 
-
+    private void spawnFlag(Location flagLocation) {
+        flag.remove();
+        flag = map.getWorld().dropItem(flagLocation, flagItemStack);
+        flag.setGravity(false);
+        flag.setVelocity(new Vector(0,0,0));
+        flag.setPickupDelay(10000);
+        flag.setTicksLived(1);
     }
 
     //TODO: Fix helmet situation (maybe)

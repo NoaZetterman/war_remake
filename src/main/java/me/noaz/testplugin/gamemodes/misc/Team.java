@@ -1,4 +1,4 @@
-package me.noaz.testplugin.gamemodes.teams;
+package me.noaz.testplugin.gamemodes.misc;
 
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
@@ -15,7 +15,6 @@ import java.util.*;
  * @version 2019-12-13
  */
 public class Team {
-    //TODO: Think over below implementation, maybe UUID is enough?
     private List<PlayerExtension> players = new ArrayList<>();
     private Color teamColor; //Maybe useless
     private ChatColor chatColor;

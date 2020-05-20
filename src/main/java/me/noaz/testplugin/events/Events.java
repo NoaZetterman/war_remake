@@ -5,13 +5,19 @@ import me.noaz.testplugin.inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityToggleSwimEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -43,10 +49,6 @@ public class Events implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        //event.setCancelled(true);
-
-        //event.getItem()
-
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
 
@@ -55,10 +57,9 @@ public class Events implements Listener {
             player.getWeaponInMainHand().shoot();
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
             LoadoutMenu.loadoutStartScreen(player);
-            //player.getOwnedWeapons();
         }
 
-        if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
+        if(action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
             switch(event.getClickedBlock().getType()) {
                 case CRAFTING_TABLE:
                 case FLOWER_POT:
@@ -100,11 +101,28 @@ public class Events implements Listener {
                 case LEVER:
                 case CHIPPED_ANVIL:
                 case DAMAGED_ANVIL:
+                case ITEM_FRAME:
+                case PAINTING:
                     event.setCancelled(true);
                     break;
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
+        if(event.getRightClicked() instanceof ItemFrame) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteractEntityEvent(EntityInteractEvent event) {
+        if(event.getBlock().getType() == Material.ITEM_FRAME) {
+            event.setCancelled(true);
+        }
+    }
+
 
     /**
      * If the inventory was clicked on in game then do nothing, otherwise use the loadout GUI
@@ -198,6 +216,26 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerSwimEvent(EntityToggleSwimEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onHangingEntityBreakEvent(HangingBreakEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerHangEntityEvent(HangingPlaceEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onManipulateArmorstandEvent(PlayerArmorStandManipulateEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerTakeLecternBookEvent(PlayerTakeLecternBookEvent event) {
         event.setCancelled(true);
     }
 }

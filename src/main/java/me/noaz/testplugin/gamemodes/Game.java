@@ -106,7 +106,7 @@ public abstract class Game {
     public void end(boolean forceEnd) {
         for (PlayerExtension player : players.values()) {
             if (forceEnd) {
-                player.forceEndGame();
+                player.forceLeaveGame();
             } else {
                 player.leaveGame();
             }

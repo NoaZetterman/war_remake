@@ -41,18 +41,24 @@ import java.util.List;
  */
 public class PlayerExtension {
     private TestPlugin plugin;
+    private Connection connection;
+
     private Player player;
     private int playerId;
-    private Connection connection;
-    private Gun primaryGun;
-    private Gun secondaryGun;
     private PlayerStatistic statistics;
+
     private Team team;
     private Team enemyTeam;
+
+    private Gun primaryGun;
+    private Gun secondaryGun;
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
+
     private String[] actionBarMessage;
     private boolean isDead = false;
+
+    private BukkitRunnable respawnCountdown;
 
 
     /**
@@ -158,8 +164,11 @@ public class PlayerExtension {
      * Respawn the player in a one spawnpoint belonging to its team.
      */
     public void respawn(Player killer) {
-        primaryGun.reset();
-        secondaryGun.reset();
+        if(team.getTeamColor() != Color.GREEN) {
+            primaryGun.reset();
+            secondaryGun.reset();
+        }
+
         isDead = true;
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
@@ -175,16 +184,14 @@ public class PlayerExtension {
             BroadcastMessage.infectKill(getName());
         }
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
-        //TODO: Make a separate class for display name stuff
+
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         if(killer != null) {
             player.setSpectatorTarget(killer);
-        } else {
-            player.teleport(team.getSpawnPoint());
         }
 
-        new BukkitRunnable() {
+        respawnCountdown = new BukkitRunnable() {
 
             int i = 3;
             @Override
@@ -203,7 +210,7 @@ public class PlayerExtension {
 
                     if(team.getTeamColor() == Color.GREEN) {
                         DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*60*6, 1));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
                         Arrays.fill(actionBarMessage, "");
                     } else {
                         DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
@@ -215,7 +222,9 @@ public class PlayerExtension {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0, 20);
+        };
+
+        respawnCountdown.runTaskTimer(plugin, 0, 20);
     }
 
     /**
@@ -248,6 +257,7 @@ public class PlayerExtension {
                     BroadcastMessage.launchEmp(player.getName());
                     break;
                 case 21:
+                    BroadcastMessage.launchNuke(player.getName());
                     for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
                         if(!enemyPlayer.isDead() && enemyPlayer != this
                                 && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
@@ -266,7 +276,6 @@ public class PlayerExtension {
 
                         }
                     }
-                    BroadcastMessage.launchNuke(player.getName());
                     break;
 
             }
@@ -305,16 +314,14 @@ public class PlayerExtension {
         //TODO: Make a separate class for display name stuff
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
-
-        primaryGun.reset();
-        secondaryGun.reset();
-
         //Replace with transparent wep corresponding to wep name/id/whatever
         if(team.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
         } else {
             DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+            primaryGun.reset();
+            secondaryGun.reset();
         }
 
         player.setHealth(20D);
@@ -326,10 +333,6 @@ public class PlayerExtension {
     public void leaveGame() {
         if(team != null) {
             statistics.updateTotalScore();
-            DefaultInventories.setDefaultLobbyInventory(player.getInventory());
-            player.removePotionEffect(PotionEffectType.SLOW);
-            primaryGun.reset();
-            secondaryGun.reset();
 
             Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
 
@@ -337,27 +340,44 @@ public class PlayerExtension {
                 player.removePotionEffect(effect.getType());
             }
 
-            Arrays.fill(actionBarMessage, "");
-
             player.setPlayerListName(player.getName());
             player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
-            player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
 
             team.removePlayer(this);
-
             enemyTeam = null;
             team = null;
+
+            primaryGun.reset();
+            secondaryGun.reset();
+
+            Arrays.fill(actionBarMessage, "");
+
+            if(respawnCountdown != null && !respawnCountdown.isCancelled()) {
+                respawnCountdown.cancel();
+            }
+
+            player.setGameMode(GameMode.ADVENTURE);
+            player.setHealth(20.0);
+            player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
+            DefaultInventories.setDefaultLobbyInventory(player.getInventory());
         }
     }
 
     /**
      * Ends the game for this player correctly when the server shuts down.
      */
-    public void forceEndGame() {
+    public void forceLeaveGame() {
         primaryGun.reset();
         secondaryGun.reset();
         statistics.forceUpdateScore();
         saveCurrentLoadout(true);
+
+        Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
+
+        for(PotionEffect effect : activeEffects) {
+            player.removePotionEffect(effect.getType());
+        }
+
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
     }
 
@@ -365,11 +385,12 @@ public class PlayerExtension {
      * Changes the scope, scopes if player is not in scope and vice versa
      */
     public void changeScope() {
-        if(player.hasPotionEffect(PotionEffectType.SLOW)) {
-            unScope();
-        } else {
-            //Maybe change the effect to not show on screen/how much speed etc
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10000, 4));
+        if(!getWeaponInMainHand().justStartedReloading()) {
+            if (player.hasPotionEffect(PotionEffectType.SLOW)) {
+                unScope();
+            } else {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 4, false, false, false));
+            }
         }
     }
 

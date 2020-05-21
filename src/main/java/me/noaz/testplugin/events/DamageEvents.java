@@ -73,20 +73,20 @@ public class DamageEvents implements Listener {
                         xpEarned = 35;
                         creditsEarned = 2;
 
-                        shooterExtension.addHeadshotKill();
-
                         ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
                         ChatMessage.playerHeadshotKilled(shooter, xpEarned, creditsEarned, hitPlayer,
                                 hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+
+                        shooterExtension.addHeadshotKill();
                     } else {
                         xpEarned = 25;
                         creditsEarned = 1;
 
-                        shooterExtension.addKill();
-
                         ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
                         ChatMessage.playerShotKilled(shooter, xpEarned, creditsEarned, hitPlayer,
                                 hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+
+                        shooterExtension.addKill();
                     }
 
                     //Print death messages before adding the kills to print
@@ -131,7 +131,7 @@ public class DamageEvents implements Listener {
             PlayerExtension killerExtension = data.getPlayerExtension(killer);
             PlayerExtension deadPlayerExtension = data.getPlayerExtension(deadPlayer);
 
-            if(gameLoop.getCurrentGamemode().equals("infect")) {
+            if(gameLoop.getCurrentGamemode() == Gamemode.INFECT) {
                 //Puts the player on the other team if alive
                 gameLoop.getCurrentGame().assignTeam(deadPlayerExtension);
 
@@ -162,7 +162,7 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onHealthRegen(EntityRegainHealthEvent event) {
-        if((event.getEntity() instanceof Player) &&
+        if(event.getEntity() instanceof Player &&
                 event.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED)) {
             event.setCancelled(true);
         }
@@ -181,8 +181,6 @@ public class DamageEvents implements Listener {
             } else if(gameLoop.getCurrentGamemode() == Gamemode.INFECT && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
                 //Put the player on the zombie team if human
                 event.setCancelled(true);
-                damagedPlayerExtension.respawn(damager);
-                damagedPlayerExtension.addDeath();
 
                 int xpEarned = 35;
                 int creditsEarned = 2;
@@ -194,10 +192,10 @@ public class DamageEvents implements Listener {
                 damagerExtension.changeCredits(creditsEarned);
                 damagerExtension.addKill();
 
-            } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
-                event.setCancelled(true);
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
+            } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
+                event.setCancelled(true);
 
                 int xpEarned = 25;
                 int creditsEarned = 1;
@@ -210,6 +208,8 @@ public class DamageEvents implements Listener {
                 damagerExtension.changeCredits(creditsEarned);
                 damagerExtension.addKill();
 
+                damagedPlayerExtension.respawn(damager);
+                damagedPlayerExtension.addDeath();
             }
         } else if(event.getEntity() instanceof ItemFrame) {
             event.setCancelled(true);
@@ -226,7 +226,6 @@ public class DamageEvents implements Listener {
                 case VOID:
                     if(!damagedPlayerExtension.isDead()) {
                         if (damagedPlayerExtension.isPlayingGame()) {
-                            //SOMETIMES DONE MORE THAN ONCE
                             damagedPlayerExtension.addDeath();
                             damagedPlayerExtension.respawn(null);
                         } else {

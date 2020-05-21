@@ -6,6 +6,7 @@ import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -21,6 +22,7 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 
 //https://github.com/Belphemur/CustomEvent Might be useful
 
@@ -52,24 +54,21 @@ public class Events implements Listener {
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
 
-
-        if(player.hasWeaponInMainHand() && (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
+        if(player.hasWeaponInMainHand() && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
             player.getWeaponInMainHand().shoot();
         } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
             LoadoutMenu.loadoutStartScreen(player);
         }
 
-        if(action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
-            switch(event.getClickedBlock().getType()) {
-                case CRAFTING_TABLE:
-                case FLOWER_POT:
-                case FURNACE:
-                case FURNACE_MINECART:
-                case CHEST:
-                case CHEST_MINECART:
-                case ENDER_CHEST:
-                case TRAPPED_CHEST:
-                case NOTE_BLOCK:
+        if(action == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
+            cancelClickActionForMaterials(event);
+            changeScopeWhenArmswingIsActivatedByRightclick(event.getClickedBlock().getType(), player);
+        }
+    }
+
+    private void changeScopeWhenArmswingIsActivatedByRightclick(Material clickedMaterial, PlayerExtension player) {
+        if(player.hasWeaponInMainHand()) {
+            switch (clickedMaterial) {
                 case POTTED_ACACIA_SAPLING:
                 case POTTED_ORANGE_TULIP:
                 case POTTED_ALLIUM:
@@ -95,25 +94,141 @@ public class Events implements Listener {
                 case POTTED_SPRUCE_SAPLING:
                 case POTTED_WHITE_TULIP:
                 case POTTED_WITHER_ROSE:
-                case HOPPER:
-                case HOPPER_MINECART:
-                case ANVIL:
+                case FLOWER_POT:
+                case ACACIA_BUTTON:
+                case BIRCH_BUTTON:
+                case DARK_OAK_BUTTON:
+                case JUNGLE_BUTTON:
+                case OAK_BUTTON:
+                case SPRUCE_BUTTON:
+                case STONE_BUTTON:
                 case LEVER:
+                case ACACIA_SIGN:
+                case ACACIA_WALL_SIGN:
+                case BIRCH_SIGN:
+                case BIRCH_WALL_SIGN:
+                case DARK_OAK_SIGN:
+                case DARK_OAK_WALL_SIGN:
+                case JUNGLE_SIGN:
+                case JUNGLE_WALL_SIGN:
+                case OAK_SIGN:
+                case OAK_WALL_SIGN:
+                case SPRUCE_SIGN:
+                case SPRUCE_WALL_SIGN:
+                case ANVIL:
                 case CHIPPED_ANVIL:
                 case DAMAGED_ANVIL:
-                case ITEM_FRAME:
-                case PAINTING:
-                    event.setCancelled(true);
+                case ACACIA_TRAPDOOR:
+                case BIRCH_TRAPDOOR:
+                case DARK_OAK_TRAPDOOR:
+                case JUNGLE_TRAPDOOR:
+                case OAK_TRAPDOOR:
+                case SPRUCE_TRAPDOOR:
+                case ACACIA_FENCE:
+                case BIRCH_FENCE:
+                case JUNGLE_FENCE:
+                case OAK_FENCE:
+                case SPRUCE_FENCE:
+                case NETHER_BRICK_FENCE:
+                case ACACIA_FENCE_GATE:
+                case DARK_OAK_FENCE:
+                case BIRCH_FENCE_GATE:
+                case DARK_OAK_FENCE_GATE:
+                case JUNGLE_FENCE_GATE:
+                case OAK_FENCE_GATE:
+                case SPRUCE_FENCE_GATE:
+                case DARK_OAK_DOOR:
+                case ACACIA_DOOR:
+                case BIRCH_DOOR:
+                case IRON_DOOR:
+                case JUNGLE_DOOR:
+                case OAK_DOOR:
+                case SPRUCE_DOOR:
+                case CRAFTING_TABLE:
+                case CAULDRON:
+                case CHEST:
+                case ENDER_CHEST:
+                case TRAPPED_CHEST:
+                case CHEST_MINECART:
+                case NOTE_BLOCK:
+                case JUKEBOX:
+                    player.changeScope();
                     break;
             }
+        }
+    }
+
+    private void cancelClickActionForMaterials(PlayerInteractEvent event) {
+        switch(event.getClickedBlock().getType()) {
+            case POTTED_ACACIA_SAPLING:
+            case POTTED_ORANGE_TULIP:
+            case POTTED_ALLIUM:
+            case POTTED_AZURE_BLUET:
+            case POTTED_BAMBOO:
+            case POTTED_BIRCH_SAPLING:
+            case POTTED_BLUE_ORCHID:
+            case POTTED_BROWN_MUSHROOM:
+            case POTTED_CACTUS:
+            case POTTED_CORNFLOWER:
+            case POTTED_DANDELION:
+            case POTTED_DARK_OAK_SAPLING:
+            case POTTED_DEAD_BUSH:
+            case POTTED_FERN:
+            case POTTED_JUNGLE_SAPLING:
+            case POTTED_LILY_OF_THE_VALLEY:
+            case POTTED_OAK_SAPLING:
+            case POTTED_OXEYE_DAISY:
+            case POTTED_PINK_TULIP:
+            case POTTED_POPPY:
+            case POTTED_RED_MUSHROOM:
+            case POTTED_RED_TULIP:
+            case POTTED_SPRUCE_SAPLING:
+            case POTTED_WHITE_TULIP:
+            case POTTED_WITHER_ROSE:
+            case FLOWER_POT:
+            case ACACIA_BUTTON:
+            case BIRCH_BUTTON:
+            case DARK_OAK_BUTTON:
+            case JUNGLE_BUTTON:
+            case OAK_BUTTON:
+            case SPRUCE_BUTTON:
+            case STONE_BUTTON:
+            case LEVER:
+            case CRAFTING_TABLE:
+            case FURNACE:
+            case FURNACE_MINECART:
+            case CHEST:
+            case CHEST_MINECART:
+            case ENDER_CHEST:
+            case TRAPPED_CHEST:
+            case NOTE_BLOCK:
+            case JUKEBOX:
+            case HOPPER:
+            case HOPPER_MINECART:
+            case ITEM_FRAME:
+            case PAINTING:
+            case ANVIL:
+            case DAMAGED_ANVIL:
+            case CHIPPED_ANVIL:
+                event.setCancelled(true);
+                break;
         }
     }
 
     @EventHandler
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
         if(event.getRightClicked() instanceof ItemFrame) {
+            data.getPlayerExtension(event.getPlayer()).getWeaponInMainHand().shoot();
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerInteractAtEntityEvent(PlayerInteractAtEntityEvent event) {
+        if(event.getRightClicked() instanceof ArmorStand) {
+            data.getPlayerExtension(event.getPlayer()).getWeaponInMainHand().shoot();
+        }
+        event.setCancelled(true);
     }
 
     @EventHandler
@@ -138,13 +253,10 @@ public class Events implements Listener {
 
     @EventHandler
     public void onHandSwingEvent(PlayerAnimationEvent event) {
-
         if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
             PlayerExtension player = data.getPlayerExtension(event.getPlayer());
 
-            if(player.hasWeaponInMainHand() && !player.getWeaponInMainHand().justStartedReloading()) {
-                player.changeScope();
-            }
+            player.changeScope();
         }
     }
 
@@ -201,8 +313,7 @@ public class Events implements Listener {
             ((Player) event.getEntity()).setFoodLevel(20);
         }
     }
-//BOOK
-    //BRICKS
+
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         //TODO: Change this, maybe put in ChatMessages?

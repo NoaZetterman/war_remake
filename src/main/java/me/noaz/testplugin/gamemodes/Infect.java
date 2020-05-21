@@ -64,13 +64,13 @@ public class Infect extends Game {
     }
 
     @Override public void end(boolean forceEnd) {
-        super.end(forceEnd);
-
-        if(teams[1].getPlayers().size() == 0) {
+        if(teams[1].getTeamSize() == 0) {
             BroadcastMessage.teamWonGame("Zombies");
         } else {
             BroadcastMessage.teamWonGame("Survivors");
         }
+
+        super.end(forceEnd);
     }
 
 }

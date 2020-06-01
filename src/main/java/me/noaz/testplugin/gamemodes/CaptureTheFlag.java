@@ -3,6 +3,7 @@ package me.noaz.testplugin.gamemodes;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.gamemodes.misc.Flag;
@@ -16,23 +17,17 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class CaptureTheFlag extends Game {
-    private Flag blueFlag;
-    private Flag redFlag;
-
     public CaptureTheFlag(GameMap map, TestPlugin plugin, HashMap<Player, PlayerExtension> players) {
         this.players = players;
         this.map = map;
 
-        teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
-        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
-        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
-
         Location redFlagLocation = map.getLocationsByName("redflag").get(0);
         Location blueFlagLocation = map.getLocationsByName("blueflag").get(0);
 
-        //Flag position 0 is always red and pos 1 is always blue.
-        redFlag = new Flag(Color.RED, redFlagLocation, blueFlagLocation, map, plugin, players);
-        blueFlag = new Flag(Color.BLUE, blueFlagLocation, redFlagLocation, map, plugin, players);
+        teams = new Team[] {new Team(Color.RED, ChatColor.RED, redFlagLocation, blueFlagLocation, map, plugin, players),
+                            new Team(Color.BLUE, ChatColor.BLUE, blueFlagLocation, redFlagLocation, map, plugin, players)};
+        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
+        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
         assignTeamToAllPlayers(players);
     }
@@ -71,24 +66,30 @@ public class CaptureTheFlag extends Game {
     @Override
     public void updatePlayerList() {
         for(Player player : players.keySet())
-        PlayerListMessage.setCaptureTheFlagHeader(player, blueFlag.getCaptures(), redFlag.getCaptures());
+        PlayerListMessage.setCaptureTheFlagHeader(player, teams[1].getCaptures(), teams[0].getCaptures());
     }
 
     @Override
-    public void end(boolean forceEnd) {
-        blueFlag.stop();
-        redFlag.stop();
-
-        super.end(forceEnd);
-
-        //replace below with captures
-        if(redFlag.getCaptures() < blueFlag.getCaptures()) {
-            //Red won by ... caps or something
-            BroadcastMessage.teamWonGame("Red");
-        } else if(blueFlag.getCaptures() < redFlag.getCaptures()) {
-            BroadcastMessage.teamWonGame("Blue");
-        } else {
-            BroadcastMessage.nooneWonGame();
+    public void end(boolean forceEnd, Gamemode gamemode) {
+        for(Team team : teams) {
+            team.getFlag().stop();
         }
+
+        String winner = "None";
+        Team winnerTeam = teams[0];
+        Team loserTeam = teams[1];
+        //replace below with captures
+        if(teams[0].getCaptures() < teams[1].getCaptures()) {
+            winner = "Red";
+            winnerTeam = teams[0];
+            loserTeam = teams[1];
+        } else if(teams[1].getCaptures() < teams[0].getCaptures()) {
+            winner = "Blue";
+            winnerTeam = teams[1];
+            loserTeam = teams[0];
+        }
+
+        super.endGame(forceEnd, gamemode, winner, winnerTeam, loserTeam);
+
     }
 }

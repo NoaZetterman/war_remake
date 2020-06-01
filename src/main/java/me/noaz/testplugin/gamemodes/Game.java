@@ -3,6 +3,7 @@ package me.noaz.testplugin.gamemodes;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
 
 import org.bukkit.entity.Player;
@@ -103,12 +104,14 @@ public abstract class Game {
      * Ends the game. Must be called before terminating the object.
      * @param forceEnd True if the game should force end (used for server shutdown), otherwise false
      */
-    public void end(boolean forceEnd) {
+    public abstract void end(boolean forceEnd, Gamemode gamemode);
+
+    protected void endGame(boolean forceEnd, Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam) {
         for (PlayerExtension player : players.values()) {
             if (forceEnd) {
-                player.forceLeaveGame();
+                player.forceEndGame();
             } else {
-                player.leaveGame();
+                player.endGame(gamemode, winner, winnerTeam, loserTeam);
             }
         }
     }

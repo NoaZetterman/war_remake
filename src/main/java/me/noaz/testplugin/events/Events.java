@@ -5,11 +5,9 @@ import me.noaz.testplugin.inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -61,8 +59,11 @@ public class Events implements Listener {
         }
 
         if(action == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
-            cancelClickActionForMaterials(event);
-            changeScopeWhenArmswingIsActivatedByRightclick(event.getClickedBlock().getType(), player);
+            if(player.hasWeaponInMainHand()) {
+                changeScopeWhenArmswingIsActivatedByRightclick(event.getClickedBlock().getType(), player);
+            }
+
+            cancelClickActions(event);
         }
     }
 
@@ -158,7 +159,7 @@ public class Events implements Listener {
         }
     }
 
-    private void cancelClickActionForMaterials(PlayerInteractEvent event) {
+    private void cancelClickActions(PlayerInteractEvent event) {
         switch(event.getClickedBlock().getType()) {
             case POTTED_ACACIA_SAPLING:
             case POTTED_ORANGE_TULIP:
@@ -226,7 +227,10 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerInteractAtEntityEvent(PlayerInteractAtEntityEvent event) {
         if(event.getRightClicked() instanceof ArmorStand) {
-            data.getPlayerExtension(event.getPlayer()).getWeaponInMainHand().shoot();
+            PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+            if(player.hasWeaponInMainHand()) {
+                player.getWeaponInMainHand().shoot();
+            }
         }
         event.setCancelled(true);
     }
@@ -253,10 +257,11 @@ public class Events implements Listener {
 
     @EventHandler
     public void onHandSwingEvent(PlayerAnimationEvent event) {
-        if(event.getAnimationType().equals(PlayerAnimationType.ARM_SWING)) {
+        if(event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
             PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-
-            player.changeScope();
+            if(player.hasWeaponInMainHand()) {
+                player.changeScope();
+            }
         }
     }
 

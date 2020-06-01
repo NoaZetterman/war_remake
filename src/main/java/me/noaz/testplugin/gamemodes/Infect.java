@@ -2,6 +2,7 @@ package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.GameMap;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
@@ -63,14 +64,21 @@ public class Infect extends Game {
         }
     }
 
-    @Override public void end(boolean forceEnd) {
+    @Override public void end(boolean forceEnd, Gamemode gamemode) {
+        String winner;
+        Team winnerTeam;
+        Team loserTeam;
         if(teams[1].getTeamSize() == 0) {
-            BroadcastMessage.teamWonGame("Zombies");
+            winner = "Zombies";
+            winnerTeam = teams[0];
+            loserTeam = teams[1];
         } else {
-            BroadcastMessage.teamWonGame("Survivors");
+            winner = "Humans";
+            winnerTeam = teams[1];
+            loserTeam = teams[0];
         }
 
-        super.end(forceEnd);
+        super.endGame(forceEnd, gamemode, winner, winnerTeam, loserTeam);
     }
 
 }

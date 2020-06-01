@@ -2,6 +2,7 @@ package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.GameMap;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
@@ -62,15 +63,21 @@ public class TeamDeathMatch extends Game {
     }
 
     @Override
-    public void end(boolean forceEnd) {
-        super.end(forceEnd);
+    public void end(boolean forceEnd, Gamemode gamemode) {
+        String winner = "None";
+        Team winnerTeam = teams[0];
+        Team loserTeam = teams[1];
 
         if(teams[0].getKills() > teams[1].getKills()) {
-            BroadcastMessage.teamWonGame("Red");
+            winner = "Red";
+            winnerTeam = teams[0];
+            loserTeam = teams[1];
         } else if(teams[0].getKills() < teams[1].getKills()) {
-            BroadcastMessage.teamWonGame("Blue");
-        } else {
-            BroadcastMessage.nooneWonGame();
+            winner = "Blue";
+            winnerTeam = teams[1];
+            loserTeam = teams[0];
         }
+
+        super.endGame(forceEnd, gamemode, winner, winnerTeam, loserTeam);
     }
 }

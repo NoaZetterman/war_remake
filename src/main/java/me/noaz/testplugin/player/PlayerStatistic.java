@@ -40,6 +40,8 @@ public class PlayerStatistic {
     private int killstreak = 0;
     private int firedBullets = 0;
     private int firedBulletsThatHitEnemy = 0;
+    private int creditsThisGame;
+    private int xpThisGame;
 
     /**
      * Create a new player statistic for given player (should only be done from PlayerHandler constructor
@@ -90,11 +92,12 @@ public class PlayerStatistic {
         player.setDisplayName("Lvl " + level + " " + player.getName());
     }
 
-    /**
-     * @return The amount of kills by this player in this game, 0 if in lobby
-     */
-    public int getKillsThisGame() {
-        return kills;
+    public int getTotalKills() {
+        return totalKills;
+    }
+
+    public int getTotalDeaths() {
+        return totalDeaths;
     }
 
     /**
@@ -119,6 +122,39 @@ public class PlayerStatistic {
     }
 
     /**
+     * @return The amount of kills by this player in this game
+     */
+    public int getKillsThisGame() {
+        return kills;
+    }
+
+    /**
+     @return The amount of deaths by this player in this game
+     */
+    public int getDeathsThisGame() {
+        return deaths;
+    }
+
+    public int getFiredBullets() {
+        return firedBullets;
+    }
+
+    public int getFiredBulletsThatHitEnemy() {
+        return firedBulletsThatHitEnemy;
+    }
+
+    /**
+     * @return The amount of credits this player have earned during the current game.
+     */
+    public int getCreditsThisGame() {
+        return creditsThisGame;
+    }
+
+    public int getXpThisGame() {
+        return xpThisGame;
+    }
+
+    /**
      * Add xp to this player, levels the player if necessary.
      * Changes scoreboard accordingly
      *
@@ -127,6 +163,7 @@ public class PlayerStatistic {
     public void addXP(int amount) {
         Player player = Bukkit.getServer().getPlayer(playerUUID);
         xpOnCurrentLevel += amount;
+        xpThisGame += amount;
         if(xpOnCurrentLevel >= totalXpOnCurrentLevel) {
             level++;
             player.setLevel(level);
@@ -156,6 +193,7 @@ public class PlayerStatistic {
 
     public void addCredits(int amount) {
         credits += amount;
+        creditsThisGame += amount;
 
         updateGameScoreboard();
     }
@@ -201,6 +239,8 @@ public class PlayerStatistic {
         killstreak = 0;
         firedBullets = 0;
         firedBulletsThatHitEnemy = 0;
+        xpThisGame = 0;
+        creditsThisGame = 0;
     }
 
     /**

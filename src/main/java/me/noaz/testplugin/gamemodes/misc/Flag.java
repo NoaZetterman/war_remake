@@ -26,9 +26,7 @@ public class Flag {
     private Color flagColor;
     private Location flagPoleLocation;
     private Location enemyFlagPoleLocation;
-    private BukkitRunnable task;
     private BukkitRunnable woolFlagTask;
-    private ArmorStand flagPole;
     private PlayerExtension flagHolder = null;
     private HashMap<Player, PlayerExtension> players;
 

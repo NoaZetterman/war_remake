@@ -45,6 +45,7 @@ public class GameMap {
             });*/
             world = Bukkit.getServer().createWorld(new WorldCreator(name));
             world.setDifficulty(Difficulty.PEACEFUL);
+            world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
             System.out.println("Map loaded: " + name);
         }
     }
@@ -62,7 +63,7 @@ public class GameMap {
         Gamemode gamemode = Gamemode.valueOf(gamemodeString);
 
         switch(gamemode) {
-            case TEAM_DEATH_MATCH:
+            case TEAM_DEATHMATCH:
                 return hasTeamDeathMatch;
             case CAPTURE_THE_FLAG:
                 return hasCaptureTheFlag;
@@ -83,9 +84,9 @@ public class GameMap {
 
         while(true) {
             switch(Gamemode.values()[random.nextInt(Gamemode.values().length)]) {
-                case TEAM_DEATH_MATCH:
+                case TEAM_DEATHMATCH:
                     if(hasTeamDeathMatch) {
-                        return Gamemode.TEAM_DEATH_MATCH;
+                        return Gamemode.TEAM_DEATHMATCH;
                     }
                     break;
                 case CAPTURE_THE_FLAG:

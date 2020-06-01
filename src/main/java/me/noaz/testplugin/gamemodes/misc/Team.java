@@ -1,9 +1,12 @@
 package me.noaz.testplugin.gamemodes.misc;
 
+import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -16,11 +19,14 @@ import java.util.*;
  */
 public class Team {
     private List<PlayerExtension> players = new ArrayList<>();
-    private Color teamColor; //Maybe useless
+    private Color teamColor;
     private ChatColor chatColor;
     private List<Location> spawnPoints;
-    private Random random;
-    private int teamKills = 0;
+    private Random random = new Random();;
+
+    private int kills = 0;
+
+    private Flag flag;
 
     /**
      * Create a new, empty team
@@ -29,7 +35,13 @@ public class Team {
     public Team(Color teamColor, ChatColor chatColor) {
         this.teamColor = teamColor;
         this.chatColor = chatColor;
-        random = new Random();
+    }
+
+    public Team(Color teamColor, ChatColor chatColor, Location flagLocation, Location enemyFlagLocation, GameMap map, TestPlugin plugin,
+                HashMap<Player, PlayerExtension> players) {
+        this.teamColor = teamColor;
+        this.chatColor = chatColor;
+        this.flag = new Flag(teamColor, flagLocation, enemyFlagLocation, map, plugin, players);
     }
 
     /**
@@ -83,18 +95,26 @@ public class Team {
         return spawnPoints.get(random.nextInt(spawnPoints.size()));
     }
 
+    public int getCaptures() {
+        return flag.getCaptures();
+    }
+
+    public Flag getFlag() {
+        return flag;
+    }
+
     /**
      * Add a kill to the team
      */
     public void addKill() {
-        teamKills++;
+        kills++;
     }
 
     /**
      * @return The total amount of kills everyone in this team has
      */
     public int getKills() {
-        return teamKills;
+        return kills;
     }
 
     /**

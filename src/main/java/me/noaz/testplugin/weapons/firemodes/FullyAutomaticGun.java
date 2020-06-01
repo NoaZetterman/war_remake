@@ -35,9 +35,11 @@ public class FullyAutomaticGun extends Gun {
             fireAsIfPlayerHoldsRightClick = new FireAsIfPlayerHoldsRightClick();
             isShooting = true;
             fireAsIfPlayerHoldsRightClick.runTaskTimer(plugin, 0L, 1L);
-        } else if(currentBullets == 0){
+        } else if(currentBullets == 0) {
             playFireWithoutAmmoSound();
             ChatMessage.outOfAmmo(player);
+        } else {
+            reload();
         }
     }
 
@@ -53,6 +55,7 @@ public class FullyAutomaticGun extends Gun {
     public void stopShooting() {
         if(isShooting) {
             fireAsIfPlayerHoldsRightClick.cancel();
+            reload();
         }
     }
 

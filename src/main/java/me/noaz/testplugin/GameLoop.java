@@ -140,7 +140,7 @@ public class GameLoop {
     public void startGame() {
         if(currentGame == null) {
             switch(currentGamemode) {
-                case TEAM_DEATH_MATCH:
+                case TEAM_DEATHMATCH:
                     //Send the map in instead of locations etc
                     currentGame = new TeamDeathMatch(currentMap, data.getPlayerExtensionHashMap());
                     break;
@@ -166,7 +166,7 @@ public class GameLoop {
      */
     public void endGame() {
         if(currentGame != null) {
-            currentGame.end(false);
+            currentGame.end(false, currentGamemode);
             currentGame = null;
 
             BroadcastMessage.endGameMessage();
@@ -223,7 +223,7 @@ public class GameLoop {
     public void stop() {
         if(currentGame != null) {
             System.out.println("Ending game and saving player data");
-            currentGame.end(true);
+            currentGame.end(true, currentGamemode);
         }
 
         perSecondLoop.cancel();

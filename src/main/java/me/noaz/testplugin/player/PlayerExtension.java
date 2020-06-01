@@ -4,6 +4,7 @@ import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.misc.Team;
@@ -130,7 +131,7 @@ public class PlayerExtension {
 
                         //TODO: Change this to get certain guns instead
                         if(primaryGun == null) {
-                            primaryGun = createNewGun(gunConfigurations.get(0));
+                            primaryGun = createNewGun(gunConfigurations.get(1));
                         }
 
                         if(secondaryGun == null) {
@@ -327,6 +328,31 @@ public class PlayerExtension {
         player.setHealth(20D);
     }
 
+    public void endGame(Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam) {
+        switch(gamemode) {
+            case TEAM_DEATHMATCH:
+                ChatMessage.displayTeamDeathmatchEndGame(winner, winnerTeam, loserTeam, player);
+                break;
+            case CAPTURE_THE_FLAG:
+                ChatMessage.displayCaptureTheFlagEndGame(winner, winnerTeam, loserTeam, player);
+                break;
+            case INFECT:
+                ChatMessage.displayInfectEndGame(winner, winnerTeam, player);
+                break;
+        }
+
+        ChatMessage.displayPersonalStats(player, statistics.getKillsThisGame(), statistics.getDeathsThisGame(),
+                statistics.getTotalKills(), statistics.getTotalDeaths(), statistics.getXpThisGame(), statistics.getCreditsThisGame());
+        leaveGame();
+    }
+
+    public void endGame(String winner, int winnerKills) {
+        ChatMessage.displayFreeForAllEndGame(winner, winnerKills, player);
+        ChatMessage.displayPersonalStats(player, statistics.getKillsThisGame(), statistics.getDeathsThisGame(),
+                statistics.getTotalKills(), statistics.getTotalDeaths(), statistics.getXpThisGame(), statistics.getCreditsThisGame());
+        leaveGame();
+    }
+
     /**
      * Ends the game for this player, teleports the player to spawn and gives spawn inventory, and other spawn configurations
      */
@@ -366,7 +392,7 @@ public class PlayerExtension {
     /**
      * Ends the game for this player correctly when the server shuts down.
      */
-    public void forceLeaveGame() {
+    public void forceEndGame() {
         primaryGun.reset();
         secondaryGun.reset();
         statistics.forceUpdateScore();

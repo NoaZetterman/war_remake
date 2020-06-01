@@ -210,7 +210,7 @@ public abstract class Gun {
 
         Random random = new Random();
         double length1 = random.nextDouble()*accuracy-accuracy/2;
-        double temp = accuracy - Math.abs(length1); //Max velocity in one direction to make a circle
+        double temp = accuracy - Math.abs(length1); //Max velocity in the other direction to make a circle
 
         double length2 = random.nextDouble()*temp-temp/2;
 

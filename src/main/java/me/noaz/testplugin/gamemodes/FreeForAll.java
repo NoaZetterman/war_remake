@@ -2,6 +2,7 @@ package me.noaz.testplugin.gamemodes;
 
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.GameMap;
+import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
@@ -70,25 +71,32 @@ public class FreeForAll extends Game {
     }
 
     @Override
-    public void end(boolean forceEnd) {
+    public void end(boolean forceEnd, Gamemode gamemode) {
         PlayerExtension leader = null;
         int leaderKills = 0;
         for(PlayerExtension player : teams[0].getPlayers()) {
             int kills = player.getPlayerStatistics().getKillsThisGame();
-            if(leaderKills < kills) {
+            if(leaderKills <= kills) {
                 leaderKills = kills;
                 leader = player;
             }
         }
 
+        /*
         if(leader != null) {
             String leaderName = leader.getName();
             BroadcastMessage.teamWonGame(leaderName);
         } else {
             BroadcastMessage.nooneWonGame();
-        }
+        }*/
 
-        super.end(forceEnd);
+        for (PlayerExtension player : players.values()) {
+            if (forceEnd) {
+                player.forceEndGame();
+            } else {
+                player.endGame(leader.getName(), leaderKills);
+            }
+        }
 
     }
 }

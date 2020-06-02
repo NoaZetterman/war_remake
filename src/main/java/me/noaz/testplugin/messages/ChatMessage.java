@@ -96,9 +96,13 @@ public class ChatMessage {
     }
 
 
-    public static void displayFreeForAllEndGame(String winner, int winnerKills, Player player) {
-        player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.LIGHT_PURPLE + winner + ChatColor.GRAY
-                + " (" + ChatColor.LIGHT_PURPLE + winnerKills + ChatColor.GRAY + ")");
+    public static void displayFreeForAllEndGame(PlayerExtension winner, int winnerKills, Player player) {
+        if(winner != null) {
+            player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.LIGHT_PURPLE + winner + ChatColor.GRAY
+                    + " (" + ChatColor.LIGHT_PURPLE + winnerKills + ChatColor.GRAY + ")");
+        } else {
+            player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.GRAY + "None");
+        }
     }
 
     public static void displayTeamDeathmatchEndGame(String winner, Team winnerTeam, Team loserTeam, Player player) {
@@ -129,34 +133,6 @@ public class ChatMessage {
         player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GOLD + " won!");
     }
 
-    public static void displayStatisticsAtEndOfGame(Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam,
-            Player player, int kills, int deaths, int totalKills, int totalDeaths,int xpGained, int creditsGained) {
-
-        switch(gamemode) {
-            case FREE_FOR_ALL:
-                player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY
-                        + " (" + ChatColor.LIGHT_PURPLE + "" + ChatColor.GRAY + ")\n"
-                );
-                break;
-            case INFECT:
-                player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + " won");
-                break;
-            case TEAM_DEATHMATCH:
-                player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
-                        " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getKills() + ChatColor.GRAY + " - " +
-                        loserTeam.getTeamColorAsChatColor() + loserTeam.getKills() + ChatColor.GRAY + ")");
-                break;
-            case CAPTURE_THE_FLAG:
-                player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
-                        " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + " - " +
-                        loserTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + ")");
-                break;
-
-        }
-
-        displayPersonalStats(player,kills,deaths,totalKills,totalDeaths,xpGained,creditsGained);
-    }
-
     public static void displayPersonalStats(Player player, int kills, int deaths, int totalKills, int totalDeaths,int xpGained, int creditsGained) {
 
         player.sendMessage(ChatColor.GOLD + "Kills: " + ChatColor.GREEN +  kills + ChatColor.GOLD + "   Deaths: " + ChatColor.RED + deaths + ChatColor.GOLD +
@@ -170,46 +146,14 @@ public class ChatMessage {
                         ChatColor.DARK_AQUA + "Kills: " + ChatColor.GREEN +  kills + ChatColor.DARK_AQUA + "   Deaths: " + ChatColor.RED + deaths + ChatColor.DARK_AQUA +
                         "   K/D Ratio: " + getRatioAsString(kills, deaths, totalKills, totalDeaths) + "\n" + ChatColor.RESET +
                         ChatColor.DARK_AQUA + "Earned xp: " + ChatColor.GREEN + xpGained + ChatColor.DARK_AQUA + "   Earned credits: " + ChatColor.GREEN + creditsGained
-        );*/
+        );
 
         player.sendMessage("Colors:" + ChatColor.DARK_GRAY + "DARKGRAY" + ChatColor.GRAY + "GRAY" + ChatColor.GOLD + "GOLD" +
                 ChatColor.YELLOW + "YELLOW" + ChatColor.DARK_BLUE + "DARKBLUE" + ChatColor.BLACK + "BLACK" + ChatColor.GREEN +
                 "GREEN" + ChatColor.LIGHT_PURPLE + "LIGHTPURPLE" + ChatColor.DARK_RED + "DARKRED" + ChatColor.DARK_GREEN + "DARKGREEN" +
                 ChatColor.AQUA + "AQUA" + ChatColor.RED + "RED" + ChatColor.DARK_AQUA + "DARKAQUA" + ChatColor.WHITE + "WHITE" +
-                ChatColor.BLUE + "BLUE" + ChatColor.DARK_PURPLE +"DARKPURPLE" + ChatColor.COLOR_CHAR + "ColorChar?");
+                ChatColor.BLUE + "BLUE" + ChatColor.DARK_PURPLE +"DARKPURPLE" + ChatColor.COLOR_CHAR + "ColorChar?");*/
 
-    }
-
-    private static String getKdrDifference(double kills, double deaths, double totalkills, double totalDeaths) {
-        double ratioBefore = getRatio(totalkills, totalDeaths);
-        double ratioAfter = getRatio(totalkills+kills, totalDeaths+deaths);
-
-        double difference = ratioAfter-ratioBefore;
-
-        String differenceString;
-        if(difference < 0) {
-            differenceString = ChatColor.RED + "-";
-            difference = Math.abs(difference);
-        } else {
-            differenceString = ChatColor.GREEN + "";
-        }
-
-        if(kills+deaths > 100000) {
-            differenceString += getNDecimalPlaces(8,difference);
-        } else if(kills+deaths > 10000) {
-            differenceString += getNDecimalPlaces(7,difference);
-        } else if(kills+deaths > 1000) {
-            differenceString += getNDecimalPlaces(6,difference);
-        } else if(kills+deaths > 100) {
-            differenceString += getNDecimalPlaces(5,difference);
-        } else if(kills+deaths > 10) {
-            differenceString += getNDecimalPlaces(4,difference);
-        } else {
-            differenceString += getNDecimalPlaces(3,difference);
-        }
-
-        System.out.println(differenceString);
-        return differenceString;
     }
 
     private static String getNDecimalPlaces(int n, double number) {

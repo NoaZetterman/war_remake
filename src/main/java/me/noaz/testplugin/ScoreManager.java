@@ -41,7 +41,6 @@ public class ScoreManager {
             scoreboard.getObjective("sidebar").unregister();
             Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
 
-            sidebar.getScore(" ").setScore(10);
             sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.YELLOW + kills).setScore(9);
             sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.YELLOW + deaths).setScore(8);
             sidebar.getScore(ChatColor.GOLD + "Kdr: " + ChatColor.YELLOW + getRatio(kills, deaths)).setScore(7);
@@ -76,7 +75,6 @@ public class ScoreManager {
 
         Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
 
-        sidebar.getScore(" ").setScore(10);
         sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.GREEN + kills).setScore(9);
         sidebar.getScore(ChatColor.GOLD + "Killstreak: " + ChatColor.GREEN + killstreak).setScore(8);
         sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.RED + deaths).setScore(7);

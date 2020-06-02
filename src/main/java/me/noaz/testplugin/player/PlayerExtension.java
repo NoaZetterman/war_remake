@@ -346,7 +346,7 @@ public class PlayerExtension {
         leaveGame();
     }
 
-    public void endGame(String winner, int winnerKills) {
+    public void endGame(PlayerExtension winner, int winnerKills) {
         ChatMessage.displayFreeForAllEndGame(winner, winnerKills, player);
         ChatMessage.displayPersonalStats(player, statistics.getKillsThisGame(), statistics.getDeathsThisGame(),
                 statistics.getTotalKills(), statistics.getTotalDeaths(), statistics.getXpThisGame(), statistics.getCreditsThisGame());

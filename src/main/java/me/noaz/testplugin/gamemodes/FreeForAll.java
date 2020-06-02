@@ -94,7 +94,7 @@ public class FreeForAll extends Game {
             if (forceEnd) {
                 player.forceEndGame();
             } else {
-                player.endGame(leader.getName(), leaderKills);
+                player.endGame(leader, leaderKills);
             }
         }
 

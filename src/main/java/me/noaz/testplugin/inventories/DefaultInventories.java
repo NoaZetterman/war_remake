@@ -3,6 +3,8 @@ package me.noaz.testplugin.inventories;
 import me.noaz.testplugin.weapons.Gun;
 import org.bukkit.Material;
 import org.bukkit.Color;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -48,8 +50,8 @@ public class DefaultInventories {
         setArmor(inventory, teamColor);
 
         inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
-        inventory.setItem(1, customItemName(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
-        inventory.setItem(2, customItemName(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
+        inventory.setItem(1, customItem(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
+        inventory.setItem(2, customItem(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
     }
 
     /**
@@ -102,12 +104,15 @@ public class DefaultInventories {
         return armor;
     }
 
-    private static ItemStack customItemName(ItemStack item, String name, List<String> lore) {
+    private static ItemStack customItem(ItemStack item, String name, List<String> lore) {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setUnbreakable(true);
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier("generic.attackSpeed", 100, AttributeModifier.Operation.ADD_NUMBER));
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
 
         item.setItemMeta(meta);
         return item;

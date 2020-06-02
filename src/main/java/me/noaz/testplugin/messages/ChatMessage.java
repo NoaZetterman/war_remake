@@ -160,7 +160,7 @@ public class ChatMessage {
     public static void displayPersonalStats(Player player, int kills, int deaths, int totalKills, int totalDeaths,int xpGained, int creditsGained) {
 
         player.sendMessage(ChatColor.GOLD + "Kills: " + ChatColor.GREEN +  kills + ChatColor.GOLD + "   Deaths: " + ChatColor.RED + deaths + ChatColor.GOLD +
-                "   K/D Ratio: " + getRatioAsString(kills, deaths, totalKills, totalDeaths) + "\n" + ChatColor.RESET +
+                "   K/D Ratio: " + TextUtils.getRatioAsRedOrGreenString(kills, deaths, totalKills, totalDeaths) + "\n" + ChatColor.RESET +
                 ChatColor.GOLD + "Earned xp: " + ChatColor.GREEN + xpGained + ChatColor.GOLD + "   Earned credits: " + ChatColor.GREEN + creditsGained
         );
 
@@ -219,29 +219,4 @@ public class ChatMessage {
     private static double getRatio(double numerator, double denominator) {
         return (denominator == 0) ? numerator : numerator/denominator;
     }
-
-    private static String getRatioAsString(double killsThisGame, double deathsThisGame, double totalKills, double totalDeaths) {
-
-        String ratioString;
-        double ratio = (deathsThisGame == 0) ? killsThisGame : killsThisGame/deathsThisGame;
-        double totalRatio = (totalDeaths == 0) ? totalKills : totalKills/totalDeaths;
-        if(ratio >= totalRatio || deathsThisGame == 0) {
-            ratioString = ChatColor.GREEN + "";
-        } else {
-            ratioString = ChatColor.RED + "";
-        }
-
-
-        String ratioAsString = Double.toString(ratio);
-        if(ratio >= 100) {
-            ratioString += (ratioAsString.length() >= 6) ? ratioAsString.substring(0, 6) : ratioAsString;
-        } else if(ratio >= 10) {
-            ratioString += (ratioAsString.length() >= 5) ? ratioAsString.substring(0, 5) : ratioAsString;
-        } else {
-            ratioString += (ratioAsString.length() >= 4) ? ratioAsString.substring(0, 5) : ratioAsString;
-        }
-
-        return ratioString;
-    }
-
 }

@@ -1,5 +1,7 @@
 package me.noaz.testplugin;
 
+import me.noaz.testplugin.messages.TextUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
 
 import java.util.HashMap;
@@ -14,9 +16,6 @@ import java.util.UUID;
 public class ScoreManager {
     private TestPlugin plugin;
     private HashMap<UUID, Scoreboard> scoreboards = new HashMap<>();
-    //private HashMap<UUID, Scoreboard> gameScoreboards = new HashMap<>();
-    //private HashMap<UUID, Scoreboard> lobbyScoreboards = new HashMap<>();
-
 
     // https://wiki.vg/Protocol#Player_List_Item
     // https://bukkit.org/threads/custom-player-lists-create-your-own-tab-list-display.429333/
@@ -40,17 +39,17 @@ public class ScoreManager {
             Scoreboard scoreboard = scoreboards.get(playerUUID);
 
             scoreboard.getObjective("sidebar").unregister();
-            Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", "Lobby Scoreboard");
+            Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
 
             sidebar.getScore(" ").setScore(10);
-            sidebar.getScore("Kills: " + kills).setScore(9);
-            sidebar.getScore("Deaths: " + deaths).setScore(8);
-            sidebar.getScore("Kdr: " + getRatio(kills, deaths)).setScore(7);
-            sidebar.getScore("Accuracy: " + getRatio(bulletsHit*100, bulletsShot) + "%").setScore(6);
+            sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.YELLOW + kills).setScore(9);
+            sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.YELLOW + deaths).setScore(8);
+            sidebar.getScore(ChatColor.GOLD + "Kdr: " + ChatColor.YELLOW + getRatio(kills, deaths)).setScore(7);
+            sidebar.getScore(ChatColor.GOLD + "Accuracy: " + ChatColor.YELLOW +getRatio(bulletsHit*100, bulletsShot) + "%").setScore(6);
             sidebar.getScore("").setScore(5);
-            sidebar.getScore("Level: " + level).setScore(4);
-            sidebar.getScore("Xp: " + currentXp + "/" + totalXp).setScore(3);
-            sidebar.getScore("Credits: " + credits).setScore(2);
+            sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + level).setScore(4);
+            sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW + currentXp + "/" + totalXp).setScore(3);
+            sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + credits).setScore(2);
 
             sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
@@ -69,25 +68,25 @@ public class ScoreManager {
      * @param bulletsHit Amount of bullets the player has hit in the current game
      * @param bulletsShot Amount of bullets the player has shot in the current game
      */
-    public void giveGameScoreboard(UUID playerUUID, int kills, int deaths, int killstreak, int level, int credits,
-                                   int currentXp, int totalXp, int bulletsHit, int bulletsShot) {
+    public void giveGameScoreboard(UUID playerUUID, int kills, int deaths, int totalKills, int totalDeaths, int killstreak, int level, int credits,
+                                   int currentXp, int totalXp, int bulletsHit, int bulletsShot, int totalBulletsHit, int totalBulletsShot) {
         Scoreboard scoreboard = scoreboards.get(playerUUID);
 
         scoreboard.getObjective("sidebar").unregister();
 
-        Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", "Stats");
+        Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
 
         sidebar.getScore(" ").setScore(10);
-        sidebar.getScore("Kills: " + kills).setScore(9);
-        sidebar.getScore("Deaths: " + deaths).setScore(8);
-        sidebar.getScore("Killstreak: " + killstreak).setScore(7);
-        sidebar.getScore("Kdr: " + getRatio(kills,deaths)).setScore(6);
-        sidebar.getScore("Accuracy: " + getRatio(bulletsHit*100, bulletsShot) + "%").setScore(5);
-
+        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.GREEN + kills).setScore(9);
+        sidebar.getScore(ChatColor.GOLD + "Killstreak: " + ChatColor.GREEN + killstreak).setScore(8);
+        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.RED + deaths).setScore(7);
+        sidebar.getScore(ChatColor.GOLD + "Kdr: " + TextUtils.getRatioAsRedOrGreenString(kills, deaths, totalKills, totalDeaths)).setScore(6);
+        sidebar.getScore(ChatColor.GOLD + "Accuracy: "
+                + TextUtils.getRatioAsRedOrGreenString(bulletsHit*100, bulletsShot, totalBulletsHit*100, totalBulletsShot) + "%").setScore(5);
         sidebar.getScore("").setScore(4);
-        sidebar.getScore("Level: " + level).setScore(3);
-        sidebar.getScore("Xp: " + currentXp + "/" +  totalXp).setScore(2);
-        sidebar.getScore("Credits: " + credits).setScore(1);
+        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + level).setScore(3);
+        sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW + currentXp + "/" +  totalXp).setScore(2);
+        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + credits).setScore(1);
 
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }

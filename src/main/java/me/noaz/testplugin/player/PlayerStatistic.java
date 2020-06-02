@@ -320,8 +320,8 @@ public class PlayerStatistic {
     }
 
     public void updateGameScoreboard() {
-        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, killstreak, level, credits, xpOnCurrentLevel,
-                                        totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets);
+        scoreManager.giveGameScoreboard(playerUUID, kills, deaths, totalKills, totalDeaths, killstreak, level, credits, xpOnCurrentLevel,
+                                        totalXpOnCurrentLevel, firedBulletsThatHitEnemy, firedBullets, totalFiredBulletsThatHitEnemy, totalFiredBullets);
     }
 
     private void updateLobbyScoreboard() {

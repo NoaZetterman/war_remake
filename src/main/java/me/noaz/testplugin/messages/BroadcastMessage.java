@@ -31,13 +31,6 @@ public class BroadcastMessage {
         server.broadcastMessage(timeUntilNextGame + "s until game starts");
     }
 
-    /**
-     * Broadcasts a message that is used when the game ends
-     */
-    public static void endGameMessage() {
-        server.broadcastMessage("Ending Game, new game in 60 sec!");
-    }
-
     public static void pickedUpFlag(PlayerExtension player) {
         server.broadcastMessage(player.getName() + " picked up the flag");
     }
@@ -48,14 +41,6 @@ public class BroadcastMessage {
 
     public static void capturedFlag(PlayerExtension player) {
         server.broadcastMessage(player.getName() + " captured the flag");
-    }
-
-    public static void teamWonGame(String teamName) {
-        server.broadcastMessage(teamName + " won!");
-    }
-
-    public static void nooneWonGame() {
-        server.broadcastMessage("The game was a draw");
     }
 
     public static void launchEmp(String playerName) {

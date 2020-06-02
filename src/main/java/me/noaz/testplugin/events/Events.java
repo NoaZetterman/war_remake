@@ -153,6 +153,7 @@ public class Events implements Listener {
                 case CHEST_MINECART:
                 case NOTE_BLOCK:
                 case JUKEBOX:
+                case BREWING_STAND:
                     player.changeScope();
                     break;
             }
@@ -211,6 +212,7 @@ public class Events implements Listener {
             case ANVIL:
             case DAMAGED_ANVIL:
             case CHIPPED_ANVIL:
+            case BREWING_STAND:
                 event.setCancelled(true);
                 break;
         }

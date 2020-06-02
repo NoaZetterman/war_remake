@@ -98,7 +98,7 @@ public class ChatMessage {
 
     public static void displayFreeForAllEndGame(PlayerExtension winner, int winnerKills, Player player) {
         if(winner != null) {
-            player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.LIGHT_PURPLE + winner + ChatColor.GRAY
+            player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.LIGHT_PURPLE + winner.getName() + ChatColor.GRAY
                     + " (" + ChatColor.LIGHT_PURPLE + winnerKills + ChatColor.GRAY + ")");
         } else {
             player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.GRAY + "None");

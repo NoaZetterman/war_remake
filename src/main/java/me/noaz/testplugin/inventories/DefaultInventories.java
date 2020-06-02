@@ -109,8 +109,11 @@ public class DefaultInventories {
         meta.setDisplayName(name);
         meta.setUnbreakable(true);
         meta.setLore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
         meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier("generic.attackSpeed", 100, AttributeModifier.Operation.ADD_NUMBER));
+        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier("generic.attackDamage", 0, AttributeModifier.Operation.ADD_NUMBER));
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
 

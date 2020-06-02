@@ -232,8 +232,6 @@ public class PlayerExtension {
      * Add one kill to this players statistics and team, if the player has a team
      */
     public void addKill() {
-        primaryGun.addBullets((int)Math.floor(primaryGun.getStartingBullets()*0.25));
-        secondaryGun.addBullets((int)Math.floor(secondaryGun.getStartingBullets()*0.25));
         statistics.addKill();
 
         if(team != null) {
@@ -245,7 +243,7 @@ public class PlayerExtension {
             switch (killstreak) {
                 case 5:
                     primaryGun.addBullets(50);
-                    secondaryGun.addBullets(50);
+                    secondaryGun.addBullets(25);
                     break;
                 case 15:
                     //Launch emp

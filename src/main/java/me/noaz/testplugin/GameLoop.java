@@ -169,8 +169,6 @@ public class GameLoop {
             currentGame.end(false, currentGamemode);
             currentGame = null;
 
-            BroadcastMessage.endGameMessage();
-
             timer = 60;
 
             pickNextGame();

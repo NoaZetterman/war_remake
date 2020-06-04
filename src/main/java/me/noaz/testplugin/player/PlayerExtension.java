@@ -16,11 +16,14 @@ import me.noaz.testplugin.weapons.firemodes.BuckGun;
 import me.noaz.testplugin.weapons.Gun;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -219,6 +222,8 @@ public class PlayerExtension {
 
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
+
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
                     player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*3, 2));
                     this.cancel();
                 }
@@ -230,9 +235,14 @@ public class PlayerExtension {
 
     /**
      * Add one kill to this players statistics and team, if the player has a team
+     * @param reward The reward type of this kill
      */
-    public void addKill() {
+    public void addKill(Reward reward) {
         statistics.addKill();
+        statistics.addReward(reward);
+        if(reward == Reward.HEADSHOT_KILL) {
+            addHeadshotKill();
+        }
 
         if(team != null) {
             team.addKill();
@@ -265,12 +275,10 @@ public class PlayerExtension {
                             int xpEarned = 25;
                             int creditsEarned = 1;
 
-                            ChatMessage.playerNukeKilled(player, xpEarned, creditsEarned, enemyPlayer.getPlayer(),
+                            ChatMessage.playerNukeKilled(player, enemyPlayer.getPlayer(),
                                     enemyPlayer.getTeamChatColor());
                             ChatMessage.playerWasNukeKilled(enemyPlayer.getPlayer(), player, getTeamChatColor());
-                            addKill();
-                            addXp(xpEarned);
-                            changeCredits(creditsEarned);
+                            addKill(Reward.NUKE_KILL);
                             enemyPlayer.respawn(player);
 
                         }
@@ -281,17 +289,12 @@ public class PlayerExtension {
         }
     }
 
-    public void addHeadshotKill() {
-        addKill();
+    private void addHeadshotKill() {
         statistics.addHeadshotKill();
     }
 
     public void addDeath() {
         statistics.addDeath();
-    }
-
-    public void addXp(int amount) {
-        statistics.addXP(amount);
     }
 
     /**
@@ -300,6 +303,17 @@ public class PlayerExtension {
      */
     public void changeCredits(int amount) {
         statistics.addCredits(amount);
+    }
+
+    /**
+     * Give this player a flag capture
+     */
+    public void captureFlag() {
+        statistics.addCapture();
+        statistics.addReward(Reward.CAPTURE_FLAG);
+
+        team.addCapture();
+        //Send chatmessage to everyone
     }
 
     /**
@@ -312,6 +326,8 @@ public class PlayerExtension {
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
 
         //Replace with transparent wep corresponding to wep name/id/whatever
         if(team.getTeamColor() == Color.GREEN) {
@@ -413,7 +429,7 @@ public class PlayerExtension {
             if (player.hasPotionEffect(PotionEffectType.SLOW)) {
                 unScope();
             } else {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 4, false, false, false));
+                scope();
             }
         }
     }
@@ -423,6 +439,81 @@ public class PlayerExtension {
      */
     public void unScope() {
         player.removePotionEffect(PotionEffectType.SLOW);
+        if(hasWeaponInMainHand() && getWeaponInMainHand().getConfiguration().gunMaterial == Material.DIAMOND_AXE) {
+            ItemStack s = primaryGun.getMaterialAsItemStack();
+            ItemMeta meta = s.getItemMeta();
+            meta.setDisplayName(primaryGun.toString());
+            meta.setUnbreakable(true);
+            meta.setLore(primaryGun.getLore());
+
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier("generic.attackSpeed", 100, AttributeModifier.Operation.ADD_NUMBER));
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier("generic.attackDamage", 0, AttributeModifier.Operation.ADD_NUMBER));
+
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
+            s.setItemMeta(meta);
+
+            player.getInventory().setItemInMainHand(s);
+
+        } else if(hasWeaponInMainHand() && getWeaponInMainHand().getConfiguration().gunMaterial == Material.BONE) {
+            ItemStack m = player.getInventory().getItemInMainHand();
+
+            ItemMeta meta = m.getItemMeta();
+
+            meta.setCustomModelData(10000002);
+            m.setItemMeta(meta);
+            player.getInventory().setItemInMainHand(m);
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    scope2(10000001);
+                }
+            }.runTaskLater(plugin, 1);
+
+        }
+    }
+
+    public void scope() {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 4, false, false, false));
+        if(getWeaponInMainHand().getConfiguration().gunMaterial == Material.DIAMOND_AXE) {
+            Damageable meta = (Damageable) player.getInventory().getItemInMainHand().getItemMeta();
+
+            meta.setDamage(1560);
+
+            ItemStack s = player.getInventory().getItemInMainHand();
+            s.setItemMeta((ItemMeta)meta);
+
+            player.getInventory().setItemInMainHand(s);
+
+        } else if(getWeaponInMainHand().getConfiguration().gunMaterial == Material.BONE) {
+            ItemStack m = player.getInventory().getItemInMainHand();
+
+            ItemMeta meta = m.getItemMeta();
+
+            meta.setCustomModelData(10000002);
+            m.setItemMeta(meta);
+            player.getInventory().setItemInMainHand(m);
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    scope2(10000003);
+                }
+            }.runTaskLater(plugin, 1);
+        }
+    }
+
+    private void scope2(int val) {
+        //TODO: CHANGE THIS
+        ItemStack m = player.getInventory().getItemInMainHand();
+
+        ItemMeta meta = m.getItemMeta();
+
+        meta.setCustomModelData(val);
+        m.setItemMeta(meta);
+        player.getInventory().setItemInMainHand(m);
     }
 
     public boolean isScoping() {
@@ -475,6 +566,14 @@ public class PlayerExtension {
      */
     public void reloadWeapon(Gun wep) {
         wep.reload();
+    }
+
+    public void reloadIfGun(Material material) {
+        if(primaryGun.getMaterialType() == material) {
+            reloadWeapon(primaryGun);
+        } else if(secondaryGun.getMaterialType() == material) {
+            reloadWeapon(secondaryGun);
+        }
     }
 
     /**

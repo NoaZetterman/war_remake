@@ -5,6 +5,7 @@ import me.noaz.testplugin.GameLoop;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
+import me.noaz.testplugin.player.Reward;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -66,35 +67,23 @@ public class DamageEvents implements Listener {
                     hitPlayerExtension.addDeath();
                     hitPlayerExtension.respawn(shooter);
 
-                    int xpEarned;
-                    int creditsEarned;
-
                     if(isHeadshot) {
-                        xpEarned = 35;
-                        creditsEarned = 2;
-
                         ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
-                        ChatMessage.playerHeadshotKilled(shooter, xpEarned, creditsEarned, hitPlayer,
+                        ChatMessage.playerHeadshotKilled(shooter, hitPlayer,
                                 hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                        shooterExtension.addHeadshotKill();
+                        shooterExtension.addKill(Reward.HEADSHOT_KILL);
                     } else {
-                        xpEarned = 25;
-                        creditsEarned = 1;
-
                         ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
-                        ChatMessage.playerShotKilled(shooter, xpEarned, creditsEarned, hitPlayer,
+                        ChatMessage.playerShotKilled(shooter, hitPlayer,
                                 hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                        shooterExtension.addKill();
+                        shooterExtension.addKill(Reward.BODYSHOT_KILL);
                     }
 
                     //Print death messages before adding the kills to print
                     //eventual killstreaks after player gets killed,
                     //And add death before addKill to prevent doublekill with nuke
-
-                    shooterExtension.addXp(xpEarned);
-                    shooterExtension.changeCredits(creditsEarned);
 
                 } else {
 
@@ -137,17 +126,11 @@ public class DamageEvents implements Listener {
 
             } else {
 
-                int xpEarned = 25;
-                int creditsEarned = 1;
-
                 ChatMessage.playerWasShotToDeath(deadPlayer, killer, killerExtension.getTeamChatColor());
-                ChatMessage.playerShotKilled(killer, xpEarned, creditsEarned, deadPlayer,
+                ChatMessage.playerShotKilled(killer, deadPlayer,
                         deadPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-
-                killerExtension.addXp(xpEarned);
-                killerExtension.changeCredits(creditsEarned);
-                killerExtension.addKill();
+                killerExtension.addKill(Reward.KNIFE_KILL);
             }
         }
     }
@@ -182,15 +165,10 @@ public class DamageEvents implements Listener {
                 //Put the player on the zombie team if human
                 event.setCancelled(true);
 
-                int xpEarned = 35;
-                int creditsEarned = 2;
-
                 ChatMessage.playerWasInfectedDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
-                ChatMessage.playerInfectedKill(damager, xpEarned, creditsEarned, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
+                ChatMessage.playerInfectedKilled(damager, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
 
-                damagerExtension.addXp(xpEarned);
-                damagerExtension.changeCredits(creditsEarned);
-                damagerExtension.addKill();
+                damagerExtension.addKill(Reward.ZOMBIE_KILL_HUMAN);
 
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
@@ -201,12 +179,10 @@ public class DamageEvents implements Listener {
                 int creditsEarned = 1;
 
                 ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
-                ChatMessage.playerKnifeKilled(damager, xpEarned, creditsEarned, damagedPlayer,
+                ChatMessage.playerKnifeKilled(damager, damagedPlayer,
                         damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                damagerExtension.addXp(xpEarned);
-                damagerExtension.changeCredits(creditsEarned);
-                damagerExtension.addKill();
+                damagerExtension.addKill(Reward.KNIFE_KILL);
 
                 damagedPlayerExtension.respawn(damager);
                 damagedPlayerExtension.addDeath();
@@ -228,6 +204,7 @@ public class DamageEvents implements Listener {
                         if (damagedPlayerExtension.isPlayingGame()) {
                             damagedPlayerExtension.addDeath();
                             damagedPlayerExtension.respawn(null);
+                            ChatMessage.playerOutOfMapKilled(damagedPlayer);
                         } else {
                             damagedPlayer.teleport(damagedPlayer.getWorld().getSpawnLocation());
                         }
@@ -262,6 +239,7 @@ public class DamageEvents implements Listener {
         if(event.getTo().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER) {
             data.getPlayerExtension(event.getPlayer()).addDeath();
             data.getPlayerExtension(event.getPlayer()).respawn(null);
+            ChatMessage.playerOutOfMapKilled(event.getPlayer());
         }
     }
 }

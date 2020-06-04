@@ -3,6 +3,7 @@ package me.noaz.testplugin.messages;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
+import me.noaz.testplugin.player.Reward;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,12 +19,12 @@ public class ChatMessage {
         player.getPlayer().sendMessage("Out of ammo!");
     }
 
-    public static void playerWasShotToDeath(Player killedPlayer, Player shooter, ChatColor shooterColor) {
-        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Shot by " +
-                shooterColor + shooter.getName());
-    }
+    //Kill messages
 
-    public static void playerShotKilled(Player shooter, int xp, int credits, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+    public static void playerShotKilled(Player shooter, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.BODYSHOT_KILL.getXp();
+        int credits = Reward.BODYSHOT_KILL.getCredits();
+
         String message;
         if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
             message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
@@ -35,12 +36,10 @@ public class ChatMessage {
         shooter.sendMessage(message);
     }
 
-    public static void playerWasHeadshotToDeath(Player killedPlayer, Player shooter, ChatColor shooterColor) {
-        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Headshot by " +
-                shooterColor + shooter.getName());
-    }
+    public static void playerHeadshotKilled(Player shooter, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.HEADSHOT_KILL.getXp();
+        int credits = Reward.HEADSHOT_KILL.getCredits();
 
-    public static void playerHeadshotKilled(Player shooter, int xp, int credits, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
         String message;
         if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
             message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
@@ -52,12 +51,10 @@ public class ChatMessage {
         shooter.sendMessage(message);
     }
 
-    public static void playerWasKnifedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
-        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Knifed by " +
-                killerColor + killer.getName());
-    }
+    public static void playerKnifeKilled(Player killer, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.KNIFE_KILL.getXp();
+        int credits = Reward.KNIFE_KILL.getCredits();
 
-    public static void playerKnifeKilled(Player killer, int xp, int credits, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
         String message;
         if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
             message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
@@ -69,32 +66,73 @@ public class ChatMessage {
         killer.sendMessage(message);
     }
 
-    public static void playerWasInfectedDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
-        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Infected by " + killerColor + killer.getName());
-    }
-    public static void playerInfectedKill(Player killer, int xp, int credits, Player killedPlayer, ChatColor killedColor) {
+    public static void playerInfectedKilled(Player killer, Player killedPlayer, ChatColor killedColor) {
+        int xp = Reward.ZOMBIE_KILL_HUMAN.getXp();
+        int credits = Reward.ZOMBIE_KILL_HUMAN.getCredits();
+
         killer.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Infected "
                 + killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$");
     }
 
-    public static void playerWasNukeKilled(Player killedPlayer, Player killer, ChatColor killerColor) {
-        killedPlayer.sendMessage(ChatColor.GRAY + "[+] " + ChatColor.GRAY + "Nuked by " +
-                killerColor + killer.getName());
-    }
+    public static void playerNukeKilled(Player killer, Player killedPlayer, ChatColor killedColor) {
+        int xp = Reward.NUKE_KILL.getXp();
+        int credits = Reward.NUKE_KILL.getCredits();
 
-    public static void playerNukeKilled(Player killer, int xp, int credits, Player killedPlayer, ChatColor killedColor) {
         killer.sendMessage(ChatColor.GRAY + "[+] " + ChatColor.GRAY + "Nuked " +
                 killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$");
     }
 
-    public static void playerCapturedFlag(Player playerWhoCaptured, int xp, int credits, ChatColor flagColor) {
-        if(flagColor == ChatColor.BLUE) {
 
-        }
-        playerWhoCaptured.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] " + ChatColor.GRAY +
-                "Captured the " + flagColor + "red/blue" + ChatColor.GRAY + " flag" + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$");
+
+    //Death messages
+    public static void playerWasShotToDeath(Player killedPlayer, Player shooter, ChatColor shooterColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Shot by " +
+                shooterColor + shooter.getName());
     }
 
+    public static void playerWasHeadshotToDeath(Player killedPlayer, Player shooter, ChatColor shooterColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Headshot by " +
+                shooterColor + shooter.getName());
+    }
+
+    public static void playerWasKnifedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Knifed by " +
+                killerColor + killer.getName());
+    }
+
+    public static void playerWasInfectedDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Infected by " + killerColor + killer.getName());
+    }
+
+    public static void playerWasNukeKilled(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Nuked by " +
+                killerColor + killer.getName());
+    }
+
+    public static void playerOutOfMapKilled(Player killedPlayer) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] Out of the map!");
+    }
+
+    public static void playerCapturedFlag(Player playerWhoCaptured, ChatColor flagColor) {
+        int xp = Reward.CAPTURE_FLAG.getXp();
+        int credits = Reward.CAPTURE_FLAG.getCredits();
+
+        String message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] " + ChatColor.GRAY +
+                "Captured the " + flagColor;
+
+        if(flagColor == ChatColor.BLUE) {
+            message += "Blue";
+        } else {
+            message += "Red";
+        }
+
+        message += ChatColor.GRAY + " flag" + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$";
+
+        playerWhoCaptured.sendMessage(message);
+    }
+
+
+    //End game statistics
 
     public static void displayFreeForAllEndGame(PlayerExtension winner, int winnerKills, Player player) {
         if(winner != null) {
@@ -120,12 +158,12 @@ public class ChatMessage {
     public static void displayCaptureTheFlagEndGame(String winner, Team winnerTeam, Team loserTeam, Player player) {
         if(winner.equals("None")) {
             player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.GRAY + winner + ChatColor.GRAY +
-                    " (" + winnerTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + " - " +
-                    loserTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + ")");
+                    " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + " - " +
+                    loserTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + ")");
         } else {
             player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
-                    " (" + winnerTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + " - " +
-                    loserTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + ")");
+                    " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + " - " +
+                    loserTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + ")");
         }
     }
 

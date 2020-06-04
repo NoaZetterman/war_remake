@@ -66,7 +66,7 @@ public class CaptureTheFlag extends Game {
     @Override
     public void updatePlayerList() {
         for(Player player : players.keySet())
-        PlayerListMessage.setCaptureTheFlagHeader(player, teams[1].getCaptures(), teams[0].getCaptures());
+        PlayerListMessage.setCaptureTheFlagHeader(player, teams[0].getCaptures(), teams[1].getCaptures());
     }
 
     @Override
@@ -79,11 +79,11 @@ public class CaptureTheFlag extends Game {
         Team winnerTeam = teams[0];
         Team loserTeam = teams[1];
         //replace below with captures
-        if(teams[0].getCaptures() < teams[1].getCaptures()) {
+        if(teams[1].getCaptures() < teams[0].getCaptures()) {
             winner = "Red";
             winnerTeam = teams[0];
             loserTeam = teams[1];
-        } else if(teams[1].getCaptures() < teams[0].getCaptures()) {
+        } else if(teams[0].getCaptures() < teams[1].getCaptures()) {
             winner = "Blue";
             winnerTeam = teams[1];
             loserTeam = teams[0];

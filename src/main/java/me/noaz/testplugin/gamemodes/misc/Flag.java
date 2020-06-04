@@ -55,13 +55,6 @@ public class Flag {
         createWoolFlag();
     }
 
-    /**
-     * @return The amount of times this flag has been captured
-     */
-    public int getCaptures() {
-        return captures;
-    }
-
     /*
     private void createBannerFlag() {
 
@@ -182,6 +175,8 @@ public class Flag {
                         //Cap the flag
                         BroadcastMessage.capturedFlag(flagHolder);
                         captures++;
+
+                        flagHolder.captureFlag();
 
                         flagHolder = null;
                         spawnFlag(flagPoleLocation);

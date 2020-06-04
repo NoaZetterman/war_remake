@@ -25,6 +25,7 @@ public class Team {
     private Random random = new Random();;
 
     private int kills = 0;
+    private int captures = 0;
 
     private Flag flag;
 
@@ -96,7 +97,7 @@ public class Team {
     }
 
     public int getCaptures() {
-        return flag.getCaptures();
+        return captures;
     }
 
     public Flag getFlag() {
@@ -108,6 +109,10 @@ public class Team {
      */
     public void addKill() {
         kills++;
+    }
+
+    public void addCapture() {
+        captures++;
     }
 
     /**

@@ -270,18 +270,11 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event){
-        //Reload when pressing drop button (Q)
-        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-        if(player.getPrimaryGun().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            player.reloadWeapon(player.getPrimaryGun());
-        } else if (player.getSecondaryGun().getMaterialType().equals(event.getItemDrop().getItemStack().getType())) {
-            player.reloadWeapon(player.getSecondaryGun());
-        }
-
         event.getItemDrop().remove();
         event.setCancelled(true);
-        //@SuppressWarnings()
-        //event.getPlayer().updateInventory();
+
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+        player.reloadIfGun(event.getItemDrop().getItemStack().getType());
     }
 
     @EventHandler
@@ -311,6 +304,11 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerSwapHandItem(PlayerSwapHandItemsEvent event) {
         event.setCancelled(true);
+
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+        if(event.getMainHandItem() != null) {
+            player.reloadIfGun(event.getMainHandItem().getType());
+        }
     }
 
     @EventHandler

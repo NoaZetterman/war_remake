@@ -34,6 +34,7 @@ public class PlayerStatistic {
     private int totalFiredBulletsThatHitEnemy;
     private int totalHeadshotKills;
     private int credits;
+    private int totalCaptures;
 
     private int kills = 0;
     private int deaths = 0;
@@ -42,6 +43,8 @@ public class PlayerStatistic {
     private int firedBulletsThatHitEnemy = 0;
     private int creditsThisGame;
     private int xpThisGame;
+
+    private int captures = 0;
 
     /**
      * Create a new player statistic for given player (should only be done from PlayerHandler constructor
@@ -54,6 +57,8 @@ public class PlayerStatistic {
         this.plugin = plugin;
         this.scoreManager = scoreManager;
         playerUUID = player.getUniqueId();
+
+        this.totalCaptures = 0;
 
         //level quickfix
         levels = new int[] {100, 120, 150, 200, 325, 450, 700, 1000, 1500, 3000, 5000, 8500, 12000, 15000, 20000, 30000,
@@ -88,7 +93,7 @@ public class PlayerStatistic {
         updateLobbyScoreboard();
 
         player.setLevel(level);
-        addXP(0);
+        addXp(0);
         player.setDisplayName("Lvl " + level + " " + player.getName());
     }
 
@@ -160,7 +165,7 @@ public class PlayerStatistic {
      *
      * @param amount The amount of xp
      */
-    public void addXP(int amount) {
+    public void addXp(int amount) {
         Player player = Bukkit.getServer().getPlayer(playerUUID);
         xpOnCurrentLevel += amount;
         xpThisGame += amount;
@@ -196,6 +201,16 @@ public class PlayerStatistic {
         creditsThisGame += amount;
 
         updateGameScoreboard();
+    }
+
+    public void addReward(Reward reward) {
+        addXp(reward.getXp());
+        addCredits(reward.getCredits());
+
+    }
+
+    public void addCapture() {
+        captures++;
     }
 
     /**
@@ -241,6 +256,7 @@ public class PlayerStatistic {
         firedBulletsThatHitEnemy = 0;
         xpThisGame = 0;
         creditsThisGame = 0;
+        captures = 0;
     }
 
     /**

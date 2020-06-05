@@ -178,6 +178,8 @@ public class Flag {
 
                         flagHolder.captureFlag();
 
+                        //Flag message?
+
                         flagHolder = null;
                         spawnFlag(flagPoleLocation);
                     } else if(flagHolder.isDead()){

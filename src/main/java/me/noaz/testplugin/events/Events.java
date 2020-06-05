@@ -294,21 +294,19 @@ public class Events implements Listener {
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
 
         if(player.isPlayingGame()) {
-            player.getPrimaryGun().stopShooting();
-            player.getSecondaryGun().stopShooting();
-            data.getPlayerExtension(event.getPlayer()).unScope();
+            player.changeMainHand(event.getNewSlot());
         }
-        player.updateActionBar();
+        //player.updateActionBar();
     }
 
     @EventHandler
     public void onPlayerSwapHandItem(PlayerSwapHandItemsEvent event) {
-        event.setCancelled(true);
-
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-        if(event.getMainHandItem() != null) {
+        if(event.getOffHandItem() != null) {
             player.reloadIfGun(event.getMainHandItem().getType());
         }
+        System.out.println("Hello");
+        event.setCancelled(true);
     }
 
     @EventHandler

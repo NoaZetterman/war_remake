@@ -131,6 +131,24 @@ public class ChatMessage {
         playerWhoCaptured.sendMessage(message);
     }
 
+    //Capture flag
+
+    public static void teamCapturedFlag(Player player, Team team) {
+        if(team.getTeamColorAsChatColor() == ChatColor.RED) {
+            player.sendMessage(ChatColor.RED + "Red" + ChatColor.GRAY + " flag was captured");
+        } else {
+            player.sendMessage(ChatColor.BLUE + "Blue" + ChatColor.GRAY + " flag was captured");
+        }
+    }
+
+    public static void enemyTeamCapturedFlag(Player player, Team team) {
+        if(team.getTeamColorAsChatColor() == ChatColor.BLUE) {
+            player.sendMessage(ChatColor.RED + "Red" + ChatColor.GRAY + " flag was captured");
+        } else {
+            player.sendMessage(ChatColor.BLUE + "Blue" + ChatColor.GRAY + " flag was captured");
+        }
+    }
+
 
     //End game statistics
 

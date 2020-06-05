@@ -236,9 +236,11 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onBarrierBlockWalk(PlayerMoveEvent event) {
-        if(event.getTo().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER) {
-            data.getPlayerExtension(event.getPlayer()).addDeath();
-            data.getPlayerExtension(event.getPlayer()).respawn(null);
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+        if(event.getTo().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER &&
+           !player.isDead()) {
+            player.addDeath();
+            player.respawn(null);
             ChatMessage.playerOutOfMapKilled(event.getPlayer());
         }
     }

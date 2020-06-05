@@ -26,6 +26,9 @@ commands:
   ping:
     permission: TestPlugin.ping
     description: Displays players ping
+  resource:
+    permission: TestPlugin.game
+    description: Changes the players resourcepack
 
 permissions:
   TestPlugin.game:

@@ -17,13 +17,7 @@ import me.noaz.testplugin.weapons.Gun;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -61,6 +55,8 @@ public class PlayerExtension {
 
     private String[] actionBarMessage;
     private boolean isDead = false;
+
+    private Resourcepack selectedResourcepack = Resourcepack.PACK_2D_16X16;
 
     private BukkitRunnable respawnCountdown;
 
@@ -223,8 +219,6 @@ public class PlayerExtension {
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
 
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*3, 2));
                     this.cancel();
                 }
             }
@@ -312,8 +306,9 @@ public class PlayerExtension {
         statistics.addCapture();
         statistics.addReward(Reward.CAPTURE_FLAG);
 
-        team.addCapture();
-        //Send chatmessage to everyone
+        team.captureFlag();
+        enemyTeam.enemyCapturedFlag();
+        ChatMessage.playerCapturedFlag(player, team.getTeamColorAsChatColor());
     }
 
     /**
@@ -327,9 +322,6 @@ public class PlayerExtension {
         //TODO: Make a separate class for display name stuff
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
-
-        //Replace with transparent wep corresponding to wep name/id/whatever
         if(team.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
@@ -439,81 +431,12 @@ public class PlayerExtension {
      */
     public void unScope() {
         player.removePotionEffect(PotionEffectType.SLOW);
-        if(hasWeaponInMainHand() && getWeaponInMainHand().getConfiguration().gunMaterial == Material.DIAMOND_AXE) {
-            ItemStack s = primaryGun.getMaterialAsItemStack();
-            ItemMeta meta = s.getItemMeta();
-            meta.setDisplayName(primaryGun.toString());
-            meta.setUnbreakable(true);
-            meta.setLore(primaryGun.getLore());
-
-            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier("generic.attackSpeed", 100, AttributeModifier.Operation.ADD_NUMBER));
-            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier("generic.attackDamage", 0, AttributeModifier.Operation.ADD_NUMBER));
-
-            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
-            s.setItemMeta(meta);
-
-            player.getInventory().setItemInMainHand(s);
-
-        } else if(hasWeaponInMainHand() && getWeaponInMainHand().getConfiguration().gunMaterial == Material.BONE) {
-            ItemStack m = player.getInventory().getItemInMainHand();
-
-            ItemMeta meta = m.getItemMeta();
-
-            meta.setCustomModelData(10000002);
-            m.setItemMeta(meta);
-            player.getInventory().setItemInMainHand(m);
-            new BukkitRunnable() {
-
-                @Override
-                public void run() {
-                    scope2(10000001);
-                }
-            }.runTaskLater(plugin, 1);
-
-        }
+        Animation.unscopeAnimation(player, getWeaponInMainHand(), player.getInventory().getHeldItemSlot(), plugin);
     }
 
     public void scope() {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 4, false, false, false));
-        if(getWeaponInMainHand().getConfiguration().gunMaterial == Material.DIAMOND_AXE) {
-            Damageable meta = (Damageable) player.getInventory().getItemInMainHand().getItemMeta();
-
-            meta.setDamage(1560);
-
-            ItemStack s = player.getInventory().getItemInMainHand();
-            s.setItemMeta((ItemMeta)meta);
-
-            player.getInventory().setItemInMainHand(s);
-
-        } else if(getWeaponInMainHand().getConfiguration().gunMaterial == Material.BONE) {
-            ItemStack m = player.getInventory().getItemInMainHand();
-
-            ItemMeta meta = m.getItemMeta();
-
-            meta.setCustomModelData(10000002);
-            m.setItemMeta(meta);
-            player.getInventory().setItemInMainHand(m);
-            new BukkitRunnable() {
-
-                @Override
-                public void run() {
-                    scope2(10000003);
-                }
-            }.runTaskLater(plugin, 1);
-        }
-    }
-
-    private void scope2(int val) {
-        //TODO: CHANGE THIS
-        ItemStack m = player.getInventory().getItemInMainHand();
-
-        ItemMeta meta = m.getItemMeta();
-
-        meta.setCustomModelData(val);
-        m.setItemMeta(meta);
-        player.getInventory().setItemInMainHand(m);
+        Animation.scopeAnimation(player, getWeaponInMainHand(), player.getInventory().getHeldItemSlot(), plugin);
     }
 
     public boolean isScoping() {
@@ -557,6 +480,23 @@ public class PlayerExtension {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void changeMainHand(int newSlot) {
+        primaryGun.stopShooting();
+        secondaryGun.stopShooting();
+
+        //unScope();
+
+        if(selectedResourcepack == Resourcepack.PACK_3D_128X128) {
+            if (newSlot == 1) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
+            } else {
+                player.removePotionEffect(PotionEffectType.FAST_DIGGING);
+                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+            }
         }
     }
 
@@ -765,5 +705,9 @@ public class PlayerExtension {
 
     public int getCredits() {
         return statistics.getCredits();
+    }
+
+    public void setSelectedResourcepack(Resourcepack pack) {
+        selectedResourcepack = pack;
     }
 }

@@ -2,6 +2,7 @@ package me.noaz.testplugin.gamemodes.misc;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.maps.GameMap;
+import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -111,8 +112,19 @@ public class Team {
         kills++;
     }
 
-    public void addCapture() {
+    public void captureFlag() {
         captures++;
+
+        for(PlayerExtension player : players) {
+            ChatMessage.teamCapturedFlag(player.getPlayer(), this);
+        }
+
+    }
+
+    public void enemyCapturedFlag() {
+        for(PlayerExtension player : players) {
+            ChatMessage.enemyTeamCapturedFlag(player.getPlayer(), this);
+        }
     }
 
     /**

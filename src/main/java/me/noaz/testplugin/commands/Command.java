@@ -19,6 +19,7 @@ public class Command {
         new GameCommands(plugin, gameLoop);
         new GetMapNames(plugin, data);
         new UpdateCommands(plugin, data, connection);
+        new Resource(plugin, data);
 
         plugin.getServer().getPluginCommand("update").setTabCompleter(new TabCompleteForUpdateCommands(data));
 

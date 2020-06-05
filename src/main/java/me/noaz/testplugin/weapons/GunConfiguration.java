@@ -48,6 +48,8 @@ public class GunConfiguration {
     public final Sound fireWhileReloadingSound;
     public final Sound fireWithoutAmmoSound;
 
+    public final int scopeAnimations = 1; //Amount of animations in between normal and fully scoped
+
     /**
      * Configures a weapon
      *

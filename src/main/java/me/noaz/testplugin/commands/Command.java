@@ -22,6 +22,7 @@ public class Command {
         new Resource(plugin, data);
 
         plugin.getServer().getPluginCommand("update").setTabCompleter(new TabCompleteForUpdateCommands(data));
+        plugin.getServer().getPluginCommand("resource").setTabCompleter(new TabCompleteForResource());
 
         new Profile(plugin);
         new Ping(plugin);

@@ -278,6 +278,15 @@ public class Events implements Listener {
     }
 
     @EventHandler
+    public void onPlayerSwapHandItem(PlayerSwapHandItemsEvent event) {
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+        if(player.isPlayingGame() && player.hasWeaponInMainHand()) {
+            player.reloadIfGun(player.getWeaponInMainHand().getMaterialType());
+        }
+        event.setCancelled(true);
+    }
+
+    @EventHandler
     public void onBlockPlaceEvent(BlockPlaceEvent event) {
         event.setCancelled(true);
     }
@@ -297,16 +306,6 @@ public class Events implements Listener {
             player.changeMainHand(event.getNewSlot());
         }
         //player.updateActionBar();
-    }
-
-    @EventHandler
-    public void onPlayerSwapHandItem(PlayerSwapHandItemsEvent event) {
-        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-        if(event.getOffHandItem() != null) {
-            player.reloadIfGun(event.getMainHandItem().getType());
-        }
-        System.out.println("Hello");
-        event.setCancelled(true);
     }
 
     @EventHandler
@@ -351,5 +350,23 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerTakeLecternBookEvent(PlayerTakeLecternBookEvent event) {
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerSetResourcepackEvent(PlayerResourcePackStatusEvent event) {
+        switch(event.getStatus()) {
+            case DECLINED:
+                event.getPlayer().sendMessage("Please switch resourcepacks to on");
+                break;
+            case FAILED_DOWNLOAD:
+                event.getPlayer().sendMessage("Failed download, please try again");
+                break;
+            case ACCEPTED:
+                event.getPlayer().sendMessage("Applying textures");
+                break;
+            case SUCCESSFULLY_LOADED:
+                event.getPlayer().sendMessage("Successfuly downloaded resourcepack");
+                break;
+        }
     }
 }

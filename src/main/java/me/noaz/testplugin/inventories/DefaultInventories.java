@@ -1,5 +1,6 @@
 package me.noaz.testplugin.inventories;
 
+import me.noaz.testplugin.player.DefaultCustomModelData;
 import me.noaz.testplugin.weapons.Gun;
 import org.bukkit.Material;
 import org.bukkit.Color;
@@ -116,6 +117,8 @@ public class DefaultInventories {
 
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
+        meta.setCustomModelData(DefaultCustomModelData.DEFAULT_VALUE.getValue());
 
         item.setItemMeta(meta);
         return item;

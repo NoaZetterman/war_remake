@@ -216,6 +216,8 @@ public class PlayerExtension {
                         DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
                     }
 
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 10000000, 2, false, false, false));
+
                     player.teleport(team.getSpawnPoint());
                     player.setGameMode(GameMode.ADVENTURE);
 
@@ -331,6 +333,11 @@ public class PlayerExtension {
             secondaryGun.reset();
         }
 
+        if(hasWeaponInMainHand() && selectedResourcepack == Resourcepack.PACK_3D_128X128) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
+        }
+
         player.setHealth(20D);
     }
 
@@ -366,9 +373,7 @@ public class PlayerExtension {
         if(team != null) {
             statistics.updateTotalScore();
 
-            Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
-
-            for(PotionEffect effect : activeEffects) {
+            for(PotionEffect effect : player.getActivePotionEffects()) {
                 player.removePotionEffect(effect.getType());
             }
 
@@ -474,13 +479,13 @@ public class PlayerExtension {
      * @return true if player has weapon in main hand, false otherwise
      */
     public boolean hasWeaponInMainHand() {
-        if(player.getInventory().getItemInMainHand().getType().equals(primaryGun.getMaterialType())) {
+        if (player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterialType()) {
             return true;
-        } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryGun.getMaterialType())) {
+        } else if (player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterialType()) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public void changeMainHand(int newSlot) {

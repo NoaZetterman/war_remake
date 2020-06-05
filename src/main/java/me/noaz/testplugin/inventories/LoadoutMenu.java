@@ -1,5 +1,6 @@
 package me.noaz.testplugin.inventories;
 
+import me.noaz.testplugin.player.DefaultCustomModelData;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import me.noaz.testplugin.weapons.GunType;
@@ -237,6 +238,8 @@ public class LoadoutMenu {
         meta.setUnbreakable(true);
 
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
+
+        meta.setCustomModelData(DefaultCustomModelData.DEFAULT_VALUE.getValue());
 
         item.setItemMeta(meta);
 

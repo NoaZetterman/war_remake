@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class Animation {
 
     public static void scopeAnimation(Player player, Gun gun, int slot, TestPlugin plugin) {
-        int modelDataBaseValue = 10000000;
+        int modelDataBaseValue = DefaultCustomModelData.SCOPE_START.getValue();
         int animations = gun.getConfiguration().scopeAnimations;
 
         ItemStack item = player.getInventory().getItem(slot);
@@ -35,7 +35,7 @@ public class Animation {
     }
 
     public static void unscopeAnimation(Player player, Gun gun, int slot, TestPlugin plugin) {
-        int modelDataBaseValue = 10000000;
+        int modelDataBaseValue = DefaultCustomModelData.SCOPE_START.getValue();
 
         ItemStack item = player.getInventory().getItem(slot);
         ItemMeta meta = item.getItemMeta();

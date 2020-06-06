@@ -1,5 +1,6 @@
 package me.noaz.testplugin.inventories;
 
+import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.DefaultCustomModelData;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.GunConfiguration;
@@ -114,9 +115,11 @@ public class LoadoutMenu {
         /*
         items[13] = lethal item
         items[14] = tactical item
+        */
 
-        items[16] = perk
+        items[16] = createUnlockedPerk(player.getSelectedPerk());
 
+                /*
         items[28] = first ks
         items[29] = second ks
         items[30] = third ks (= always nuke so ignore?)
@@ -330,6 +333,19 @@ public class LoadoutMenu {
         ItemMeta meta = item.getItemMeta();
 
         meta.setDisplayName("Cancel");
+        //TODO: Add some extra explanation
+
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack createUnlockedPerk(Perk perk) {
+        ItemStack item = new ItemStack(perk.getMaterial());
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName("Perk");
         //TODO: Add some extra explanation
 
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);

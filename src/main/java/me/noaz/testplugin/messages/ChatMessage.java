@@ -196,14 +196,7 @@ public class ChatMessage {
                 ChatColor.GOLD + "Earned xp: " + ChatColor.GREEN + xpGained + ChatColor.GOLD + "   Earned credits: " + ChatColor.GREEN + creditsGained
         );
 
-        /*Maybe
-        player.sendMessage(
-                "----------------------------------------------------------------" + "\n" +
-                        ChatColor.DARK_AQUA + "Kills: " + ChatColor.GREEN +  kills + ChatColor.DARK_AQUA + "   Deaths: " + ChatColor.RED + deaths + ChatColor.DARK_AQUA +
-                        "   K/D Ratio: " + getRatioAsString(kills, deaths, totalKills, totalDeaths) + "\n" + ChatColor.RESET +
-                        ChatColor.DARK_AQUA + "Earned xp: " + ChatColor.GREEN + xpGained + ChatColor.DARK_AQUA + "   Earned credits: " + ChatColor.GREEN + creditsGained
-        );
-
+        /*
         player.sendMessage("Colors:" + ChatColor.DARK_GRAY + "DARKGRAY" + ChatColor.GRAY + "GRAY" + ChatColor.GOLD + "GOLD" +
                 ChatColor.YELLOW + "YELLOW" + ChatColor.DARK_BLUE + "DARKBLUE" + ChatColor.BLACK + "BLACK" + ChatColor.GREEN +
                 "GREEN" + ChatColor.LIGHT_PURPLE + "LIGHTPURPLE" + ChatColor.DARK_RED + "DARKRED" + ChatColor.DARK_GREEN + "DARKGREEN" +

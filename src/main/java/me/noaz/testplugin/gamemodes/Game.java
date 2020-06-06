@@ -108,10 +108,12 @@ public abstract class Game {
 
     protected void endGame(boolean forceEnd, Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam) {
         for (PlayerExtension player : players.values()) {
-            if (forceEnd) {
-                player.forceEndGame();
-            } else {
-                player.endGame(gamemode, winner, winnerTeam, loserTeam);
+            if(player.isPlayingGame()) {
+                if (forceEnd) {
+                    player.forceEndGame();
+                } else {
+                    player.endGame(gamemode, winner, winnerTeam, loserTeam);
+                }
             }
         }
     }

@@ -20,16 +20,17 @@ public class ActionBarMessage {
      * @param itemSlot The itemslot to put the message in (0-8)
      */
     public static void reload(int totalReloadTimeInTicks, int ticksPassedSinceStart, PlayerExtension player, int itemSlot) {
+        String message = ChatColor.GOLD + "" + ChatColor.BOLD + "";
         if (totalReloadTimeInTicks / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◇◇◇◇ Reloading", itemSlot);
+            player.setActionBar(message + "◇◇◇◇ Reloading", itemSlot);
         } else if (totalReloadTimeInTicks * 2 / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◇◇◇ Reloading", itemSlot);
+            player.setActionBar(message + "◆◇◇◇ Reloading", itemSlot);
         } else if (totalReloadTimeInTicks * 3 / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◇◇ Reloading", itemSlot);
+            player.setActionBar(message + "◆◆◇◇ Reloading", itemSlot);
         } else if (totalReloadTimeInTicks * 4 / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◇ Reloading", itemSlot);
+            player.setActionBar(message + "◆◆◆◇ Reloading", itemSlot);
         } else {
-            player.setActionBar(ChatColor.AQUA.toString() + ChatColor.BOLD.toString() + "◆◆◆◆ Reloading", itemSlot);
+            player.setActionBar(message + "◆◆◆◆ Reloading", itemSlot);
         }
     }
 
@@ -40,7 +41,7 @@ public class ActionBarMessage {
      * @param currentBullets The total amount of bullets the player has
      * @param player The players PlayerExtension
      */
-    public static void ammunitionCurrentAndTotal(int currentClip, int currentBullets, PlayerExtension player, int itemSlot) {
-        player.setActionBar(ChatColor.DARK_RED + "" + ChatColor.BOLD + currentClip + " / " + currentBullets, itemSlot);
+    public static void ammunitionCurrentAndTotal(String gunName, int currentClip, int currentBullets, PlayerExtension player, int itemSlot) {
+        player.setActionBar(ChatColor.GOLD + "" + gunName + " | " + currentClip + "/" + currentBullets, itemSlot);
     }
 }

@@ -8,6 +8,7 @@ import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.Firemode;
 import me.noaz.testplugin.weapons.GunType;
 import me.noaz.testplugin.weapons.firemodes.BurstGun;
@@ -17,6 +18,7 @@ import me.noaz.testplugin.weapons.Gun;
 import me.noaz.testplugin.weapons.GunConfiguration;
 import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,8 +52,11 @@ public class PlayerExtension {
 
     private Gun primaryGun;
     private Gun secondaryGun;
+    private Perk selectedPerk;
+
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
+    private List<Perk> ownedPerks;
 
     private String[] actionBarMessage;
     private boolean isDead = false;
@@ -77,6 +82,8 @@ public class PlayerExtension {
 
         ownedPrimaryGuns = new ArrayList<>();
         ownedSecondaryGuns = new ArrayList<>();
+        ownedPerks = new ArrayList<>();
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -152,6 +159,10 @@ public class PlayerExtension {
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
 
+        //Redo this with database etc
+        ownedPerks.add(Perk.SCAVENGER);
+        selectedPerk = Perk.SCAVENGER;
+
 
 
         //Get current used guns from database instead
@@ -164,17 +175,19 @@ public class PlayerExtension {
      * Respawn the player in a one spawnpoint belonging to its team.
      */
     public void respawn(Player killer) {
-        if(team.getTeamColor() != Color.GREEN) {
-            primaryGun.reset();
-            secondaryGun.reset();
-        }
-
         isDead = true;
+
         DefaultInventories.giveEmptyInventory(player.getInventory());
         player.setGameMode(GameMode.SPECTATOR);
+
+        for(Entity passenger : player.getPassengers()) {
+            player.removePassenger(passenger);
+        }
+
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.SLOW);
 
+        //If killed by infected, switch team
         if(enemyTeam.getTeamColor() == Color.GREEN) {
             team.removePlayer(this);
             enemyTeam.addPlayer(this);
@@ -187,7 +200,7 @@ public class PlayerExtension {
 
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
-        if(killer != null) {
+        if(killer != null && killer.getGameMode() != GameMode.SPECTATOR) {
             player.setSpectatorTarget(killer);
         }
 
@@ -202,24 +215,7 @@ public class PlayerExtension {
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(i < 0) {
-                    primaryGun.reset();
-                    secondaryGun.reset();
-
-                    isDead = false;
-                    player.setHealth(20D);
-
-                    if(team.getTeamColor() == Color.GREEN) {
-                        DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
-                        Arrays.fill(actionBarMessage, "");
-                    } else {
-                        DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
-                    }
-
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 10000000, 2, false, false, false));
-
-                    player.teleport(team.getSpawnPoint());
-                    player.setGameMode(GameMode.ADVENTURE);
+                    spawn();
 
                     this.cancel();
                 }
@@ -227,6 +223,31 @@ public class PlayerExtension {
         };
 
         respawnCountdown.runTaskTimer(plugin, 0, 20);
+    }
+
+    private void spawn() {
+        isDead = false;
+
+        if(team.getTeamColor() == Color.GREEN) {
+            DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
+            Arrays.fill(actionBarMessage, "");
+        } else {
+            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+            primaryGun.reset();
+            secondaryGun.reset();
+        }
+
+        if(hasWeaponInMainHand() && selectedResourcepack == Resourcepack.PACK_3D_128X128) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
+        }
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20*3, 2, false, false, false));
+
+        player.setHealth(20D);
+        player.setGameMode(GameMode.ADVENTURE);
+
+        player.teleport(team.getSpawnPoint());
     }
 
     /**
@@ -240,6 +261,11 @@ public class PlayerExtension {
             addHeadshotKill();
         }
 
+        if(selectedPerk == Perk.SCAVENGER) {
+            primaryGun.addBullets(primaryGun.getConfiguration().scavengerAmmo);
+            secondaryGun.addBullets(secondaryGun.getConfiguration().scavengerAmmo);
+        }
+
         if(team != null) {
             team.addKill();
         }
@@ -248,8 +274,8 @@ public class PlayerExtension {
             int killstreak = statistics.getKillstreak();
             switch (killstreak) {
                 case 5:
-                    primaryGun.addBullets(50);
-                    secondaryGun.addBullets(25);
+                    primaryGun.addBullets(primaryGun.getConfiguration().resupplyAmmo);
+                    secondaryGun.addBullets(secondaryGun.getConfiguration().resupplyAmmo);
                     break;
                 case 15:
                     //Launch emp
@@ -319,26 +345,11 @@ public class PlayerExtension {
     public void startPlayingGame() {
         statistics.updateGameScoreboard();
 
-        player.teleport(team.getSpawnPoint());
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
         player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
-        if(team.getTeamColor() == Color.GREEN) {
-            DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
-        } else {
-            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
-            primaryGun.reset();
-            secondaryGun.reset();
-        }
-
-        if(hasWeaponInMainHand() && selectedResourcepack == Resourcepack.PACK_3D_128X128) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
-        }
-
-        player.setHealth(20D);
+        spawn();
     }
 
     public void endGame(Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam) {
@@ -535,6 +546,10 @@ public class PlayerExtension {
         return secondaryGun;
     }
 
+    public Perk getSelectedPerk() {
+        return selectedPerk;
+    }
+
     public ChatColor getTeamChatColor() {
         if(team != null) {
             return team.getTeamColorAsChatColor();
@@ -714,5 +729,14 @@ public class PlayerExtension {
 
     public void setSelectedResourcepack(Resourcepack pack) {
         selectedResourcepack = pack;
+
+        if(selectedResourcepack == Resourcepack.PACK_2D_16X16 || player.getInventory().getHeldItemSlot() != 1) {
+            player.removePotionEffect(PotionEffectType.FAST_DIGGING);
+            player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+        } else if(selectedResourcepack == Resourcepack.PACK_3D_128X128 && player.getInventory().getHeldItemSlot() == 1) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
+        }
+
     }
 }

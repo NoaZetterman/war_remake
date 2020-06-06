@@ -49,6 +49,8 @@ public class GunConfiguration {
     public final Sound fireWithoutAmmoSound;
 
     public final int scopeAnimations = 1; //Amount of animations in between normal and fully scoped
+    public final int scavengerAmmo = 10;
+    public final int resupplyAmmo = 50;
 
     /**
      * Configures a weapon

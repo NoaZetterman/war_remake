@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class FreeForAll extends Game {
@@ -82,19 +83,13 @@ public class FreeForAll extends Game {
             }
         }
 
-        /*
-        if(leader != null) {
-            String leaderName = leader.getName();
-            BroadcastMessage.teamWonGame(leaderName);
-        } else {
-            BroadcastMessage.nooneWonGame();
-        }*/
-
         for (PlayerExtension player : players.values()) {
-            if (forceEnd) {
-                player.forceEndGame();
-            } else {
-                player.endGame(leader, leaderKills);
+            if(player.isPlayingGame()) {
+                if (forceEnd) {
+                    player.forceEndGame();
+                } else {
+                    player.endGame(leader, leaderKills);
+                }
             }
         }
 

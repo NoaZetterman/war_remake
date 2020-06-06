@@ -97,7 +97,7 @@ public abstract class Gun {
 
         statistics.addBulletsShot(config.bulletsPerClick);
 
-        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class Gun {
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
     }
 
     /**
@@ -143,7 +143,7 @@ public abstract class Gun {
                         currentBullets -= bulletsToReload;
 
                         isReloading = false;
-                        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+                        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
                         cancel();
                     } else {
                         ActionBarMessage.reload(config.reloadTime, i, player, itemSlot);
@@ -236,7 +236,7 @@ public abstract class Gun {
         currentBullets = config.startingBullets - config.clipSize;
         currentClip = config.clipSize;
 
-        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
     }
 
     /**
@@ -262,7 +262,7 @@ public abstract class Gun {
 
     public void addBullets(int amount) {
         currentBullets += amount;
-        ActionBarMessage.ammunitionCurrentAndTotal(currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
     }
 
     public boolean justStartedReloading() {

@@ -1,11 +1,11 @@
-package me.noaz.testplugin.weapons.firemodes;
+package me.noaz.testplugin.weapons.guns.firemodes;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Gun;
-import me.noaz.testplugin.weapons.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.Gun;
+import me.noaz.testplugin.weapons.guns.GunConfiguration;
 
 /**
  * A gun that does not take into account holding down rightclick, but may fire faster when clicking the mouse fast
@@ -21,7 +21,7 @@ public class SingleBoltGun extends Gun {
         super(plugin, player, statistics, config);
     }
 
-    public synchronized void shoot() {
+    public synchronized void use() {
         if(!isReloading && currentClip != 0 && isNextBulletReady) {
             fireBullet();
 

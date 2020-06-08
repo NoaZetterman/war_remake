@@ -4,19 +4,22 @@ import de.Herbystar.TTA.TTA_Methods;
 import me.noaz.testplugin.inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.perk.Perk;
-import me.noaz.testplugin.weapons.Firemode;
-import me.noaz.testplugin.weapons.GunType;
-import me.noaz.testplugin.weapons.firemodes.BurstGun;
-import me.noaz.testplugin.weapons.firemodes.FullyAutomaticGun;
-import me.noaz.testplugin.weapons.firemodes.BuckGun;
-import me.noaz.testplugin.weapons.Gun;
-import me.noaz.testplugin.weapons.GunConfiguration;
-import me.noaz.testplugin.weapons.firemodes.SingleBoltGun;
+import me.noaz.testplugin.weapons.Weapon;
+import me.noaz.testplugin.weapons.guns.Firemode;
+import me.noaz.testplugin.weapons.guns.GunType;
+import me.noaz.testplugin.weapons.guns.firemodes.BurstGun;
+import me.noaz.testplugin.weapons.guns.firemodes.FullyAutomaticGun;
+import me.noaz.testplugin.weapons.guns.firemodes.BuckGun;
+import me.noaz.testplugin.weapons.guns.Gun;
+import me.noaz.testplugin.weapons.guns.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
+import me.noaz.testplugin.weapons.lethals.Grenade;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -53,6 +56,7 @@ public class PlayerExtension {
     private Gun primaryGun;
     private Gun secondaryGun;
     private Perk selectedPerk;
+    private Grenade selectedLethal;
 
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
@@ -163,8 +167,6 @@ public class PlayerExtension {
         ownedPerks.add(Perk.SCAVENGER);
         selectedPerk = Perk.SCAVENGER;
 
-
-
         //Get current used guns from database instead
 
         actionBarMessage = new String[9];
@@ -233,7 +235,7 @@ public class PlayerExtension {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
             Arrays.fill(actionBarMessage, "");
         } else {
-            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun);
+            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun, selectedLethal);
             primaryGun.reset();
             secondaryGun.reset();
         }
@@ -342,8 +344,11 @@ public class PlayerExtension {
     /**
      * Makes this player start playing a game at given location with correct equipment
      */
-    public void startPlayingGame() {
+    public void startPlayingGame(GameMap map) {
         statistics.updateGameScoreboard();
+
+
+        selectedLethal = new Grenade(plugin, this, map);
 
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
@@ -432,12 +437,14 @@ public class PlayerExtension {
     /**
      * Changes the scope, scopes if player is not in scope and vice versa
      */
-    public void changeScope() {
-        if(!getWeaponInMainHand().justStartedReloading()) {
-            if (player.hasPotionEffect(PotionEffectType.SLOW)) {
-                unScope();
-            } else {
-                scope();
+    public void changeScope(int slot) {
+        if(slot == 1 || slot == 2) {
+            if(!((Gun) getWeaponInMainHand()).justStartedReloading()) {
+                if(player.hasPotionEffect(PotionEffectType.SLOW)) {
+                    unScope(slot);
+                } else {
+                    scope(slot);
+                }
             }
         }
     }
@@ -445,14 +452,22 @@ public class PlayerExtension {
     /**
      * Makes the player be stop scoping (or nothing if the player is not scoping).
      */
-    public void unScope() {
+    public void unScope(int slot) {
         player.removePotionEffect(PotionEffectType.SLOW);
-        Animation.unscopeAnimation(player, getWeaponInMainHand(), player.getInventory().getHeldItemSlot(), plugin);
+        if(slot == primaryGun.getInventorySlot()) {
+            Animation.unscopeAnimation(player, primaryGun, slot, plugin);
+        } else if(slot == secondaryGun.getInventorySlot()) {
+            Animation.unscopeAnimation(player, secondaryGun, slot, plugin);
+        }
     }
 
-    public void scope() {
+    public void scope(int slot) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 4, false, false, false));
-        Animation.scopeAnimation(player, getWeaponInMainHand(), player.getInventory().getHeldItemSlot(), plugin);
+        if(slot == primaryGun.getInventorySlot()) {
+            Animation.scopeAnimation(player, primaryGun, slot, plugin);
+        } else if(slot == secondaryGun.getInventorySlot()) {
+            Animation.scopeAnimation(player, secondaryGun, slot, plugin);
+        }
     }
 
     public boolean isScoping() {
@@ -476,11 +491,13 @@ public class PlayerExtension {
     /**
      * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
-    public Gun getWeaponInMainHand() {
-        if(player.getInventory().getItemInMainHand().getType().equals(primaryGun.getMaterialType())) {
+    public Weapon getWeaponInMainHand() {
+        if(player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()) {
             return primaryGun;
-        } else if(player.getInventory().getItemInMainHand().getType().equals(secondaryGun.getMaterialType())) {
+        } else if(player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterial()) {
             return secondaryGun;
+        } else if(player.getInventory().getItemInMainHand().getType() == selectedLethal.getMaterial()) {
+            return selectedLethal;
         } else {
             return null;
         }
@@ -490,13 +507,14 @@ public class PlayerExtension {
      * @return true if player has weapon in main hand, false otherwise
      */
     public boolean hasWeaponInMainHand() {
-        if (player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterialType()) {
-            return true;
-        } else if (player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterialType()) {
-            return true;
-        }
+        return (player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()
+            || player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterial()
+            || player.getInventory().getItemInMainHand().getType() == selectedLethal.getMaterial());
+    }
 
-        return false;
+    public boolean hasGunInMainHand() {
+        return (player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()
+                || player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterial());
     }
 
     public void changeMainHand(int newSlot) {
@@ -524,10 +542,10 @@ public class PlayerExtension {
         wep.reload();
     }
 
-    public void reloadIfGun(Material material) {
-        if(primaryGun.getMaterialType() == material) {
+    public void reloadIfGun(int slot) {
+        if(slot == primaryGun.getInventorySlot()) {
             reloadWeapon(primaryGun);
-        } else if(secondaryGun.getMaterialType() == material) {
+        } else if(slot == secondaryGun.getInventorySlot()) {
             reloadWeapon(secondaryGun);
         }
     }
@@ -548,6 +566,10 @@ public class PlayerExtension {
 
     public Perk getSelectedPerk() {
         return selectedPerk;
+    }
+
+    public Grenade getSelectedLethal() {
+        return selectedLethal;
     }
 
     public ChatColor getTeamChatColor() {
@@ -737,6 +759,5 @@ public class PlayerExtension {
             player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
         }
-
     }
 }

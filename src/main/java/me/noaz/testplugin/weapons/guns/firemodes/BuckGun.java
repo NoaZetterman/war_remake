@@ -1,11 +1,11 @@
-package me.noaz.testplugin.weapons.firemodes;
+package me.noaz.testplugin.weapons.guns.firemodes;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Gun;
-import me.noaz.testplugin.weapons.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.Gun;
+import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -30,7 +30,7 @@ public class BuckGun extends Gun {
      * For buck guns, a number of bullets gets fired in different directions at the same time, but only removes
      * one bullet off the clip.
      */
-    public synchronized void shoot() {
+    public synchronized void use() {
         if(currentClip != 0 && !isReloading) {
             if(isShooting) {
                 fireAsIfPlayerHoldsRightClick.cancel();

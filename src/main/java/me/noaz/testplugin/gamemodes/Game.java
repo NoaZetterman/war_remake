@@ -26,7 +26,7 @@ public abstract class Game {
     protected void assignTeamToAllPlayers(HashMap<Player, PlayerExtension> players) {
         for(PlayerExtension playerExtension : players.values()) {
             assignTeam(playerExtension);
-            playerExtension.startPlayingGame();
+            playerExtension.startPlayingGame(map);
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class Game {
     public boolean join(PlayerExtension player) {
         if(!player.isPlayingGame()) {
             assignTeam(player);
-            player.startPlayingGame();
+            player.startPlayingGame(map);
             return true;
         }
 

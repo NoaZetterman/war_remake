@@ -1,4 +1,4 @@
-package me.noaz.testplugin.weapons;
+package me.noaz.testplugin.weapons.guns;
 
 import me.noaz.testplugin.TestPlugin;
 import org.bukkit.*;

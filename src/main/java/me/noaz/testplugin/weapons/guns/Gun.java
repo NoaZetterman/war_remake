@@ -1,9 +1,10 @@
-package me.noaz.testplugin.weapons;
+package me.noaz.testplugin.weapons.guns;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
+import me.noaz.testplugin.weapons.Weapon;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,7 +19,7 @@ import java.util.Random;
  * @author Noa Zetterman
  * @version 2019-12-16
  */
-public abstract class Gun {
+public abstract class Gun implements Weapon {
     protected TestPlugin plugin;
     protected PlayerExtension player;
     protected PlayerStatistic statistics;
@@ -35,7 +36,7 @@ public abstract class Gun {
     protected BukkitRunnable reloadTask;
     protected BukkitRunnable burstDelayTask;
 
-    protected int itemSlot;
+    protected int inventorySlot;
 
     /**
      * @param plugin this plugin
@@ -51,7 +52,7 @@ public abstract class Gun {
         this.currentClip = config.clipSize;
         this.currentBullets = config.startingBullets-currentClip;
 
-        itemSlot = config.gunType == GunType.SECONDARY ? 2 : 1;
+        inventorySlot = config.gunType == GunType.SECONDARY ? 2 : 1;
 
 
         //They have to be initialised now to not cause errors
@@ -73,11 +74,6 @@ public abstract class Gun {
     }
 
     /**
-     * Tries to shoot one burst of bullets, does not shoot when player should not be able to shoot (eg reloading)
-     */
-    public abstract void shoot();
-
-    /**
      * Fires as many bullets as should get fired in one click/shot
      * If multiple bullets are fired at once they will be fired in the same direction
      * Do not use this for shotguns and alike.
@@ -97,7 +93,7 @@ public abstract class Gun {
 
         statistics.addBulletsShot(config.bulletsPerClick);
 
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -120,7 +116,7 @@ public abstract class Gun {
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -143,10 +139,10 @@ public abstract class Gun {
                         currentBullets -= bulletsToReload;
 
                         isReloading = false;
-                        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
+                        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
                         cancel();
                     } else {
-                        ActionBarMessage.reload(config.reloadTime, i, player, itemSlot);
+                        ActionBarMessage.reload(config.reloadTime, i, player, inventorySlot);
                     }
 
                 }
@@ -236,7 +232,7 @@ public abstract class Gun {
         currentBullets = config.startingBullets - config.clipSize;
         currentClip = config.clipSize;
 
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -262,7 +258,7 @@ public abstract class Gun {
 
     public void addBullets(int amount) {
         currentBullets += amount;
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, itemSlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     public boolean justStartedReloading() {
@@ -272,8 +268,12 @@ public abstract class Gun {
     /**
      * @return The material type of this weapon
      */
-    public Material getMaterialType() {
+    public Material getMaterial() {
         return config.gunMaterial;
+    }
+
+    public int getInventorySlot() {
+        return inventorySlot;
     }
 
     /**

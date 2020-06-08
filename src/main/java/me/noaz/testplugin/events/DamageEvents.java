@@ -153,41 +153,63 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onEntityDamageEntity(EntityDamageByEntityEvent event) {
-        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            Player damagedPlayer = (Player) event.getEntity();
-            Player damager = (Player) event.getDamager();
-            PlayerExtension damagedPlayerExtension = data.getPlayerExtension(damagedPlayer);
-            PlayerExtension damagerExtension = data.getPlayerExtension(damager);
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+                Player damagedPlayer = (Player) event.getEntity();
+                Player damager = (Player) event.getDamager();
+                PlayerExtension damagedPlayerExtension = data.getPlayerExtension(damagedPlayer);
+                PlayerExtension damagerExtension = data.getPlayerExtension(damager);
 
-            if(gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
-                event.setCancelled(true);
-            } else if(gameLoop.getCurrentGamemode() == Gamemode.INFECT && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
-                //Put the player on the zombie team if human
-                event.setCancelled(true);
+                if (gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
+                    event.setCancelled(true);
+                } else {
+                    switch (event.getCause()) {
+                        case ENTITY_ATTACK:
+                            if (gameLoop.getCurrentGamemode() == Gamemode.INFECT && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
+                                //Put the player on the zombie team if human
+                                event.setCancelled(true);
 
-                ChatMessage.playerWasInfectedDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
-                ChatMessage.playerInfectedKilled(damager, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
+                                ChatMessage.playerWasInfectedDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                                ChatMessage.playerInfectedKilled(damager, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
 
-                damagerExtension.addKill(Reward.ZOMBIE_KILL_HUMAN);
+                                damagerExtension.addKill(Reward.ZOMBIE_KILL_HUMAN);
 
-                damagedPlayerExtension.respawn(damager);
-                damagedPlayerExtension.addDeath();
-            } else if(((Player) event.getEntity()).getHealth() - event.getDamage() <= 0) {
-                event.setCancelled(true);
+                                damagedPlayerExtension.respawn(damager);
+                                damagedPlayerExtension.addDeath();
+                            } else if (damagedPlayer.getHealth() - event.getDamage() <= 0) {
+                                event.setCancelled(true);
 
-                int xpEarned = 25;
-                int creditsEarned = 1;
+                                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                                ChatMessage.playerKnifeKilled(damager, damagedPlayer,
+                                        damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                ChatMessage.playerWasKnifedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
-                ChatMessage.playerKnifeKilled(damager, damagedPlayer,
-                        damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                                damagerExtension.addKill(Reward.KNIFE_KILL);
 
-                damagerExtension.addKill(Reward.KNIFE_KILL);
+                                damagedPlayerExtension.respawn(damager);
+                                damagedPlayerExtension.addDeath();
+                            }
+                            break;
+                        case ENTITY_EXPLOSION:
+                            if(false/*Infect stuff)*/) {
 
-                damagedPlayerExtension.respawn(damager);
-                damagedPlayerExtension.addDeath();
-            }
-        } else if(event.getEntity() instanceof ItemFrame) {
+                            } else if (damagedPlayer.getHealth() - event.getDamage() <= 0) {
+                                event.setCancelled(true);
+
+                                ChatMessage.playerWasGrenadedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                                ChatMessage.playerGrenadeKilled(damager, damagedPlayer,
+                                        damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+
+                                damagerExtension.addKill(Reward.KNIFE_KILL);
+
+                                damagedPlayerExtension.respawn(damager);
+                                damagedPlayerExtension.addDeath();
+                            }
+                            break;
+                        default:
+                            break;
+
+                    }
+                }
+        } else {
             event.setCancelled(true);
         }
     }
@@ -232,6 +254,11 @@ public class DamageEvents implements Listener {
             }
 
         }
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        System.out.println("EntityExplodeEvent: " + event.getEntity());
     }
 
     @EventHandler

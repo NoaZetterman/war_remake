@@ -35,7 +35,7 @@ public class Infect extends Game {
         root.setTeam(teams[0], teams[1]);
 
         for(PlayerExtension player: players.values()) {
-            player.startPlayingGame();
+            player.startPlayingGame(map);
         }
         //Also add special root effect stuff I guess
     }

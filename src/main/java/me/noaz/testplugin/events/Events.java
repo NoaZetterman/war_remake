@@ -52,14 +52,14 @@ public class Events implements Listener {
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         Action action = event.getAction();
 
-        if(player.hasWeaponInMainHand() && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
-            player.getWeaponInMainHand().shoot();
-        } else if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_BLOCK)) {
+        if(player.isPlayingGame() && player.hasWeaponInMainHand() && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
+            player.getWeaponInMainHand().use();
+        } else if(event.getPlayer().getInventory().getItemInMainHand().getType() == Material.DIAMOND_BLOCK) {
             LoadoutMenu.loadoutStartScreen(player);
         }
 
         if(action == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
-            if(player.hasWeaponInMainHand()) {
+            if(player.hasGunInMainHand()) {
                 changeScopeWhenArmswingIsActivatedByRightclick(event.getClickedBlock().getType(), player);
             }
 
@@ -154,7 +154,7 @@ public class Events implements Listener {
                 case NOTE_BLOCK:
                 case JUKEBOX:
                 case BREWING_STAND:
-                    player.changeScope();
+                    player.changeScope(player.getPlayer().getInventory().getHeldItemSlot());
                     break;
             }
         }
@@ -220,8 +220,10 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        if(event.getRightClicked() instanceof ItemFrame) {
-            data.getPlayerExtension(event.getPlayer()).getWeaponInMainHand().shoot();
+        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+
+        if(event.getRightClicked() instanceof ItemFrame && player.hasWeaponInMainHand()) {
+            data.getPlayerExtension(event.getPlayer()).getWeaponInMainHand().use();
             event.setCancelled(true);
         }
     }
@@ -231,7 +233,7 @@ public class Events implements Listener {
         if(event.getRightClicked() instanceof ArmorStand) {
             PlayerExtension player = data.getPlayerExtension(event.getPlayer());
             if(player.hasWeaponInMainHand()) {
-                player.getWeaponInMainHand().shoot();
+                player.getWeaponInMainHand().use();
             }
         }
         event.setCancelled(true);
@@ -262,7 +264,7 @@ public class Events implements Listener {
         if(event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
             PlayerExtension player = data.getPlayerExtension(event.getPlayer());
             if(player.hasWeaponInMainHand()) {
-                player.changeScope();
+                player.changeScope(event.getPlayer().getInventory().getHeldItemSlot());
             }
         }
     }
@@ -274,14 +276,14 @@ public class Events implements Listener {
         event.setCancelled(true);
 
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-        player.reloadIfGun(event.getItemDrop().getItemStack().getType());
+        player.reloadIfGun(event.getPlayer().getInventory().getHeldItemSlot());
     }
 
     @EventHandler
     public void onPlayerSwapHandItem(PlayerSwapHandItemsEvent event) {
         PlayerExtension player = data.getPlayerExtension(event.getPlayer());
         if(player.isPlayingGame() && player.hasWeaponInMainHand()) {
-            player.reloadIfGun(player.getWeaponInMainHand().getMaterialType());
+            player.reloadIfGun(event.getPlayer().getInventory().getHeldItemSlot());
         }
         event.setCancelled(true);
     }
@@ -304,6 +306,7 @@ public class Events implements Listener {
 
         if(player.isPlayingGame()) {
             player.changeMainHand(event.getNewSlot());
+            player.unScope(event.getPreviousSlot());
         }
         //player.updateActionBar();
     }

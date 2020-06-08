@@ -1,7 +1,7 @@
 package me.noaz.testplugin.player;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.weapons.Gun;
+import me.noaz.testplugin.weapons.guns.Gun;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

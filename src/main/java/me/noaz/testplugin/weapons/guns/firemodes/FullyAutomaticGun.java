@@ -1,14 +1,12 @@
-package me.noaz.testplugin.weapons.firemodes;
+package me.noaz.testplugin.weapons.guns.firemodes;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerStatistic;
-import me.noaz.testplugin.weapons.Gun;
-import me.noaz.testplugin.weapons.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.Gun;
+import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Used for guns that fires one bullet at a time at any speed.
@@ -26,7 +24,7 @@ public class FullyAutomaticGun extends Gun {
         super(plugin, player, statistics, config);
     }
 
-    public synchronized void shoot() {
+    public synchronized void use() {
         if(currentClip != 0) {
             if(isShooting) {
                 fireAsIfPlayerHoldsRightClick.cancel();

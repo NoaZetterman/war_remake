@@ -1,4 +1,4 @@
-package me.noaz.testplugin.weapons;
+package me.noaz.testplugin.weapons.guns;
 
 public enum Firemode {
     BURST,

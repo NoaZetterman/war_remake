@@ -2,9 +2,8 @@ package me.noaz.testplugin;
 
 import me.noaz.testplugin.maps.CustomLocation;
 import me.noaz.testplugin.maps.GameMap;
-import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.weapons.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;

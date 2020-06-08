@@ -82,9 +82,27 @@ public class ChatMessage {
                 killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$");
     }
 
+    public static void playerGrenadeKilled(Player killer, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.GRENADE_KILL.getXp();
+        int credits = Reward.GRENADE_KILL.getCredits();
+
+        String message;
+        if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
+            message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
+        } else {
+            message = ChatColor.GRAY + "[+] ";
+        }
+
+        message += "Grenaded " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$";
+
+        killer.sendMessage(message);
+    }
+
 
 
     //Death messages
+
     public static void playerWasShotToDeath(Player killedPlayer, Player shooter, ChatColor shooterColor) {
         killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Shot by " +
                 shooterColor + shooter.getName());
@@ -113,6 +131,13 @@ public class ChatMessage {
         killedPlayer.sendMessage(ChatColor.GRAY + "[-] Out of the map!");
     }
 
+    public static void playerWasGrenadedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Grenaded by " +
+                killerColor + killer.getName());
+    }
+
+    //Capture flag
+
     public static void playerCapturedFlag(Player playerWhoCaptured, ChatColor flagColor) {
         int xp = Reward.CAPTURE_FLAG.getXp();
         int credits = Reward.CAPTURE_FLAG.getCredits();
@@ -130,8 +155,6 @@ public class ChatMessage {
 
         playerWhoCaptured.sendMessage(message);
     }
-
-    //Capture flag
 
     public static void teamCapturedFlag(Player player, Team team) {
         if(team.getTeamColorAsChatColor() == ChatColor.RED) {

@@ -6,7 +6,8 @@ public enum Reward {
     HEADSHOT_KILL(35,2),
     KNIFE_KILL(25, 1),
     ZOMBIE_KILL_HUMAN(25, 1),
-    NUKE_KILL(25,1);
+    NUKE_KILL(25,1),
+    GRENADE_KILL(45, 3);
 
     private int xp;
     private int credits;

@@ -198,7 +198,11 @@ public class PlayerStatistic {
 
     public void addCredits(int amount) {
         credits += amount;
-        creditsThisGame += amount;
+
+        //Player can only earn credits in a game
+        if(amount >= 0) {
+            creditsThisGame += amount;
+        }
 
         updateGameScoreboard();
     }

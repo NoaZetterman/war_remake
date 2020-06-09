@@ -18,7 +18,7 @@ public class GunConfiguration {
     public final String name;
     public final List<String> weaponLore;
     public final GunType gunType;
-    public final Firemode firemode;
+    public final FireType fireType;
 
     public final double accuracyScoped;
     public final double accuracyNotScoped;
@@ -86,7 +86,7 @@ public class GunConfiguration {
         this.name = name;
         this.gunMaterial = Material.getMaterial(gunMaterial);
         this.gunType = GunType.valueOf(gunType);
-        this.firemode = Firemode.valueOf(firemode);
+        this.fireType = FireType.valueOf(firemode);
         this.accuracyNotScoped = accuracyNotScoped;
         this.accuracyScoped = accuracyScoped;
         this.bodyDamage = bodyDamage;

@@ -11,7 +11,7 @@ import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.Weapon;
-import me.noaz.testplugin.weapons.guns.Firemode;
+import me.noaz.testplugin.weapons.guns.FireType;
 import me.noaz.testplugin.weapons.guns.GunType;
 import me.noaz.testplugin.weapons.guns.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.guns.firemodes.FullyAutomaticGun;
@@ -65,7 +65,7 @@ public class PlayerExtension {
     private String[] actionBarMessage;
     private boolean isDead = false;
 
-    private Resourcepack selectedResourcepack = Resourcepack.PACK_2D_16X16;
+    private Resourcepack selectedResourcepack = Resourcepack.PACK_3D_DEFAULT;
 
     private BukkitRunnable respawnCountdown;
 
@@ -171,6 +171,8 @@ public class PlayerExtension {
 
         actionBarMessage = new String[9];
         Arrays.fill(actionBarMessage, "");
+
+        setSelectedResourcepack(Resourcepack.PACK_3D_DEFAULT);
     }
 
     /**
@@ -240,7 +242,7 @@ public class PlayerExtension {
             secondaryGun.reset();
         }
 
-        if(hasWeaponInMainHand() && selectedResourcepack == Resourcepack.PACK_3D_128X128) {
+        if(hasWeaponInMainHand() && selectedResourcepack == Resourcepack.PACK_3D_DEFAULT) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
         }
@@ -523,7 +525,7 @@ public class PlayerExtension {
 
         //unScope();
 
-        if(selectedResourcepack == Resourcepack.PACK_3D_128X128) {
+        if(selectedResourcepack == Resourcepack.PACK_3D_DEFAULT) {
             if (newSlot == 1) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
@@ -640,11 +642,11 @@ public class PlayerExtension {
     }
 
     private Gun createNewGun(GunConfiguration configuration) {
-        Firemode firemode = configuration.firemode;
+        FireType fireType = configuration.fireType;
 
         Gun gunToChange;
 
-        switch(firemode) {
+        switch(fireType) {
             case BURST:
                 gunToChange = new BurstGun(plugin, this, statistics, configuration);
                 break;
@@ -750,14 +752,18 @@ public class PlayerExtension {
     }
 
     public void setSelectedResourcepack(Resourcepack pack) {
+        player.setResourcePack(pack.getUrl(), pack.getSha1());
         selectedResourcepack = pack;
 
-        if(selectedResourcepack == Resourcepack.PACK_2D_16X16 || player.getInventory().getHeldItemSlot() != 1) {
-            player.removePotionEffect(PotionEffectType.FAST_DIGGING);
-            player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-        } else if(selectedResourcepack == Resourcepack.PACK_3D_128X128 && player.getInventory().getHeldItemSlot() == 1) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
+
+        if(isPlayingGame()) {
+            if (selectedResourcepack == Resourcepack.PACK_2D_16X16 || player.getInventory().getHeldItemSlot() != 1) {
+                player.removePotionEffect(PotionEffectType.FAST_DIGGING);
+                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+            } else if (selectedResourcepack == Resourcepack.PACK_3D_DEFAULT && player.getInventory().getHeldItemSlot() == 1) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
+            }
         }
     }
 }

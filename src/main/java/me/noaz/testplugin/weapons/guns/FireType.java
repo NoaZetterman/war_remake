@@ -1,11 +1,11 @@
 package me.noaz.testplugin.weapons.guns;
 
-public enum Firemode {
+public enum FireType {
     BURST,
     BUCK,
     SINGLE,
     AUTOMATIC;
 
-    private Firemode() {
+    FireType() {
     }
 }

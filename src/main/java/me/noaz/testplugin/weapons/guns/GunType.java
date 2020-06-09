@@ -2,6 +2,8 @@ package me.noaz.testplugin.weapons.guns;
 
 public enum GunType {
     ASSAULT_RIFLE ("Assault rifle"),
+    SNIPER_RIFLE("Sniper rifle"),
+    SHOTGUN("Shotgun"),
     SECONDARY ("Secondary");
 
     private String gunType;

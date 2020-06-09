@@ -25,13 +25,11 @@ public class Resource implements CommandExecutor {
 
         if(args.length >= 1) {
             if (args[0].toLowerCase().equals("2d")) {
-                player.setResourcePack(Resourcepack.PACK_2D_16X16.getUrl(), Resourcepack.PACK_2D_16X16.getSha1());
-                sender.sendMessage("Applying 2D textures");
                 data.getPlayerExtension(player).setSelectedResourcepack(Resourcepack.PACK_2D_16X16);
+                sender.sendMessage("Applying 2D textures");
             } else if (args[0].toLowerCase().equals("3d")) {
-                player.setResourcePack(Resourcepack.PACK_3D_128X128.getUrl(), Resourcepack.PACK_3D_128X128.getSha1());
+                data.getPlayerExtension(player).setSelectedResourcepack(Resourcepack.PACK_3D_DEFAULT);
                 sender.sendMessage("Applying 3D textures");
-                data.getPlayerExtension(player).setSelectedResourcepack(Resourcepack.PACK_3D_128X128);
             } else {
                 sender.sendMessage("Invalid input");
                 return false;

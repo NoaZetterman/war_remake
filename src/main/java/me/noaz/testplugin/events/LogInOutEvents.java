@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -74,6 +75,11 @@ public class LogInOutEvents implements Listener {
         //TODO: Put row below into player extension
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).removePlayer(event.getPlayer());
         event.getPlayer().removePotionEffect(PotionEffectType.SLOW);
+
+        for(PotionEffect effect : event.getPlayer().getActivePotionEffects()) {
+            event.getPlayer().removePotionEffect(effect.getType());
+        };
+
         data.removePlayer(event.getPlayer());
     }
 }

@@ -1,6 +1,7 @@
 package me.noaz.testplugin.messages;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -22,7 +23,7 @@ public class BossBarMessage {
      */
     public static void timeUntilGameEnds(int timeUntilGameEnds) {
         String time = getTimeInClockFormat(timeUntilGameEnds);
-        bar.setTitle("Time until game ends: " + time);
+        bar.setTitle(ChatColor.YELLOW + "Game starts in " + time);
     }
 
     /**
@@ -31,7 +32,7 @@ public class BossBarMessage {
      */
     public static void timeUntilNextGame(int timeUntilNextGame) {
         String time = getTimeInClockFormat(timeUntilNextGame);
-        bar.setTitle("Time until next game: " + time);
+        bar.setTitle(ChatColor.YELLOW + "Game ends in " + time);
     }
 
     private static String getTimeInClockFormat(int timeInSeconds) {
@@ -52,7 +53,7 @@ public class BossBarMessage {
     }
 
     private static BossBar createVisibleTimer() {
-        BossBar bossBar = Bukkit.getServer().createBossBar(NamespacedKey.minecraft("timer"), "", BarColor.PURPLE, BarStyle.SOLID, BarFlag.PLAY_BOSS_MUSIC);
+        BossBar bossBar = Bukkit.getServer().createBossBar(NamespacedKey.minecraft("timer"), "", BarColor.WHITE, BarStyle.SOLID, BarFlag.PLAY_BOSS_MUSIC);
         bossBar.setVisible(true);
         bossBar.setProgress(1.0);
 

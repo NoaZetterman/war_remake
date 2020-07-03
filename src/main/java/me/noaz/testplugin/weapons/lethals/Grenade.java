@@ -4,7 +4,6 @@ import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.Weapon;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;

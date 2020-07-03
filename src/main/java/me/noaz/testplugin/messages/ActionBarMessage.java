@@ -20,17 +20,17 @@ public class ActionBarMessage {
      * @param itemSlot The itemslot to put the message in (0-8)
      */
     public static void reload(int totalReloadTimeInTicks, int ticksPassedSinceStart, PlayerExtension player, int itemSlot) {
-        String message = ChatColor.GOLD + "" + ChatColor.BOLD + "";
+        String message = ChatColor.RED + "";
         if (totalReloadTimeInTicks / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(message + "◇◇◇◇ Reloading", itemSlot);
+            player.setActionBar(message + "◇◇◇◇ Reloading ◇◇◇◇", itemSlot);
         } else if (totalReloadTimeInTicks * 2 / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(message + "◆◇◇◇ Reloading", itemSlot);
+            player.setActionBar(message + "◆◇◇◇ Reloading ◇◇◇◆", itemSlot);
         } else if (totalReloadTimeInTicks * 3 / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(message + "◆◆◇◇ Reloading", itemSlot);
+            player.setActionBar(message + "◆◆◇◇ Reloading ◇◇◆◆", itemSlot);
         } else if (totalReloadTimeInTicks * 4 / 5 >= ticksPassedSinceStart) {
-            player.setActionBar(message + "◆◆◆◇ Reloading", itemSlot);
+            player.setActionBar(message + "◆◆◆◇ Reloading ◇◆◆◆", itemSlot);
         } else {
-            player.setActionBar(message + "◆◆◆◆ Reloading", itemSlot);
+            player.setActionBar(message + "◆◆◆◆ Reloading ◆◆◆◆", itemSlot);
         }
     }
 
@@ -42,6 +42,6 @@ public class ActionBarMessage {
      * @param player The players PlayerExtension
      */
     public static void ammunitionCurrentAndTotal(String gunName, int currentClip, int currentBullets, PlayerExtension player, int itemSlot) {
-        player.setActionBar(ChatColor.GOLD + "" + gunName + " | " + currentClip + "/" + currentBullets, itemSlot);
+        player.setActionBar(ChatColor.YELLOW + "" + gunName + " | " + currentClip + "/" + currentBullets, itemSlot);
     }
 }

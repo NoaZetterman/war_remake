@@ -3,6 +3,7 @@ package me.noaz.testplugin.messages;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 
 /**
@@ -20,12 +21,12 @@ public class BroadcastMessage {
      * @param gamemode The gamemode that will be played
      */
     public static void gameAndGamemode(String mapName, Gamemode gamemode) {
-        server.broadcastMessage("Next map: " + mapName + " Next gamemode: " + gamemode);
+        server.broadcastMessage(ChatColor.GOLD + "Next map: " + ChatColor.YELLOW + mapName + ChatColor.GOLD + " Next gamemode: " + ChatColor.YELLOW + gamemode);
     }
 
     /**
      * Broadcasts a message that shows time left util next game
-     * @param timeUntilNextGame The time left until next game
+     * @param timeUntilNextGame The time left until next game in seconds
      */
     public static void timeLeftUntilGameStarts(int timeUntilNextGame) {
         server.broadcastMessage(timeUntilNextGame + "s until game starts");

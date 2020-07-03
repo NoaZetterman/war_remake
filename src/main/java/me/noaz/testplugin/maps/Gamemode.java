@@ -1,10 +1,10 @@
 package me.noaz.testplugin.maps;
 
 public enum Gamemode {
-    TEAM_DEATHMATCH("tdm"),
-    CAPTURE_THE_FLAG ("ctf"),
-    INFECT ("infect"),
-    FREE_FOR_ALL ("ffa");
+    TEAM_DEATHMATCH("Team Deathmatch"),
+    CAPTURE_THE_FLAG ("Capture the Flag"),
+    INFECT ("Infect"),
+    FREE_FOR_ALL ("Free for all");
 
     private String gamemode;
 

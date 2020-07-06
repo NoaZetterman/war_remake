@@ -97,6 +97,7 @@ public abstract class Gun implements Weapon {
         }
 
         statistics.addBulletsShot(config.bulletsPerClick);
+        player.updateGameScoreboard();
 
         ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
     }
@@ -198,31 +199,39 @@ public abstract class Gun implements Weapon {
      * @return A vector containing direction of the bullet
      */
     protected Vector calculateBulletDirection(double accuracy) {
+        /*
+         * Finds two perpendicular vectors to the players direction such that
+         * these two vectors are also perpendicular.
+         *
+         * Then adds a small, but random, length to a normalized vector in the players direction
+         * to create an offset in the bullet direction.
+         */
+
         Vector velocity = player.getLocation().getDirection();
 
-        Vector perp1;
+        Vector perpendicular;
         //Use other unit vector to generate perpendicular vector if
         //the velocity is too close to the unit vector
         if(velocity.getX() < 0.1 && velocity.getY() < 0.1) {
-            perp1 = new Vector(1,0,0).getCrossProduct(velocity);
+            perpendicular = new Vector(1,0,0).getCrossProduct(velocity);
         } else {
-            perp1 = new Vector(0, 0, 1).getCrossProduct(velocity);
+            perpendicular = new Vector(0, 0, 1).getCrossProduct(velocity);
         }
 
-        Vector perp2 = perp1.getCrossProduct(velocity);
+        Vector orthogonalToVelocityAndPerpendicular = perpendicular.getCrossProduct(velocity);
 
-        perp1.normalize();
-        perp2.normalize();
+        perpendicular.normalize();
+        orthogonalToVelocityAndPerpendicular.normalize();
 
 
         Random random = new Random();
-        double length1 = random.nextDouble()*accuracy-accuracy/2;
-        double temp = accuracy - Math.abs(length1); //Max velocity in the other direction to make a circle
+        double lengthPerpendicular = random.nextDouble()*accuracy-accuracy/2;
+        double maxLengthOrthogonal = accuracy - Math.abs(lengthPerpendicular); //Max velocity in the other direction to make a circle
 
-        double length2 = random.nextDouble()*temp-temp/2;
+        double lengthOrthogonal = random.nextDouble()*maxLengthOrthogonal-maxLengthOrthogonal/2;
 
-        velocity.add(perp1.multiply(length1));
-        velocity.add(perp2.multiply(length2));
+        velocity.add(perpendicular.multiply(lengthPerpendicular));
+        velocity.add(orthogonalToVelocityAndPerpendicular.multiply(lengthOrthogonal));
 
         velocity.normalize();
         velocity.multiply(config.bulletSpeed);

@@ -1,6 +1,7 @@
 package me.noaz.testplugin;
 
 import me.noaz.testplugin.messages.TextUtils;
+import me.noaz.testplugin.player.PlayerStatistic;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
 
@@ -53,6 +54,27 @@ public class ScoreManager {
             sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
+    public void giveLobbyScoreboard(UUID playerUUID, PlayerStatistic playerStatistic) {
+        Scoreboard scoreboard = scoreboards.get(playerUUID);
+
+        scoreboard.getObjective("sidebar").unregister();
+        Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
+
+        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.YELLOW + playerStatistic.getTotalKills()).setScore(9);
+        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.YELLOW + playerStatistic.getTotalDeaths()).setScore(8);
+        sidebar.getScore(ChatColor.GOLD + "Kdr: " + ChatColor.YELLOW +
+                getRatio(playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths())).setScore(7);
+        sidebar.getScore(ChatColor.GOLD + "Accuracy: " + ChatColor.YELLOW +
+                getRatio(playerStatistic.getTotalFiredBulletsThatHitEnemy()*100, playerStatistic.getTotalFiredBullets()) + "%").setScore(6);
+        sidebar.getScore("").setScore(5);
+        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + playerStatistic.getLevel()).setScore(4);
+        sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW +
+                playerStatistic.getXpOnCurrentLevel() + "/" + playerStatistic.getTotalXpOnCurrentLevel()).setScore(3);
+        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + playerStatistic.getCredits()).setScore(2);
+
+        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
     /**
      * Gives the player a new game scoreboard with specified stats, used to update the scoreboard since
      * there is no simple way of modifying a score.
@@ -85,6 +107,29 @@ public class ScoreManager {
         sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + level).setScore(3);
         sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW + currentXp + "/" +  totalXp).setScore(2);
         sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + credits).setScore(1);
+
+        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+    }
+
+    public void giveGameScoreboard(UUID playerUUID, PlayerStatistic playerStatistic) {
+        Scoreboard scoreboard = scoreboards.get(playerUUID);
+
+        scoreboard.getObjective("sidebar").unregister();
+
+        Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
+
+        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.GREEN + playerStatistic.getKillsThisGame()).setScore(9);
+        sidebar.getScore(ChatColor.GOLD + "Killstreak: " + ChatColor.GREEN + playerStatistic.getKillstreak()).setScore(8);
+        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.RED + playerStatistic.getDeathsThisGame()).setScore(7);
+        sidebar.getScore(ChatColor.GOLD + "Kdr: " + TextUtils.getRatioAsRedOrGreenString(playerStatistic.getKillsThisGame(),
+                playerStatistic.getDeathsThisGame(), playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths())).setScore(6);
+        sidebar.getScore(ChatColor.GOLD + "Accuracy: "
+                + TextUtils.getRatioAsRedOrGreenString(playerStatistic.getFiredBulletsThatHitEnemyThisGame()*100, playerStatistic.getFiredBulletsThisGame(), playerStatistic.getTotalFiredBulletsThatHitEnemy()*100, playerStatistic.getTotalFiredBullets()) + "%").setScore(5);
+        sidebar.getScore("").setScore(4);
+        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + playerStatistic.getLevel()).setScore(3);
+        sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW +
+                playerStatistic.getXpOnCurrentLevel() + "/" + playerStatistic.getTotalXpOnCurrentLevel()).setScore(2);
+        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + playerStatistic.getCredits()).setScore(1);
 
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }

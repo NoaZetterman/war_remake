@@ -9,7 +9,6 @@ import me.noaz.testplugin.player.Reward;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -97,6 +96,7 @@ public class DamageEvents implements Listener {
                 }
 
                 shooterExtension.getPlayerStatistics().addBulletHit();
+                shooterExtension.updateGameScoreboard();
             }
         } else if(event.getHitBlock() != null && event.getHitBlock().getType().equals(Material.GLASS_PANE)) {
             event.getHitBlock().setType(Material.AIR);

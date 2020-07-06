@@ -1,6 +1,7 @@
 package me.noaz.testplugin;
 
 import me.noaz.testplugin.commands.Command;
+import me.noaz.testplugin.dao.PlayerDao;
 import me.noaz.testplugin.events.DamageEvents;
 import me.noaz.testplugin.events.Events;
 import me.noaz.testplugin.events.LogInOutEvents;
@@ -36,6 +37,7 @@ public final class TestPlugin extends JavaPlugin {
         this.saveDefaultConfig();
 
         //TODO: Fix so that next game shows right after startup
+        new PlayerDao(connection);
         GameData data = new GameData(this, connection);
 
         gameLoop = new GameLoop(data, this);

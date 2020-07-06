@@ -3,6 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.dao.PlayerDao;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
@@ -43,20 +44,7 @@ public class LogInOutEvents implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT IGNORE INTO test.player (uuid) VALUES (?)");
-                    createPlayerIfNotExist.setString(1, event.getPlayer().getUniqueId().toString());
-                    createPlayerIfNotExist.execute();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        runnable.runTaskAsynchronously(plugin);
+        PlayerDao.add(event.getPlayer());
 
         //Temp
         PlayerListMessage.setFooter(event.getPlayer());

@@ -1,6 +1,7 @@
 package me.noaz.testplugin.player;
 
 import de.Herbystar.TTA.TTA_Methods;
+import me.noaz.testplugin.dao.PlayerDao;
 import me.noaz.testplugin.inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
@@ -48,7 +49,8 @@ public class PlayerExtension {
 
     private Player player;
     private int playerId;
-    private PlayerStatistic statistics;
+    private PlayerStatistic playerStatistic;
+    private ScoreManager scoreManager;
 
     private Team team;
     private Team enemyTeam;
@@ -82,7 +84,11 @@ public class PlayerExtension {
         this.plugin = plugin;
         this.player = player;
         this.connection = connection;
-        statistics = new PlayerStatistic(player, scoreManager, connection, plugin);
+        this.scoreManager = scoreManager;
+        playerStatistic = PlayerDao.get(player);
+        scoreManager.givePlayerNewScoreboard(player.getUniqueId());
+        updateLobbyScoreboard();
+
 
         ownedPrimaryGuns = new ArrayList<>();
         ownedSecondaryGuns = new ArrayList<>();
@@ -202,7 +208,7 @@ public class PlayerExtension {
         }
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
 
-        player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+        player.setDisplayName("Lvl " + playerStatistic.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         if(killer != null && killer.getGameMode() != GameMode.SPECTATOR) {
             player.setSpectatorTarget(killer);
@@ -259,8 +265,11 @@ public class PlayerExtension {
      * @param reward The reward type of this kill
      */
     public void addKill(Reward reward) {
-        statistics.addKill();
-        statistics.addReward(reward);
+        playerStatistic.addKill();
+        playerStatistic.addReward(reward);
+
+        updateGameScoreboard();
+
         if(reward == Reward.HEADSHOT_KILL) {
             addHeadshotKill();
         }
@@ -275,7 +284,7 @@ public class PlayerExtension {
         }
 
         if(enemyTeam != null) {
-            int killstreak = statistics.getKillstreak();
+            int killstreak = playerStatistic.getKillstreak();
             switch (killstreak) {
                 case 5:
                     primaryGun.addBullets(primaryGun.getConfiguration().resupplyAmmo);
@@ -298,9 +307,6 @@ public class PlayerExtension {
                                 && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
                             enemyPlayer.addDeath();
 
-                            int xpEarned = 25;
-                            int creditsEarned = 1;
-
                             ChatMessage.playerNukeKilled(player, enemyPlayer.getPlayer(),
                                     enemyPlayer.getTeamChatColor());
                             ChatMessage.playerWasNukeKilled(enemyPlayer.getPlayer(), player, getTeamChatColor());
@@ -316,11 +322,12 @@ public class PlayerExtension {
     }
 
     private void addHeadshotKill() {
-        statistics.addHeadshotKill();
+        playerStatistic.addHeadshotKill();
     }
 
     public void addDeath() {
-        statistics.addDeath();
+        playerStatistic.addDeath();
+        updateGameScoreboard();
     }
 
     /**
@@ -328,15 +335,18 @@ public class PlayerExtension {
      * @param amount The amount to change with.
      */
     public void changeCredits(int amount) {
-        statistics.addCredits(amount);
+        playerStatistic.addCredits(amount);
+        updateGameScoreboard();
     }
 
     /**
      * Give this player a flag capture
      */
     public void captureFlag() {
-        statistics.addCapture();
-        statistics.addReward(Reward.CAPTURE_FLAG);
+        playerStatistic.addCapture();
+        playerStatistic.addReward(Reward.CAPTURE_FLAG);
+
+        updateGameScoreboard();
 
         team.captureFlag();
         enemyTeam.enemyCapturedFlag();
@@ -347,14 +357,14 @@ public class PlayerExtension {
      * Makes this player start playing a game at given location with correct equipment
      */
     public void startPlayingGame(GameMap map) {
-        statistics.updateGameScoreboard();
+        updateGameScoreboard();
 
 
         selectedLethal = new Grenade(plugin, this, map);
 
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
-        player.setDisplayName("Lvl " + statistics.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+        player.setDisplayName("Lvl " + playerStatistic.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         spawn();
     }
@@ -372,15 +382,15 @@ public class PlayerExtension {
                 break;
         }
 
-        ChatMessage.displayPersonalStats(player, statistics.getKillsThisGame(), statistics.getDeathsThisGame(),
-                statistics.getTotalKills(), statistics.getTotalDeaths(), statistics.getXpThisGame(), statistics.getCreditsThisGame());
+        ChatMessage.displayPersonalStats(player, playerStatistic.getKillsThisGame(), playerStatistic.getDeathsThisGame(),
+                playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths(), playerStatistic.getXpThisGame(), playerStatistic.getCreditsThisGame());
         leaveGame();
     }
 
     public void endGame(PlayerExtension winner, int winnerKills) {
         ChatMessage.displayFreeForAllEndGame(winner, winnerKills, player);
-        ChatMessage.displayPersonalStats(player, statistics.getKillsThisGame(), statistics.getDeathsThisGame(),
-                statistics.getTotalKills(), statistics.getTotalDeaths(), statistics.getXpThisGame(), statistics.getCreditsThisGame());
+        ChatMessage.displayPersonalStats(player, playerStatistic.getKillsThisGame(), playerStatistic.getDeathsThisGame(),
+                playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths(), playerStatistic.getXpThisGame(), playerStatistic.getCreditsThisGame());
         leaveGame();
     }
 
@@ -389,14 +399,16 @@ public class PlayerExtension {
      */
     public void leaveGame() {
         if(team != null) {
-            statistics.updateTotalScore();
+            playerStatistic.updateTotalScore();
+            PlayerDao.update(playerStatistic);
+            updateLobbyScoreboard();
 
             for(PotionEffect effect : player.getActivePotionEffects()) {
                 player.removePotionEffect(effect.getType());
             }
 
             player.setPlayerListName(player.getName());
-            player.setDisplayName("Lvl " + statistics.getLevel() + " " + ChatColor.WHITE + player.getName());
+            player.setDisplayName("Lvl " + playerStatistic.getLevel() + " " + ChatColor.WHITE + player.getName());
 
             team.removePlayer(this);
             enemyTeam = null;
@@ -424,7 +436,8 @@ public class PlayerExtension {
     public void forceEndGame() {
         primaryGun.reset();
         secondaryGun.reset();
-        statistics.forceUpdateScore();
+        playerStatistic.updateTotalScore();
+        PlayerDao.update(playerStatistic);
         saveCurrentLoadout(true);
 
         Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
@@ -487,7 +500,7 @@ public class PlayerExtension {
      * @return The statistics object that belongs to this player
      */
     public PlayerStatistic getPlayerStatistics() {
-        return statistics;
+        return playerStatistic;
     }
 
     /**
@@ -648,16 +661,16 @@ public class PlayerExtension {
 
         switch(fireType) {
             case BURST:
-                gunToChange = new BurstGun(plugin, this, statistics, configuration);
+                gunToChange = new BurstGun(plugin, this, playerStatistic, configuration);
                 break;
             case SINGLE:
-                gunToChange = new SingleBoltGun(plugin, this, statistics, configuration);
+                gunToChange = new SingleBoltGun(plugin, this, playerStatistic, configuration);
                 break;
             case AUTOMATIC:
-                gunToChange = new FullyAutomaticGun(plugin, this, statistics, configuration);
+                gunToChange = new FullyAutomaticGun(plugin, this, playerStatistic, configuration);
                 break;
             case BUCK:
-                gunToChange = new BuckGun(plugin, this, statistics, configuration);
+                gunToChange = new BuckGun(plugin, this, playerStatistic, configuration);
                 break;
             default:
                 gunToChange = null;
@@ -744,11 +757,11 @@ public class PlayerExtension {
     }
 
     public int getLevel() {
-        return statistics.getLevel();
+        return playerStatistic.getLevel();
     }
 
     public int getCredits() {
-        return statistics.getCredits();
+        return playerStatistic.getCredits();
     }
 
     public void setSelectedResourcepack(Resourcepack pack) {
@@ -765,5 +778,13 @@ public class PlayerExtension {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
             }
         }
+    }
+
+    public void updateGameScoreboard() {
+        scoreManager.giveGameScoreboard(player.getUniqueId(), playerStatistic);
+    }
+
+    private void updateLobbyScoreboard() {
+        scoreManager.giveLobbyScoreboard(player.getUniqueId(), playerStatistic);
     }
 }

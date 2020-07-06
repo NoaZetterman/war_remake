@@ -1,19 +1,13 @@
 package me.noaz.testplugin;
 
 import me.noaz.testplugin.dao.GameMapDao;
-import me.noaz.testplugin.maps.CustomLocation;
+import me.noaz.testplugin.dao.GunDao;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
-import org.bukkit.*;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,16 +24,16 @@ public class GameData {
     private TestPlugin plugin;
 
     private List<GameMap> maps;
-    private List<GunConfiguration> gunConfigurations = new ArrayList<>();
+    private List<GunConfiguration> gunConfigurations;
     private HashMap<Player, PlayerExtension> playerExtensions = new HashMap<>();
 
     /**
      * Starts the timer.
      * @param plugin This plugin
      */
-    public GameData(TestPlugin plugin, Connection connection) {
+    public GameData(TestPlugin plugin) {
         this.plugin = plugin;
-        createGunConfigurations(connection);
+        gunConfigurations = GunDao.getAll();
         GameMapDao.addNewMaps(plugin.getServer());
         maps = GameMapDao.getAll();
     }
@@ -146,6 +140,7 @@ public class GameData {
         return playerExtensions.values();
     }
 
+    //Not rly the playercount?
     public int getPlayercount() {
         return playerExtensions.size();
     }

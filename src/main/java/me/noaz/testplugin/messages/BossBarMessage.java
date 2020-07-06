@@ -23,7 +23,7 @@ public class BossBarMessage {
      */
     public static void timeUntilGameEnds(int timeUntilGameEnds) {
         String time = getTimeInClockFormat(timeUntilGameEnds);
-        bar.setTitle(ChatColor.YELLOW + "Game starts in " + time);
+        bar.setTitle(ChatColor.YELLOW + "Game ends in " + time);
     }
 
     /**
@@ -32,7 +32,7 @@ public class BossBarMessage {
      */
     public static void timeUntilNextGame(int timeUntilNextGame) {
         String time = getTimeInClockFormat(timeUntilNextGame);
-        bar.setTitle(ChatColor.YELLOW + "Game ends in " + time);
+        bar.setTitle(ChatColor.YELLOW + "Game starts in " + time);
     }
 
     private static String getTimeInClockFormat(int timeInSeconds) {

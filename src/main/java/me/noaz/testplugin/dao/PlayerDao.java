@@ -15,7 +15,6 @@ public class PlayerDao {
         PlayerDao.connection = connection;
     }
 
-
     public static void update(PlayerStatistic playerStatistic) {
         try {
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +

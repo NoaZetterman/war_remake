@@ -6,12 +6,8 @@ import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -21,7 +17,6 @@ import java.util.*;
  * @version 2020-03-01
  */
 public class GameData {
-    private TestPlugin plugin;
 
     private List<GameMap> maps;
     private List<GunConfiguration> gunConfigurations;
@@ -32,7 +27,6 @@ public class GameData {
      * @param plugin This plugin
      */
     public GameData(TestPlugin plugin) {
-        this.plugin = plugin;
         gunConfigurations = GunDao.getAll();
         GameMapDao.addNewMaps(plugin.getServer());
         maps = GameMapDao.getAll();
@@ -89,7 +83,6 @@ public class GameData {
     }
 
     public void removePlayer(Player player) {
-        playerExtensions.get(player).saveCurrentLoadout(false);
         playerExtensions.get(player).leaveGame();
         playerExtensions.remove(player);
     }
@@ -143,87 +136,5 @@ public class GameData {
     //Not rly the playercount?
     public int getPlayercount() {
         return playerExtensions.size();
-    }
-
-    private void createGunConfigurations(Connection connection) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("SELECT * FROM test.gun_configuration");
-                    ResultSet result = getGunConfigurationsFromDatabase.executeQuery();
-
-                    while(result.next()) {
-                        int gunId = result.getInt("gun_id");
-                        String name = result.getString("gun_name");
-                        String gunMaterial = result.getString("gun_material");
-                        String weaponType = result.getString("weapon_type");
-                        String fireType = result.getString("fire_type");
-                        float accuracyNotScoped = result.getFloat("accuracy_not_scoped");
-                        float accuracyScoped = result.getFloat("accuracy_scoped");
-                        float bodyDamage = result.getFloat("body_damage");
-                        float headDamage = result.getFloat("head_damage");
-                        float bulletSpeed = result.getFloat("bullet_speed");
-                        int gunRange = result.getInt("gun_range");
-                        int reloadTimeInMs = result.getInt("reload_time_in_ms");
-                        int burstDelayInMs = result.getInt("burst_delay_in_ms");
-                        int bulletsPerBurst = result.getInt("bullets_per_burst");
-                        int bulletsPerClick = result.getInt("bullets_per_click");
-                        int startingBullets = result.getInt("starting_bullets");
-                        int clipSize = result.getInt("clip_size");
-                        int loadoutSlot = result.getInt("loadout_slot");
-                        int unlockLevel = result.getInt("unlock_level");
-                        int costToBuy = result.getInt("cost_to_buy");
-                        String fireBulletSound = result.getString("fire_bullet_sound");
-                        String fireWhileReloadingSound = result.getString("fire_while_reloading_sound");
-                        String fireWithoutAmmoSound = result.getString("fire_without_ammo_sound");
-
-                        gunConfigurations.add(new GunConfiguration(gunId, name, gunMaterial, weaponType,
-                                fireType, accuracyNotScoped, accuracyScoped, bodyDamage, headDamage,
-                                bulletSpeed, gunRange, reloadTimeInMs, burstDelayInMs, bulletsPerBurst,
-                                bulletsPerClick, startingBullets, clipSize, loadoutSlot, unlockLevel,
-                                costToBuy, fireBulletSound, fireWhileReloadingSound, fireWithoutAmmoSound));
-
-
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.runTaskAsynchronously(plugin);
-
-
-        //Should grab the information for all guns from database later on
-
-        // http://puttyland.com/share/TTYWy1vN.txt
-
-        /*
-        SELECT * FROM test.player WHERE player_uuid=uuid;
-SELECT * FROM test.owned_gun_list WHERE id=(player.owned_guns);
-         */
-        /* WORKS:
-
-        SELECT * FROM test.gun_configuration
-INNER JOIN test.player_own_gun ON test.gun_configuration.gun_id=test.player_own_gun.gun_id
-WHERE player_own_gun.player_id=5
-
-// INSERT INTO test.player_own_gun (player_id, gun_id) VALUES (5,1); Inserts gun with player id 5 and gun nr 1
-
-         */
-
-        // INNER JOIN test.owned_gun_list ON test.player.owned_guns=test.owned_gun_list.id
-        /*INSERT INTO test.gun_configuration (gun_name, gun_material, weapon_type, fire_type, accuracy_not_scoped, accuracy_scoped, body_damage,
-                head_damage, bullet_speed, gun_range, reload_time_in_ms, burst_delay_in_ms, bullets_per_burst, bullets_per_click, starting_bullets,
-                clip_size, loadout_slot, unlock_level, cost_to_buy, fire_bullet_sound, fire_while_reloading_sound, fire_without_ammo_sound) VALUES
-                ('Skullcrusher', 'GOLD_INGOT', 'Automatic', 'burst', 2.0, 100, 7.2, 7.5, 4, 76, 4000, 400, 3, 1, 72, 24, 13, 6, 300, 'ENTITY_SKELETON_HURT',
-                        'ENTITY_ZOMBIE_BREAK_WOODEN_DOOR', 'ENTITY_GHAST_SHOOT');*/
-
-
-        /*gunConfigurations.put("Minigun", new WeaponConfiguration("Minigun", "DIAMOND",
-                "Automatic", "buck", 3, 10,
-                3.6, 4.5, 4, 128, 100, 50,
-                1, 2, 64, 64,
-                new Sound[] {Sound.ENTITY_SKELETON_HURT, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, Sound.ENTITY_GHAST_SHOOT},
-                10, 35));*/
     }
 }

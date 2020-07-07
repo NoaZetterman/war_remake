@@ -3,7 +3,7 @@ package me.noaz.testplugin.weapons.guns.firemodes;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.player.PlayerStatistic;
+import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,7 +16,7 @@ public class BurstGun extends Gun {
      * @param statistics That players statistics
      * @param config     The configuration of this weapon
      */
-    public BurstGun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, GunConfiguration config) {
+    public BurstGun(TestPlugin plugin, PlayerExtension player, PlayerInformation statistics, GunConfiguration config) {
         super(plugin, player, statistics, config);
     }
 

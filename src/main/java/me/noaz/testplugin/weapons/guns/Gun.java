@@ -3,7 +3,7 @@ package me.noaz.testplugin.weapons.guns;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ActionBarMessage;
 import me.noaz.testplugin.player.PlayerExtension;
-import me.noaz.testplugin.player.PlayerStatistic;
+import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.weapons.Weapon;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +22,7 @@ import java.util.Random;
 public abstract class Gun implements Weapon {
     protected TestPlugin plugin;
     protected PlayerExtension player;
-    protected PlayerStatistic statistics;
+    protected PlayerInformation statistics;
     protected GunConfiguration config;
 
     protected int currentClip;
@@ -44,7 +44,7 @@ public abstract class Gun implements Weapon {
      * @param statistics That players statistics
      * @param config The configuration of this weapon
      */
-    protected Gun(TestPlugin plugin, PlayerExtension player, PlayerStatistic statistics, GunConfiguration config) {
+    protected Gun(TestPlugin plugin, PlayerExtension player, PlayerInformation statistics, GunConfiguration config) {
         this.plugin = plugin;
         this.player = player;
         this.statistics = statistics;

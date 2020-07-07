@@ -58,8 +58,8 @@ public class LoadoutMenu {
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
                             if(gun.name.equals(clickedItemName)) {
-                                if(player.getOwnedPrimaryGuns().contains(clickedItemName)) {
-                                    player.changePrimaryGun(gun);
+                                if(player.ownsPrimaryGun(clickedItemName)) {
+                                    player.setSelectedPrimaryGun(clickedItemName);
                                 } else if(gun.costToBuy <= player.getCredits()) {
                                     buyGun(player, gun);
                                     //Take player to other screen of buying gun
@@ -74,8 +74,8 @@ public class LoadoutMenu {
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
                             if(gun.name.equals(clickedItemName)) {
-                                if(player.getOwnedSecondaryGuns().contains(clickedItemName)) {
-                                    player.changeSecondaryGun(gun);
+                                if(player.ownsSecondaryGun(clickedItemName)) {
+                                    player.setSelectedSecondaryGun(clickedItemName);
                                 } else if(gun.costToBuy <= player.getCredits()) {
                                     buyGun(player, gun);
                                 }
@@ -172,10 +172,9 @@ public class LoadoutMenu {
         //Want: All guns but unlocked in one way and other in other ways. O(n^2)?
         //Loop through unlocked once and make a list of locked ones?
 
-        List<String> ownedPrimaryGuns = player.getOwnedPrimaryGuns();
         for(GunConfiguration gun : configurations) {
             if(gun.gunType != GunType.SECONDARY) {
-                if (!ownedPrimaryGuns.contains(gun.name)) {
+                if (!player.ownsPrimaryGun(gun.name)) {
                     if(gun.unlockLevel > player.getLevel()) {
                     items[gun.loadoutSlot] = createLockedWeaponItem(gun);
                     } else if(gun.costToBuy > player.getCredits()) {
@@ -205,10 +204,9 @@ public class LoadoutMenu {
 
         items[0] = new ItemStack(goBackArrow);
 
-        List<String> ownedSecondaryGuns = player.getOwnedSecondaryGuns();
         for(GunConfiguration gun : configurations) {
             if(gun.gunType == GunType.SECONDARY) {
-                if (!ownedSecondaryGuns.contains(gun.name)) {
+                if (!player.ownsSecondaryGun(gun.name)) {
                     if(gun.unlockLevel > player.getLevel()) {
                         items[gun.loadoutSlot] = createLockedWeaponItem(gun);
                     } else if(gun.costToBuy > player.getCredits()) {

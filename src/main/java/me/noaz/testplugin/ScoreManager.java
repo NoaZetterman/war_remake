@@ -1,7 +1,7 @@
 package me.noaz.testplugin;
 
 import me.noaz.testplugin.messages.TextUtils;
-import me.noaz.testplugin.player.PlayerStatistic;
+import me.noaz.testplugin.player.PlayerInformation;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
 
@@ -54,23 +54,23 @@ public class ScoreManager {
             sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
-    public void giveLobbyScoreboard(UUID playerUUID, PlayerStatistic playerStatistic) {
+    public void giveLobbyScoreboard(UUID playerUUID, PlayerInformation playerInformation) {
         Scoreboard scoreboard = scoreboards.get(playerUUID);
 
         scoreboard.getObjective("sidebar").unregister();
         Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
 
-        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.YELLOW + playerStatistic.getTotalKills()).setScore(9);
-        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.YELLOW + playerStatistic.getTotalDeaths()).setScore(8);
+        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.YELLOW + playerInformation.getTotalKills()).setScore(9);
+        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.YELLOW + playerInformation.getTotalDeaths()).setScore(8);
         sidebar.getScore(ChatColor.GOLD + "Kdr: " + ChatColor.YELLOW +
-                getRatio(playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths())).setScore(7);
+                getRatio(playerInformation.getTotalKills(), playerInformation.getTotalDeaths())).setScore(7);
         sidebar.getScore(ChatColor.GOLD + "Accuracy: " + ChatColor.YELLOW +
-                getRatio(playerStatistic.getTotalFiredBulletsThatHitEnemy()*100, playerStatistic.getTotalFiredBullets()) + "%").setScore(6);
+                getRatio(playerInformation.getTotalFiredBulletsThatHitEnemy()*100, playerInformation.getTotalFiredBullets()) + "%").setScore(6);
         sidebar.getScore("").setScore(5);
-        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + playerStatistic.getLevel()).setScore(4);
+        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + playerInformation.getLevel()).setScore(4);
         sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW +
-                playerStatistic.getXpOnCurrentLevel() + "/" + playerStatistic.getTotalXpOnCurrentLevel()).setScore(3);
-        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + playerStatistic.getCredits()).setScore(2);
+                playerInformation.getXpOnCurrentLevel() + "/" + playerInformation.getTotalXpOnCurrentLevel()).setScore(3);
+        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + playerInformation.getCredits()).setScore(2);
 
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
@@ -111,25 +111,25 @@ public class ScoreManager {
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
-    public void giveGameScoreboard(UUID playerUUID, PlayerStatistic playerStatistic) {
+    public void giveGameScoreboard(UUID playerUUID, PlayerInformation playerInformation) {
         Scoreboard scoreboard = scoreboards.get(playerUUID);
 
         scoreboard.getObjective("sidebar").unregister();
 
         Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Statistics");
 
-        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.GREEN + playerStatistic.getKillsThisGame()).setScore(9);
-        sidebar.getScore(ChatColor.GOLD + "Killstreak: " + ChatColor.GREEN + playerStatistic.getKillstreak()).setScore(8);
-        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.RED + playerStatistic.getDeathsThisGame()).setScore(7);
-        sidebar.getScore(ChatColor.GOLD + "Kdr: " + TextUtils.getRatioAsRedOrGreenString(playerStatistic.getKillsThisGame(),
-                playerStatistic.getDeathsThisGame(), playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths())).setScore(6);
+        sidebar.getScore(ChatColor.GOLD + "Kills: " + ChatColor.GREEN + playerInformation.getKillsThisGame()).setScore(9);
+        sidebar.getScore(ChatColor.GOLD + "Killstreak: " + ChatColor.GREEN + playerInformation.getKillstreak()).setScore(8);
+        sidebar.getScore(ChatColor.GOLD + "Deaths: " + ChatColor.RED + playerInformation.getDeathsThisGame()).setScore(7);
+        sidebar.getScore(ChatColor.GOLD + "Kdr: " + TextUtils.getRatioAsRedOrGreenString(playerInformation.getKillsThisGame(),
+                playerInformation.getDeathsThisGame(), playerInformation.getTotalKills(), playerInformation.getTotalDeaths())).setScore(6);
         sidebar.getScore(ChatColor.GOLD + "Accuracy: "
-                + TextUtils.getRatioAsRedOrGreenString(playerStatistic.getFiredBulletsThatHitEnemyThisGame()*100, playerStatistic.getFiredBulletsThisGame(), playerStatistic.getTotalFiredBulletsThatHitEnemy()*100, playerStatistic.getTotalFiredBullets()) + "%").setScore(5);
+                + TextUtils.getRatioAsRedOrGreenString(playerInformation.getFiredBulletsThatHitEnemyThisGame()*100, playerInformation.getFiredBulletsThisGame(), playerInformation.getTotalFiredBulletsThatHitEnemy()*100, playerInformation.getTotalFiredBullets()) + "%").setScore(5);
         sidebar.getScore("").setScore(4);
-        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + playerStatistic.getLevel()).setScore(3);
+        sidebar.getScore(ChatColor.GOLD + "Level: " + ChatColor.YELLOW + playerInformation.getLevel()).setScore(3);
         sidebar.getScore(ChatColor.GOLD + "Xp: " + ChatColor.YELLOW +
-                playerStatistic.getXpOnCurrentLevel() + "/" + playerStatistic.getTotalXpOnCurrentLevel()).setScore(2);
-        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + playerStatistic.getCredits()).setScore(1);
+                playerInformation.getXpOnCurrentLevel() + "/" + playerInformation.getTotalXpOnCurrentLevel()).setScore(2);
+        sidebar.getScore(ChatColor.GOLD + "Credits: " + ChatColor.YELLOW + playerInformation.getCredits()).setScore(1);
 
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
     }

@@ -16,6 +16,6 @@ public enum Perk {
     }
 
     public void use() {
-        //Create a perk class of some type depending on enum and use it for perk activation
+        //Create a perk class of some type depending on enum and use it for perk activation(maybe)
     }
 }

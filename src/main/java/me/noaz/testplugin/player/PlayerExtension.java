@@ -29,10 +29,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -45,11 +41,10 @@ import java.util.List;
  */
 public class PlayerExtension {
     private TestPlugin plugin;
-    private Connection connection;
+    private List<GunConfiguration> gunConfigurations;
 
     private Player player;
-    private int playerId;
-    private PlayerStatistic playerStatistic;
+    private PlayerInformation playerInformation;
     private ScoreManager scoreManager;
 
     private Team team;
@@ -59,10 +54,6 @@ public class PlayerExtension {
     private Gun secondaryGun;
     private Perk selectedPerk;
     private Grenade selectedLethal;
-
-    private List<String> ownedPrimaryGuns;
-    private List<String> ownedSecondaryGuns;
-    private List<Perk> ownedPerks;
 
     private String[] actionBarMessage;
     private boolean isDead = false;
@@ -83,95 +74,19 @@ public class PlayerExtension {
                            List<GunConfiguration> gunConfigurations, Connection connection) {
         this.plugin = plugin;
         this.player = player;
-        this.connection = connection;
         this.scoreManager = scoreManager;
-        playerStatistic = PlayerDao.get(player);
+        playerInformation = PlayerDao.get(player);
         scoreManager.givePlayerNewScoreboard(player.getUniqueId());
+
+        this.gunConfigurations = gunConfigurations;
         updateLobbyScoreboard();
-
-
-        ownedPrimaryGuns = new ArrayList<>();
-        ownedSecondaryGuns = new ArrayList<>();
-        ownedPerks = new ArrayList<>();
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    PreparedStatement getPlayerInfo = connection.prepareStatement("SELECT player.id, player.selected_primary, player.selected_secondary" +
-                            " FROM test.player WHERE player.uuid=?");
-                    getPlayerInfo.setString(1, player.getUniqueId().toString());
-                    ResultSet info = getPlayerInfo.executeQuery();
-                    playerId = 0;
-                    int selectedPrimaryGunId = 1;
-                    int selectedSecondaryGunId = 2;
-                    while(info.next()) {
-                        playerId = info.getInt("id");
-                        selectedPrimaryGunId = info.getInt("selected_primary");
-                        selectedSecondaryGunId = info.getInt("selected_secondary");
-
-                    }
-
-                    if(playerId != 0) {
-                        PreparedStatement getPlayerGuns = connection.prepareStatement("SELECT test.gun_configuration.gun_name FROM test.gun_configuration " +
-                                "INNER JOIN test.player_own_gun " +
-                                "ON test.gun_configuration.gun_id = test.player_own_gun.gun_id  " +
-                                "WHERE test.player_own_gun.player_id = ?");
-
-                        getPlayerGuns.setInt(1, playerId);
-                        ResultSet playerGuns = getPlayerGuns.executeQuery();
-
-                        List<String> ownedGuns = new ArrayList<>();
-
-                        while(playerGuns.next()) {
-                            ownedGuns.add(playerGuns.getString("gun_name"));
-
-                        }
-
-                        for(GunConfiguration gun : gunConfigurations) {
-                            if(ownedGuns.contains(gun.name) || gun.unlockLevel == 0) {
-                                if (gun.gunType == GunType.SECONDARY) {
-                                    ownedSecondaryGuns.add(gun.name);
-                                    if(gun.gunId == selectedSecondaryGunId) {
-                                        secondaryGun = createNewGun(gun);
-                                    }
-                                } else {
-                                    ownedPrimaryGuns.add(gun.name);
-                                    if(gun.gunId == selectedPrimaryGunId) {
-                                        primaryGun = createNewGun(gun);
-                                    }
-                                }
-
-                            }
-                        }
-
-                        //TODO: Change this to get certain guns instead
-                        if(primaryGun == null) {
-                            primaryGun = createNewGun(gunConfigurations.get(1));
-                        }
-
-                        if(secondaryGun == null) {
-                            secondaryGun = createNewGun(gunConfigurations.get(0));
-                        }
-
-                    } else {
-                        player.sendMessage("Something went wrong when loading stats, try to rejoin, if that doesn't work " +
-                                "please contact server admins");
-                    }
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.runTaskAsynchronously(plugin);
-
 
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
 
-        //Redo this with database etc
-        ownedPerks.add(Perk.SCAVENGER);
         selectedPerk = Perk.SCAVENGER;
+        setSelectedPrimaryGun(playerInformation.getSelectedPrimaryGun());
+        setSelectedSecondaryGun(playerInformation.getSelectedSecondaryGun());
 
         //Get current used guns from database instead
 
@@ -208,7 +123,7 @@ public class PlayerExtension {
         }
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
 
-        player.setDisplayName("Lvl " + playerStatistic.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+        player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         if(killer != null && killer.getGameMode() != GameMode.SPECTATOR) {
             player.setSpectatorTarget(killer);
@@ -265,8 +180,8 @@ public class PlayerExtension {
      * @param reward The reward type of this kill
      */
     public void addKill(Reward reward) {
-        playerStatistic.addKill();
-        playerStatistic.addReward(reward);
+        playerInformation.addKill();
+        playerInformation.addReward(reward);
 
         updateGameScoreboard();
 
@@ -284,7 +199,7 @@ public class PlayerExtension {
         }
 
         if(enemyTeam != null) {
-            int killstreak = playerStatistic.getKillstreak();
+            int killstreak = playerInformation.getKillstreak();
             switch (killstreak) {
                 case 5:
                     primaryGun.addBullets(primaryGun.getConfiguration().resupplyAmmo);
@@ -322,11 +237,11 @@ public class PlayerExtension {
     }
 
     private void addHeadshotKill() {
-        playerStatistic.addHeadshotKill();
+        playerInformation.addHeadshotKill();
     }
 
     public void addDeath() {
-        playerStatistic.addDeath();
+        playerInformation.addDeath();
         updateGameScoreboard();
     }
 
@@ -335,16 +250,20 @@ public class PlayerExtension {
      * @param amount The amount to change with.
      */
     public void changeCredits(int amount) {
-        playerStatistic.addCredits(amount);
-        updateGameScoreboard();
+        playerInformation.addCredits(amount);
+        if(isPlayingGame()) {
+            updateGameScoreboard();
+        } else {
+            updateLobbyScoreboard();
+        }
     }
 
     /**
      * Give this player a flag capture
      */
     public void captureFlag() {
-        playerStatistic.addCapture();
-        playerStatistic.addReward(Reward.CAPTURE_FLAG);
+        playerInformation.addCapture();
+        playerInformation.addReward(Reward.CAPTURE_FLAG);
 
         updateGameScoreboard();
 
@@ -364,7 +283,7 @@ public class PlayerExtension {
 
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
-        player.setDisplayName("Lvl " + playerStatistic.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+        player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         spawn();
     }
@@ -382,15 +301,15 @@ public class PlayerExtension {
                 break;
         }
 
-        ChatMessage.displayPersonalStats(player, playerStatistic.getKillsThisGame(), playerStatistic.getDeathsThisGame(),
-                playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths(), playerStatistic.getXpThisGame(), playerStatistic.getCreditsThisGame());
+        ChatMessage.displayPersonalStats(player, playerInformation.getKillsThisGame(), playerInformation.getDeathsThisGame(),
+                playerInformation.getTotalKills(), playerInformation.getTotalDeaths(), playerInformation.getXpThisGame(), playerInformation.getCreditsThisGame());
         leaveGame();
     }
 
     public void endGame(PlayerExtension winner, int winnerKills) {
         ChatMessage.displayFreeForAllEndGame(winner, winnerKills, player);
-        ChatMessage.displayPersonalStats(player, playerStatistic.getKillsThisGame(), playerStatistic.getDeathsThisGame(),
-                playerStatistic.getTotalKills(), playerStatistic.getTotalDeaths(), playerStatistic.getXpThisGame(), playerStatistic.getCreditsThisGame());
+        ChatMessage.displayPersonalStats(player, playerInformation.getKillsThisGame(), playerInformation.getDeathsThisGame(),
+                playerInformation.getTotalKills(), playerInformation.getTotalDeaths(), playerInformation.getXpThisGame(), playerInformation.getCreditsThisGame());
         leaveGame();
     }
 
@@ -399,8 +318,7 @@ public class PlayerExtension {
      */
     public void leaveGame() {
         if(team != null) {
-            playerStatistic.updateTotalScore();
-            PlayerDao.update(playerStatistic);
+            playerInformation.updateTotalScore();
             updateLobbyScoreboard();
 
             for(PotionEffect effect : player.getActivePotionEffects()) {
@@ -408,7 +326,7 @@ public class PlayerExtension {
             }
 
             player.setPlayerListName(player.getName());
-            player.setDisplayName("Lvl " + playerStatistic.getLevel() + " " + ChatColor.WHITE + player.getName());
+            player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + ChatColor.WHITE + player.getName());
 
             team.removePlayer(this);
             enemyTeam = null;
@@ -428,6 +346,8 @@ public class PlayerExtension {
             player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
             DefaultInventories.setDefaultLobbyInventory(player.getInventory());
         }
+
+        PlayerDao.update(playerInformation);
     }
 
     /**
@@ -436,9 +356,8 @@ public class PlayerExtension {
     public void forceEndGame() {
         primaryGun.reset();
         secondaryGun.reset();
-        playerStatistic.updateTotalScore();
-        PlayerDao.update(playerStatistic);
-        saveCurrentLoadout(true);
+        playerInformation.updateTotalScore();
+        PlayerDao.update(playerInformation);
 
         Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
 
@@ -499,8 +418,8 @@ public class PlayerExtension {
     /**
      * @return The statistics object that belongs to this player
      */
-    public PlayerStatistic getPlayerStatistics() {
-        return playerStatistic;
+    public PlayerInformation getPlayerStatistics() {
+        return playerInformation;
     }
 
     /**
@@ -551,17 +470,17 @@ public class PlayerExtension {
 
     /**
      * Reloads a given weapon
-     * @param wep The weapon to reload
+     * @param gun The weapon to reload
      */
-    public void reloadWeapon(Gun wep) {
-        wep.reload();
+    public void reloadGun(Gun gun) {
+        gun.reload();
     }
 
     public void reloadIfGun(int slot) {
         if(slot == primaryGun.getInventorySlot()) {
-            reloadWeapon(primaryGun);
+            reloadGun(primaryGun);
         } else if(slot == secondaryGun.getInventorySlot()) {
-            reloadWeapon(secondaryGun);
+            reloadGun(secondaryGun);
         }
     }
 
@@ -606,19 +525,26 @@ public class PlayerExtension {
     /**
      * Sets the primary gun of this player
      *
-     * @param gun The guns GunConfiguration
+     * @param gunName The Name of the gun
      */
-    public void changePrimaryGun(GunConfiguration gun) {
-            primaryGun = createNewGun(gun);
+    public void setSelectedPrimaryGun(String gunName) {
+            primaryGun = createNewGun(gunName);
+            playerInformation.setSelectedPrimaryGun(gunName);
     }
 
     /**
      * Sets the secondary gun of this player
      *
-     * @param gun The guns GunConfiguration
+     * @param gunName The guns GunConfiguration
      */
-    public void changeSecondaryGun(GunConfiguration gun) {
-        secondaryGun = createNewGun(gun);
+    public void setSelectedSecondaryGun(String gunName) {
+        secondaryGun = createNewGun(gunName);
+        playerInformation.setSelectedSecondaryGun(gunName);
+    }
+
+    public void setSelectedPerk(Perk perk) {
+        selectedPerk = perk;
+        playerInformation.setSelectedPerk(perk);
     }
 
     public void buyGun(String gunName, List<GunConfiguration> gunConfigurations) {
@@ -627,86 +553,44 @@ public class PlayerExtension {
                 changeCredits(-gun.costToBuy);
 
                 if(gun.gunType == GunType.SECONDARY) {
-                    ownedSecondaryGuns.add(gunName);
+                    playerInformation.addSecondary(gunName);
                 } else {
-                    ownedPrimaryGuns.add(gunName);
+                    playerInformation.addPrimary(gunName);
                 }
-
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement addGunToPlayer = connection.prepareStatement("INSERT INTO test.player_own_gun " +
-                            "(player_id, gun_id) VALUES (?,?)");
-
-                            addGunToPlayer.setInt(1, playerId);
-                            addGunToPlayer.setInt(2, gun.gunId);
-
-                            addGunToPlayer.execute();
-
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.runTaskAsynchronously(plugin);
-
             }
         }
     }
 
-    private Gun createNewGun(GunConfiguration configuration) {
-        FireType fireType = configuration.fireType;
+    private Gun createNewGun(String gunName) {
+        GunConfiguration gunConfigurationForNewGun = null;
+        for(GunConfiguration gun : gunConfigurations) {
+            if(gun.name.equals(gunName)) {
+                gunConfigurationForNewGun = gun;
+            }
+        }
+
+        FireType fireType = gunConfigurationForNewGun.fireType;
 
         Gun gunToChange;
 
         switch(fireType) {
             case BURST:
-                gunToChange = new BurstGun(plugin, this, playerStatistic, configuration);
+                gunToChange = new BurstGun(plugin, this, playerInformation, gunConfigurationForNewGun);
                 break;
             case SINGLE:
-                gunToChange = new SingleBoltGun(plugin, this, playerStatistic, configuration);
+                gunToChange = new SingleBoltGun(plugin, this, playerInformation, gunConfigurationForNewGun);
                 break;
             case AUTOMATIC:
-                gunToChange = new FullyAutomaticGun(plugin, this, playerStatistic, configuration);
+                gunToChange = new FullyAutomaticGun(plugin, this, playerInformation, gunConfigurationForNewGun);
                 break;
             case BUCK:
-                gunToChange = new BuckGun(plugin, this, playerStatistic, configuration);
+                gunToChange = new BuckGun(plugin, this, playerInformation, gunConfigurationForNewGun);
                 break;
             default:
                 gunToChange = null;
         }
 
         return gunToChange;
-    }
-
-    /**
-     * Saves the players current loadout, so that it will be remembered for when the player joins next time.
-     * @param force True if this should be done during shutdown, false otherwise
-     */
-    public void saveCurrentLoadout(boolean force) {
-        if(force) {
-            saveLoadout();
-        } else {
-            new BukkitRunnable() {
-                public void run() {
-                    saveLoadout();
-                }
-            }.runTaskAsynchronously(plugin);
-        }
-    }
-
-    private void saveLoadout() {
-        try {
-            PreparedStatement saveLoadout = connection.prepareStatement("UPDATE test.player SET " +
-                    "selected_primary=?, selected_secondary=? WHERE id=?");
-
-            saveLoadout.setInt(1, primaryGun.getConfiguration().gunId);
-            saveLoadout.setInt(2, secondaryGun.getConfiguration().gunId);
-            saveLoadout.setInt(3, playerId);
-            saveLoadout.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -748,20 +632,20 @@ public class PlayerExtension {
         return isDead;
     }
 
-    public List<String> getOwnedPrimaryGuns() {
-        return ownedPrimaryGuns;
+    public boolean ownsPrimaryGun(String name) {
+        return playerInformation.hasPrimary(name);
     }
 
-    public List<String> getOwnedSecondaryGuns() {
-        return ownedSecondaryGuns;
+    public boolean ownsSecondaryGun(String name) {
+        return playerInformation.hasSecondary(name);
     }
 
     public int getLevel() {
-        return playerStatistic.getLevel();
+        return playerInformation.getLevel();
     }
 
     public int getCredits() {
-        return playerStatistic.getCredits();
+        return playerInformation.getCredits();
     }
 
     public void setSelectedResourcepack(Resourcepack pack) {
@@ -781,10 +665,10 @@ public class PlayerExtension {
     }
 
     public void updateGameScoreboard() {
-        scoreManager.giveGameScoreboard(player.getUniqueId(), playerStatistic);
+        scoreManager.giveGameScoreboard(player.getUniqueId(), playerInformation);
     }
 
     private void updateLobbyScoreboard() {
-        scoreManager.giveLobbyScoreboard(player.getUniqueId(), playerStatistic);
+        scoreManager.giveLobbyScoreboard(player.getUniqueId(), playerInformation);
     }
 }

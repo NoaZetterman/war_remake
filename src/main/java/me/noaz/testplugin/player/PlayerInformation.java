@@ -1,11 +1,10 @@
 package me.noaz.testplugin.player;
 
-import me.noaz.testplugin.ScoreManager;
-import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.perk.Perk;
+import me.noaz.testplugin.weapons.lethals.Grenade;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.*;
+import java.util.List;
 
 /**
  * This class stores information regarding one players statistics, both in a game and in spawn, should be updated
@@ -14,14 +13,17 @@ import java.sql.*;
  * @author Noa Zetterman
  * @version 2019-12-10
  */
-public class PlayerStatistic {
-    //TODO: RENAME to PlayerInformation, add owned guns and such as well.
-
+public class PlayerInformation {
     private Player player;
-    private ScoreManager scoreManager;
-    private Connection connection;
-    private TestPlugin plugin;
 
+    private List<String> ownedPrimaryGuns;
+    private List<String> ownedSecondaryGuns;
+    private List<Perk> ownedPerks;
+
+    private String selectedPrimaryGun;
+    private String selectedSecondaryGun;
+    private Perk selectedPerk;
+    private Grenade selectedLethal;
 
     private int[] levels;
 
@@ -45,9 +47,19 @@ public class PlayerStatistic {
     private int xpThisGame;
     private int captures = 0;
 
-    public PlayerStatistic(Player player, int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
-                           int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills) {
+    public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
+                             List<Perk> ownedPerks, String selectedPrimaryGun, String selectedSecondaryGun, Perk selectedPerk,
+                             int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
+                             int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills) {
         this.player = player;
+
+        this.ownedPrimaryGuns = ownedPrimaryGuns;
+        this.ownedSecondaryGuns = ownedSecondaryGuns;
+        this.ownedPerks = ownedPerks;
+        this.selectedPrimaryGun = selectedPrimaryGun;
+        this.selectedSecondaryGun = selectedSecondaryGun;
+        this.selectedPerk = selectedPerk;
+
         this.totalKills = totalKills;
         this.totalDeaths = totalDeaths;
         this.totalFiredBullets = totalFiredBullets;
@@ -57,6 +69,7 @@ public class PlayerStatistic {
         this.credits = credits;
         this.totalHeadshotKills = totalHeadshotKills;
 
+        //Redo lvls
         levels = new int[] {100, 120, 150, 200, 325, 450, 700, 1000, 1500, 3000, 5000, 8500, 12000, 15000, 20000, 30000,
                 45000, 60000, 80000, 100000, 150000, 200000, 300000, 400000, 500000};
 
@@ -67,6 +80,50 @@ public class PlayerStatistic {
         addXp(0);
 
         player.setDisplayName("Lvl " + level + " " + player.getName());
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public boolean hasPrimary(String gunName) {
+        return ownedPrimaryGuns.contains(gunName);
+    }
+
+    public boolean hasSecondary(String gunName) {
+        return ownedSecondaryGuns.contains(gunName);
+    }
+
+    public boolean hasPerk(Perk perk) {
+        return ownedPerks.contains(perk);
+    }
+
+    public List<String> getOwnedPrimaryGuns() {
+        return ownedPrimaryGuns;
+    }
+
+    public List<String> getOwnedSecondaryGuns() {
+        return ownedSecondaryGuns;
+    }
+
+    public List<Perk> getOwnedPerks() {
+        return ownedPerks;
+    }
+
+    public String getSelectedPrimaryGun() {
+        return selectedPrimaryGun;
+    }
+
+    public String getSelectedSecondaryGun() {
+        return selectedSecondaryGun;
+    }
+
+    public Perk getSelectedPerk() {
+        return selectedPerk;
+    }
+
+    public Grenade getSelectedLethal() {
+        return selectedLethal;
     }
 
     public int getTotalKills() {
@@ -95,10 +152,6 @@ public class PlayerStatistic {
 
     public int getTotalHeadshotKills() {
         return totalHeadshotKills;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public int getTotalCaptures() {
@@ -157,6 +210,35 @@ public class PlayerStatistic {
 
     public int getXpThisGame() {
         return xpThisGame;
+    }
+
+    public void addPrimary(String name) {
+        ownedPrimaryGuns.add(name);
+    }
+
+    public void addSecondary(String name) {
+        ownedSecondaryGuns.add(name);
+    }
+
+    public void addPerk(Perk perk) {
+        ownedPerks.add(perk);
+    }
+
+
+    public void setSelectedPrimaryGun(String selectedPrimaryGun) {
+        this.selectedPrimaryGun = selectedPrimaryGun;
+    }
+
+    public void setSelectedSecondaryGun(String selectedSecondaryGun) {
+        this.selectedSecondaryGun = selectedSecondaryGun;
+    }
+
+    public void setSelectedPerk(Perk selectedPerk) {
+        this.selectedPerk = selectedPerk;
+    }
+
+    public void setSelectedLethal(Grenade selectedLethal) {
+        this.selectedLethal = selectedLethal;
     }
 
     /**

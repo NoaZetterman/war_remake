@@ -125,6 +125,7 @@ public abstract class Gun implements Weapon {
         }
 
         statistics.addBulletsShot(config.bulletsPerClick);
+        player.updateGameScoreboard();
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 

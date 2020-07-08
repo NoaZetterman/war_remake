@@ -1,10 +1,14 @@
 package me.noaz.testplugin.player;
 
+import me.noaz.testplugin.commands.Resource;
+import me.noaz.testplugin.dao.PlayerDao;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.lethals.Grenade;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class stores information regarding one players statistics, both in a game and in spawn, should be updated
@@ -15,6 +19,10 @@ import java.util.List;
  */
 public class PlayerInformation {
     private Player player;
+
+    private Long totalOnlineTimeInSeconds;
+    private Long lastSavedTimeInSeconds;
+    private Resourcepack selectedResourcepack;
 
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
@@ -49,9 +57,15 @@ public class PlayerInformation {
 
     public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
                              List<Perk> ownedPerks, String selectedPrimaryGun, String selectedSecondaryGun, Perk selectedPerk,
+                             Resourcepack selectedResourcepack, Long totalOnlineTimeInSeconds,
                              int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
                              int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills) {
         this.player = player;
+
+        this.totalOnlineTimeInSeconds = totalOnlineTimeInSeconds;
+        lastSavedTimeInSeconds = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
+
+        this.selectedResourcepack = selectedResourcepack;
 
         this.ownedPrimaryGuns = ownedPrimaryGuns;
         this.ownedSecondaryGuns = ownedSecondaryGuns;
@@ -84,6 +98,10 @@ public class PlayerInformation {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public Long getTotalOnlineTimeInSeconds() {
+        return totalOnlineTimeInSeconds;
     }
 
     public boolean hasPrimary(String gunName) {
@@ -124,6 +142,10 @@ public class PlayerInformation {
 
     public Grenade getSelectedLethal() {
         return selectedLethal;
+    }
+
+    public Resourcepack getSelectedResourcepack() {
+        return selectedResourcepack;
     }
 
     public int getTotalKills() {
@@ -225,20 +247,24 @@ public class PlayerInformation {
     }
 
 
-    public void setSelectedPrimaryGun(String selectedPrimaryGun) {
-        this.selectedPrimaryGun = selectedPrimaryGun;
+    public void setSelectedPrimaryGun(String primaryGun) {
+        this.selectedPrimaryGun = primaryGun;
     }
 
-    public void setSelectedSecondaryGun(String selectedSecondaryGun) {
-        this.selectedSecondaryGun = selectedSecondaryGun;
+    public void setSelectedSecondaryGun(String secondaryGun) {
+        this.selectedSecondaryGun = secondaryGun;
     }
 
-    public void setSelectedPerk(Perk selectedPerk) {
-        this.selectedPerk = selectedPerk;
+    public void setSelectedPerk(Perk perk) {
+        this.selectedPerk = perk;
     }
 
-    public void setSelectedLethal(Grenade selectedLethal) {
-        this.selectedLethal = selectedLethal;
+    public void setSelectedLethal(Grenade lethal) {
+        this.selectedLethal = lethal;
+    }
+
+    public void setSelectedResourcepack(Resourcepack resourcepack) {
+        selectedResourcepack = resourcepack;
     }
 
     /**
@@ -335,5 +361,11 @@ public class PlayerInformation {
         xpThisGame = 0;
         creditsThisGame = 0;
         captures = 0;
+
+        long currentTimeInSeconds = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
+        long passedTimeInSeconds = currentTimeInSeconds - lastSavedTimeInSeconds;
+
+        totalOnlineTimeInSeconds += passedTimeInSeconds;
+        lastSavedTimeInSeconds = currentTimeInSeconds;
     }
 }

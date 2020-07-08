@@ -58,8 +58,6 @@ public class PlayerExtension {
     private String[] actionBarMessage;
     private boolean isDead = false;
 
-    private Resourcepack selectedResourcepack = Resourcepack.PACK_3D_DEFAULT;
-
     private BukkitRunnable respawnCountdown;
 
 
@@ -93,7 +91,7 @@ public class PlayerExtension {
         actionBarMessage = new String[9];
         Arrays.fill(actionBarMessage, "");
 
-        setSelectedResourcepack(Resourcepack.PACK_3D_DEFAULT);
+        setSelectedResourcepack(playerInformation.getSelectedResourcepack());
     }
 
     /**
@@ -163,7 +161,7 @@ public class PlayerExtension {
             secondaryGun.reset();
         }
 
-        if(hasWeaponInMainHand() && selectedResourcepack == Resourcepack.PACK_3D_DEFAULT) {
+        if(hasWeaponInMainHand() && playerInformation.getSelectedResourcepack() == Resourcepack.PACK_3D_DEFAULT) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
         }
@@ -457,7 +455,7 @@ public class PlayerExtension {
 
         //unScope();
 
-        if(selectedResourcepack == Resourcepack.PACK_3D_DEFAULT) {
+        if(playerInformation.getSelectedResourcepack() == Resourcepack.PACK_3D_DEFAULT) {
             if (newSlot == 1) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
@@ -650,14 +648,14 @@ public class PlayerExtension {
 
     public void setSelectedResourcepack(Resourcepack pack) {
         player.setResourcePack(pack.getUrl(), pack.getSha1());
-        selectedResourcepack = pack;
+        playerInformation.setSelectedResourcepack(pack);
 
 
         if(isPlayingGame()) {
-            if (selectedResourcepack == Resourcepack.PACK_2D_16X16 || player.getInventory().getHeldItemSlot() != 1) {
+            if (playerInformation.getSelectedResourcepack() == Resourcepack.PACK_2D_16X16 || player.getInventory().getHeldItemSlot() != 1) {
                 player.removePotionEffect(PotionEffectType.FAST_DIGGING);
                 player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
-            } else if (selectedResourcepack == Resourcepack.PACK_3D_DEFAULT && player.getInventory().getHeldItemSlot() == 1) {
+            } else if (playerInformation.getSelectedResourcepack() == Resourcepack.PACK_3D_DEFAULT && player.getInventory().getHeldItemSlot() == 1) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 10000000, 10, false, false, false));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 10000000, 10, false, false, false));
             }

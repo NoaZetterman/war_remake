@@ -3,12 +3,10 @@ package me.noaz.testplugin.dao;
 import com.google.gson.*;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerInformation;
+import me.noaz.testplugin.player.Resourcepack;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,8 +33,9 @@ public class PlayerDao {
 
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
                     "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
-                    "level=?, credits=?, xp_on_level=?, headshots=?, selected_primary=?, selected_secondary=?, " +
-                    "selected_perk=?, owned_equipment=? WHERE uuid=?");
+                    "level=?, credits=?, xp_on_level=?, headshots=?, seconds_online=?, last_online=?, " +
+                    "selected_primary=?, selected_secondary=?, " +
+                    "selected_perk=?, selected_resourcepack=?, owned_equipment=? WHERE uuid=?");
 
             updatePlayerData.setInt(1, playerInformation.getTotalKills());
             updatePlayerData.setInt(2, playerInformation.getTotalDeaths());
@@ -46,11 +45,14 @@ public class PlayerDao {
             updatePlayerData.setInt(6, playerInformation.getCredits());
             updatePlayerData.setInt(7, playerInformation.getXpOnCurrentLevel());
             updatePlayerData.setInt(8, playerInformation.getTotalHeadshotKills());
-            updatePlayerData.setString(9, playerInformation.getSelectedPrimaryGun());
-            updatePlayerData.setString(10, playerInformation.getSelectedSecondaryGun());
-            updatePlayerData.setString(11, playerInformation.getSelectedPerk().name());
-            updatePlayerData.setString(12, ownedEquipmentAsJson.toString());
-            updatePlayerData.setString(13, playerInformation.getPlayer().getUniqueId().toString());
+            updatePlayerData.setLong(9, playerInformation.getTotalOnlineTimeInSeconds());
+            updatePlayerData.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
+            updatePlayerData.setString(11, playerInformation.getSelectedPrimaryGun());
+            updatePlayerData.setString(12, playerInformation.getSelectedSecondaryGun());
+            updatePlayerData.setString(13, playerInformation.getSelectedPerk().name());
+            updatePlayerData.setString(14, playerInformation.getSelectedResourcepack().name());
+            updatePlayerData.setString(15, ownedEquipmentAsJson.toString());
+            updatePlayerData.setString(16, playerInformation.getPlayer().getUniqueId().toString());
 
             updatePlayerData.execute();
         } catch (SQLException e) {
@@ -68,13 +70,14 @@ public class PlayerDao {
         int credits = 0;
         int totalHeadshotKills = 0;
 
+
         String selectedPrimaryGun = "";
         String selectedSecondaryGun = "";
         Perk selectedPerk = Perk.SCAVENGER;
+        Resourcepack selectedResourcepack = Resourcepack.PACK_2D_16X16;
+        long timePlayedInMinutes = 0;
 
-        String oownedEquipmentAsJson = "";
-
-        JsonObject ownedEquipmentAsJson;
+        JsonObject ownedEquipmentAsJson = new JsonObject();
 
         try {
             PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE uuid=\"" + player.getUniqueId() + "\";");
@@ -91,15 +94,13 @@ public class PlayerDao {
                 selectedPrimaryGun = result.getString("selected_primary");
                 selectedSecondaryGun = result.getString("selected_secondary");
                 selectedPerk = Perk.valueOf(result.getString("selected_perk"));
-                oownedEquipmentAsJson = result.getString("owned_equipment");
-                //ownedEquipmentAsJson = ownedEquipmentAsJson.getAsJsonObject(result.getString("owned_equipment"));
+                selectedResourcepack = Resourcepack.valueOf(result.getString("selected_resourcepack"));
+                ownedEquipmentAsJson = new JsonParser().parse(result.getString("owned_equipment")).getAsJsonObject();
+                timePlayedInMinutes = result.getInt("seconds_online");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        ownedEquipmentAsJson = new JsonParser().parse(oownedEquipmentAsJson).getAsJsonObject();
 
         List<String> ownedPrimarys = jsonArrayToStringList(ownedEquipmentAsJson.getAsJsonArray(jsonPrimaryGunsKey));
         List<String> ownedSecondarys = jsonArrayToStringList(ownedEquipmentAsJson.getAsJsonArray(jsonSecondaryGunsKey));
@@ -107,9 +108,8 @@ public class PlayerDao {
                 .map(Perk::valueOf)
                 .collect(Collectors.toList());
 
-
         return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, selectedPrimaryGun,
-                selectedSecondaryGun, selectedPerk, totalKills, totalDeaths,
+                selectedSecondaryGun, selectedPerk, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
                 totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills);
 
     }

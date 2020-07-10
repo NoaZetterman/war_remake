@@ -21,6 +21,7 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -254,8 +255,8 @@ public class Events implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(!data.getPlayerExtension((Player) event.getWhoClicked()).isPlayingGame() &&
-                event.getClickedInventory() != null && event.getAction() != InventoryAction.NOTHING)
+        if(event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.CHEST
+                && event.getAction() != InventoryAction.NOTHING)
             LoadoutMenu.onItemClick(event.getClickedInventory(), event.getSlot(), data.getPlayerExtension((Player) event.getWhoClicked()),
                     data.getGunConfigurations());
         event.setCancelled(true);

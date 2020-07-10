@@ -95,7 +95,7 @@ public class DamageEvents implements Listener {
                     hitPlayer.setVelocity(knockback);
                 }
 
-                shooterExtension.getPlayerStatistics().addBulletHit();
+                shooterExtension.getPlayerInformation().addBulletHit();
                 shooterExtension.updateGameScoreboard();
             }
         } else if(event.getHitBlock() != null && event.getHitBlock().getType().equals(Material.GLASS_PANE)) {

@@ -3,14 +3,12 @@ package me.noaz.testplugin.gamemodes;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
-import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class FreeForAll extends Game {
@@ -46,7 +44,7 @@ public class FreeForAll extends Game {
     @Override
     public boolean teamHasWon() {
         for(PlayerExtension player : teams[0].getPlayers()) {
-            int kills = player.getPlayerStatistics().getKillsThisGame();
+            int kills = player.getPlayerInformation().getKillsThisGame();
             if(kills >= maxKills) {
                 return true;
             }
@@ -59,7 +57,7 @@ public class FreeForAll extends Game {
         String leaderName = "";
         int leaderKills = 0;
         for(PlayerExtension player : teams[0].getPlayers()) {
-            int kills = player.getPlayerStatistics().getKillsThisGame();
+            int kills = player.getPlayerInformation().getKillsThisGame();
             if(leaderKills < kills) {
                 leaderKills = kills;
                 leaderName = player.getName();
@@ -76,7 +74,7 @@ public class FreeForAll extends Game {
         PlayerExtension leader = null;
         int leaderKills = 0;
         for(PlayerExtension player : teams[0].getPlayers()) {
-            int kills = player.getPlayerStatistics().getKillsThisGame();
+            int kills = player.getPlayerInformation().getKillsThisGame();
             if(leaderKills <= kills) {
                 leaderKills = kills;
                 leader = player;

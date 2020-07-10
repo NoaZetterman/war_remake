@@ -109,8 +109,8 @@ public class LoadoutMenu {
 
         ItemStack[] items = new ItemStack[inventorySize];
 
-        items[10] = createUnlockedWeaponItem(player.getPrimaryGun().getConfiguration());
-        items[11] = createUnlockedWeaponItem(player.getSecondaryGun().getConfiguration());
+        items[10] = createUnlockedWeaponItem(player.getPrimaryGunConfiguration());
+        items[11] = createUnlockedWeaponItem(player.getSecondaryGunConfiguration());
 
         /*
         items[13] = lethal item

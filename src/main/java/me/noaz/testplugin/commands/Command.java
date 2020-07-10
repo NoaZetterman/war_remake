@@ -20,6 +20,7 @@ public class Command {
         new GetMapNames(plugin, data);
         new UpdateCommands(plugin, data, connection);
         new Resource(plugin, data);
+        new Loadout(plugin, data);
 
         plugin.getServer().getPluginCommand("update").setTabCompleter(new TabCompleteForUpdateCommands(data));
         plugin.getServer().getPluginCommand("resource").setTabCompleter(new TabCompleteForResource());

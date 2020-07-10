@@ -156,9 +156,10 @@ public class PlayerExtension {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
             Arrays.fill(actionBarMessage, "");
         } else {
+            primaryGun = createGun(playerInformation.getSelectedPrimaryGun());
+            secondaryGun = createGun(playerInformation.getSelectedSecondaryGun());
+            //Same with perk etc
             DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), primaryGun, secondaryGun, selectedLethal);
-            primaryGun.reset();
-            secondaryGun.reset();
         }
 
         if(hasWeaponInMainHand() && playerInformation.getSelectedResourcepack() == Resourcepack.PACK_3D_DEFAULT) {
@@ -171,6 +172,8 @@ public class PlayerExtension {
         player.setGameMode(GameMode.ADVENTURE);
 
         player.teleport(team.getSpawnPoint());
+
+
     }
 
     /**
@@ -416,7 +419,7 @@ public class PlayerExtension {
     /**
      * @return The statistics object that belongs to this player
      */
-    public PlayerInformation getPlayerStatistics() {
+    public PlayerInformation getPlayerInformation() {
         return playerInformation;
     }
 
@@ -485,15 +488,25 @@ public class PlayerExtension {
     /**
      * @return the primary weapon the player has selected
      */
-    public Gun getPrimaryGun() {
-        return primaryGun;
+    public GunConfiguration getPrimaryGunConfiguration() {
+        for(GunConfiguration gun : gunConfigurations) {
+            if(gun.name.equals(playerInformation.getSelectedPrimaryGun())) {
+                return gun;
+            }
+        }
+        return null;
     }
 
     /**
      * @return the secondary weapon the player has selected
      */
-    public Gun getSecondaryGun() {
-        return secondaryGun;
+    public GunConfiguration getSecondaryGunConfiguration() {
+        for(GunConfiguration gun : gunConfigurations) {
+            if(gun.name.equals(playerInformation.getSelectedSecondaryGun())) {
+                return gun;
+            }
+        }
+        return null;
     }
 
     public Perk getSelectedPerk() {
@@ -526,7 +539,6 @@ public class PlayerExtension {
      * @param gunName The Name of the gun
      */
     public void setSelectedPrimaryGun(String gunName) {
-            primaryGun = createNewGun(gunName);
             playerInformation.setSelectedPrimaryGun(gunName);
     }
 
@@ -536,12 +548,10 @@ public class PlayerExtension {
      * @param gunName The guns GunConfiguration
      */
     public void setSelectedSecondaryGun(String gunName) {
-        secondaryGun = createNewGun(gunName);
         playerInformation.setSelectedSecondaryGun(gunName);
     }
 
     public void setSelectedPerk(Perk perk) {
-        selectedPerk = perk;
         playerInformation.setSelectedPerk(perk);
     }
 
@@ -559,7 +569,7 @@ public class PlayerExtension {
         }
     }
 
-    private Gun createNewGun(String gunName) {
+    private Gun createGun(String gunName) {
         GunConfiguration gunConfigurationForNewGun = null;
         for(GunConfiguration gun : gunConfigurations) {
             if(gun.name.equals(gunName)) {

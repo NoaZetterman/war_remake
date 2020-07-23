@@ -48,7 +48,7 @@ public class DamageEvents implements Listener {
                 double damageDropoffPerTick = (double) event.getEntity().getMetadata("damageDropoffPerTick").get(0).value();
                 int ticksSinceFired = event.getEntity().getTicksLived();
 
-                double damageDropoffStartAfterTick = (double) event.getEntity().getMetadata("damageDropoffStartAfterTick").get(0).value();
+                int damageDropoffStartAfterTick = (int) event.getEntity().getMetadata("damageDropoffStartAfterTick").get(0).value();
 
                 double damageDropoff = damageDropoffPerTick*(ticksSinceFired-damageDropoffStartAfterTick);
 

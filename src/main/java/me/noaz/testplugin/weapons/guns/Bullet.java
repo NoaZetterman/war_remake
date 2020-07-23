@@ -25,7 +25,7 @@ public class Bullet {
      * @param headDamage The damage this bullet should do when it hits the players head
      */
     public Bullet(Player player, TestPlugin plugin, Vector velocity, double bulletSpeed, int range,
-                  double bodyDamage, double headDamage, double damageDropoffPerTick, double damageDropoffStartAfterTick) {
+                  double bodyDamage, double headDamage, double damageDropoffPerTick, int damageDropoffStartAfterTick) {
 
         Entity bullet = player.launchProjectile(Snowball.class);
 

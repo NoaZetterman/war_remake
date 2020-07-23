@@ -25,7 +25,7 @@ public class GunConfiguration {
     public final double bodyDamage;
     public final double headDamage;
     public final double damageDropoffPerTick = 0.1;
-    public final double damageDropoffStartAfterTick = 4;
+    public final int damageDropoffStartAfterTick = 4;
     //public double recoil; //Not added yet
     public final double bulletSpeed;
     public final int range;

@@ -5,6 +5,7 @@ import me.noaz.testplugin.dao.PlayerDao;
 import me.noaz.testplugin.inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
@@ -54,6 +55,7 @@ public class PlayerExtension {
     private Gun secondaryGun;
     private Perk selectedPerk;
     private Grenade selectedLethal;
+    private Killstreak selectedKillstreak;
 
     private String[] actionBarMessage;
     private boolean isDead = false;
@@ -82,16 +84,17 @@ public class PlayerExtension {
         player.teleport(plugin.getServer().getWorld("world").getSpawnLocation());
         DefaultInventories.setDefaultLobbyInventory(player.getInventory());
 
-        selectedPerk = Perk.SCAVENGER;
         setSelectedPrimaryGun(playerInformation.getSelectedPrimaryGun());
         setSelectedSecondaryGun(playerInformation.getSelectedSecondaryGun());
 
+        selectedPerk = playerInformation.getSelectedPerk();
+        selectedKillstreak = playerInformation.getSelectedKillstreak();
         //Get current used guns from database instead
+
+        setSelectedResourcepack(playerInformation.getSelectedResourcepack());
 
         actionBarMessage = new String[9];
         Arrays.fill(actionBarMessage, "");
-
-        setSelectedResourcepack(playerInformation.getSelectedResourcepack());
     }
 
     /**
@@ -200,39 +203,13 @@ public class PlayerExtension {
         }
 
         if(enemyTeam != null) {
-            int killstreak = playerInformation.getKillstreak();
-            switch (killstreak) {
-                case 5:
-                    primaryGun.addBullets(primaryGun.getConfiguration().resupplyAmmo);
-                    secondaryGun.addBullets(secondaryGun.getConfiguration().resupplyAmmo);
-                    break;
-                case 15:
-                    //Launch emp
-                    for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
-                        if(enemyPlayer != this) {
-                            enemyPlayer.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 15, 4));
-                        }
-                    }
-
-                    BroadcastMessage.launchEmp(player.getName());
-                    break;
-                case 21:
-                    BroadcastMessage.launchNuke(player.getName());
-                    for(PlayerExtension enemyPlayer : enemyTeam.getPlayers()) {
-                        if(!enemyPlayer.isDead() && enemyPlayer != this
-                                && !enemyPlayer.getPlayer().hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-                            enemyPlayer.addDeath();
-
-                            ChatMessage.playerNukeKilled(player, enemyPlayer.getPlayer(),
-                                    enemyPlayer.getTeamChatColor());
-                            ChatMessage.playerWasNukeKilled(enemyPlayer.getPlayer(), player, getTeamChatColor());
-                            addKill(Reward.NUKE_KILL);
-                            enemyPlayer.respawn(player);
-
-                        }
-                    }
-                    break;
-
+            int kills = playerInformation.getKillstreak();
+            if(kills == Killstreak.RESUPPLY.getKillAmount()) {
+                Killstreak.RESUPPLY.use(this, team, enemyTeam);
+            } else if(kills == selectedKillstreak.getKillAmount()) {
+                selectedKillstreak.use(this, team, enemyTeam);
+            } else if(kills == Killstreak.NUKE.getKillAmount()) {
+                Killstreak.NUKE.use(this, team, enemyTeam);
             }
         }
     }
@@ -436,6 +413,14 @@ public class PlayerExtension {
         } else {
             return null;
         }
+    }
+
+    public Gun getPrimaryGun() {
+        return primaryGun;
+    }
+
+    public Gun getSecondaryGun() {
+        return secondaryGun;
     }
 
     /**

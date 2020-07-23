@@ -2,6 +2,7 @@ package me.noaz.testplugin.player;
 
 import me.noaz.testplugin.commands.Resource;
 import me.noaz.testplugin.dao.PlayerDao;
+import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.lethals.Grenade;
 import org.bukkit.entity.Player;
@@ -27,11 +28,13 @@ public class PlayerInformation {
     private List<String> ownedPrimaryGuns;
     private List<String> ownedSecondaryGuns;
     private List<Perk> ownedPerks;
+    private List<Killstreak> ownedKillstreaks;
 
     private String selectedPrimaryGun;
     private String selectedSecondaryGun;
     private Perk selectedPerk;
     private Grenade selectedLethal;
+    private Killstreak selectedKillstreak;
 
     private int[] levels;
 
@@ -56,7 +59,8 @@ public class PlayerInformation {
     private int captures = 0;
 
     public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
-                             List<Perk> ownedPerks, String selectedPrimaryGun, String selectedSecondaryGun, Perk selectedPerk,
+                             List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, String selectedPrimaryGun,
+                             String selectedSecondaryGun, Perk selectedPerk, Killstreak selectedKillstreak,
                              Resourcepack selectedResourcepack, Long totalOnlineTimeInSeconds,
                              int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
                              int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills) {
@@ -70,9 +74,12 @@ public class PlayerInformation {
         this.ownedPrimaryGuns = ownedPrimaryGuns;
         this.ownedSecondaryGuns = ownedSecondaryGuns;
         this.ownedPerks = ownedPerks;
+        this.ownedKillstreaks = ownedKillstreaks;
+
         this.selectedPrimaryGun = selectedPrimaryGun;
         this.selectedSecondaryGun = selectedSecondaryGun;
         this.selectedPerk = selectedPerk;
+        this.selectedKillstreak = selectedKillstreak;
 
         this.totalKills = totalKills;
         this.totalDeaths = totalDeaths;
@@ -116,6 +123,10 @@ public class PlayerInformation {
         return ownedPerks.contains(perk);
     }
 
+    public boolean hasKillstreak(Killstreak killstreak) {
+        return ownedKillstreaks.contains(killstreak);
+    }
+
     public List<String> getOwnedPrimaryGuns() {
         return ownedPrimaryGuns;
     }
@@ -126,6 +137,10 @@ public class PlayerInformation {
 
     public List<Perk> getOwnedPerks() {
         return ownedPerks;
+    }
+
+    public List<Killstreak> getOwnedKillstreaks() {
+        return ownedKillstreaks;
     }
 
     public String getSelectedPrimaryGun() {
@@ -142,6 +157,10 @@ public class PlayerInformation {
 
     public Grenade getSelectedLethal() {
         return selectedLethal;
+    }
+
+    public Killstreak getSelectedKillstreak() {
+        return selectedKillstreak;
     }
 
     public Resourcepack getSelectedResourcepack() {
@@ -246,6 +265,10 @@ public class PlayerInformation {
         ownedPerks.add(perk);
     }
 
+    public void addKillstreak(Killstreak killstreak) {
+        ownedKillstreaks.add(killstreak);
+    }
+
 
     public void setSelectedPrimaryGun(String primaryGun) {
         this.selectedPrimaryGun = primaryGun;
@@ -257,6 +280,10 @@ public class PlayerInformation {
 
     public void setSelectedPerk(Perk perk) {
         this.selectedPerk = perk;
+    }
+
+    public void setSelectedKillstreak(Killstreak selectedKillstreak) {
+        this.selectedKillstreak = selectedKillstreak;
     }
 
     public void setSelectedLethal(Grenade lethal) {

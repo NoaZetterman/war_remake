@@ -1,6 +1,7 @@
 package me.noaz.testplugin.dao;
 
 import com.google.gson.*;
+import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.player.Resourcepack;
@@ -16,6 +17,7 @@ public class PlayerDao {
     private static final String jsonPrimaryGunsKey = "primary_guns";
     private static final String jsonSecondaryGunsKey = "secondary_guns";
     private static final String jsonPerksKey = "perks";
+    private static final String jsonKillstreakKey = "killstreaks";
 
     public PlayerDao(Connection connection) {
         PlayerDao.connection = connection;
@@ -30,12 +32,15 @@ public class PlayerDao {
             ownedEquipmentAsJson.add(jsonPerksKey, stringListToJsonArray(playerInformation.getOwnedPerks().stream()
                                     .map(Enum::name)
                                     .collect(Collectors.toList())));
+            ownedEquipmentAsJson.add(jsonKillstreakKey, stringListToJsonArray(playerInformation.getOwnedKillstreaks().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList())));
 
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
                     "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
                     "level=?, credits=?, xp_on_level=?, headshots=?, seconds_online=?, last_online=?, " +
                     "selected_primary=?, selected_secondary=?, " +
-                    "selected_perk=?, selected_resourcepack=?, owned_equipment=? WHERE uuid=?");
+                    "selected_perk=?, selected_killstreak=?, selected_resourcepack=?, owned_equipment=? WHERE uuid=?");
 
             updatePlayerData.setInt(1, playerInformation.getTotalKills());
             updatePlayerData.setInt(2, playerInformation.getTotalDeaths());
@@ -50,9 +55,10 @@ public class PlayerDao {
             updatePlayerData.setString(11, playerInformation.getSelectedPrimaryGun());
             updatePlayerData.setString(12, playerInformation.getSelectedSecondaryGun());
             updatePlayerData.setString(13, playerInformation.getSelectedPerk().name());
-            updatePlayerData.setString(14, playerInformation.getSelectedResourcepack().name());
-            updatePlayerData.setString(15, ownedEquipmentAsJson.toString());
-            updatePlayerData.setString(16, playerInformation.getPlayer().getUniqueId().toString());
+            updatePlayerData.setString(14, playerInformation.getSelectedKillstreak().name());
+            updatePlayerData.setString(15, playerInformation.getSelectedResourcepack().name());
+            updatePlayerData.setString(16, ownedEquipmentAsJson.toString());
+            updatePlayerData.setString(17, playerInformation.getPlayer().getUniqueId().toString());
 
             updatePlayerData.execute();
         } catch (SQLException e) {
@@ -74,6 +80,7 @@ public class PlayerDao {
         String selectedPrimaryGun = "";
         String selectedSecondaryGun = "";
         Perk selectedPerk = Perk.SCAVENGER;
+        Killstreak selectedKillstreak = Killstreak.EMP;
         Resourcepack selectedResourcepack = Resourcepack.PACK_2D_16X16;
         long timePlayedInMinutes = 0;
 
@@ -94,6 +101,7 @@ public class PlayerDao {
                 selectedPrimaryGun = result.getString("selected_primary");
                 selectedSecondaryGun = result.getString("selected_secondary");
                 selectedPerk = Perk.valueOf(result.getString("selected_perk"));
+                selectedKillstreak = Killstreak.valueOf(result.getString("selected_killstreak"));
                 selectedResourcepack = Resourcepack.valueOf(result.getString("selected_resourcepack"));
                 ownedEquipmentAsJson = new JsonParser().parse(result.getString("owned_equipment")).getAsJsonObject();
                 timePlayedInMinutes = result.getInt("seconds_online");
@@ -102,26 +110,37 @@ public class PlayerDao {
             e.printStackTrace();
         }
 
-        List<String> ownedPrimarys = jsonArrayToStringList(ownedEquipmentAsJson.getAsJsonArray(jsonPrimaryGunsKey));
-        List<String> ownedSecondarys = jsonArrayToStringList(ownedEquipmentAsJson.getAsJsonArray(jsonSecondaryGunsKey));
-        List<Perk> ownedPerks = jsonArrayToStringList(ownedEquipmentAsJson.getAsJsonArray(jsonPerksKey)).stream()
+        //Try catch on those and if they flip up then give default stuff
+        List<String> ownedPrimarys = jsonArrayToStringList(ownedEquipmentAsJson, jsonPrimaryGunsKey);
+        List<String> ownedSecondarys = jsonArrayToStringList(ownedEquipmentAsJson, jsonSecondaryGunsKey);
+        List<Perk> ownedPerks = jsonArrayToStringList(ownedEquipmentAsJson, jsonPerksKey).stream()
                 .map(Perk::valueOf)
                 .collect(Collectors.toList());
+        List<Killstreak> ownedKillstreaks = jsonArrayToStringList(ownedEquipmentAsJson, jsonKillstreakKey).stream()
+                .map(Killstreak::valueOf)
+                .collect(Collectors.toList());
 
-        return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, selectedPrimaryGun,
-                selectedSecondaryGun, selectedPerk, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
+        return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, ownedKillstreaks, selectedPrimaryGun,
+                selectedSecondaryGun, selectedPerk, selectedKillstreak, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
                 totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills);
 
     }
 
-    private static List<String> jsonArrayToStringList(JsonArray jsonArray) {
+    private static List<String> jsonArrayToStringList(JsonObject ownedEquipmentAsJson, String jsonKey) {
         List<String> list = new ArrayList<>();
 
-        for(JsonElement element : jsonArray) {
-            list.add(element.getAsJsonPrimitive().getAsString());
+        try {
+            JsonArray jsonArray = ownedEquipmentAsJson.getAsJsonArray(jsonKey);
+
+            for(JsonElement element : jsonArray) {
+                list.add(element.getAsJsonPrimitive().getAsString());
+            }
+        } catch(Exception e) {
+            System.out.println("Json Syntax error when reading player data");
         }
 
         return list;
+
     }
 
     private static JsonArray stringListToJsonArray(List<String> list) {

@@ -442,13 +442,15 @@ public class PlayerExtension {
      * @return true if player has weapon in main hand, false otherwise
      */
     public boolean hasWeaponInMainHand() {
-        return (player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()
+        return (isPlayingGame()
+                && player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()
             || player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterial()
             || player.getInventory().getItemInMainHand().getType() == selectedLethal.getMaterial());
     }
 
     public boolean hasGunInMainHand() {
-        return (player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()
+        return (isPlayingGame()
+                && player.getInventory().getItemInMainHand().getType() == primaryGun.getMaterial()
                 || player.getInventory().getItemInMainHand().getType() == secondaryGun.getMaterial());
     }
 

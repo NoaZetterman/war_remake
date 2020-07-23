@@ -29,10 +29,12 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
-        //TODO: Reduce hitbox size (maybe)
-/*        Location snowballLocation = event.getEntity().getLocation();
+        //Reduce hitbox size (maybe)
+        /*Location snowballLocation = event.getEntity().getLocation();
         Player hitPlayer = (Player)event.getHitEntity();
         hitPlayer.getLocation().getY*/
+
+        //event.getEntity().getTicksLived(); //This works for decrease dmg with range
 
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
             Player hitPlayer = (Player) event.getHitEntity();

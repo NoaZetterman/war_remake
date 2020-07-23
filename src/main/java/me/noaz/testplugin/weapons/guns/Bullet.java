@@ -40,7 +40,7 @@ public class Bullet {
     /**
      * Subclass to bullet for activating gravity after bullet a certain distance (time)
      */
-    private class ActivateGravity implements Runnable {
+    private static class ActivateGravity implements Runnable {
         Entity bullet;
 
         public ActivateGravity(Entity bullet) {

@@ -34,8 +34,6 @@ public class DamageEvents implements Listener {
         Player hitPlayer = (Player)event.getHitEntity();
         hitPlayer.getLocation().getY*/
 
-        //event.getEntity().getTicksLived(); //This works for decrease dmg with range
-
         if(event.getHitEntity() instanceof Player && event.getEntity().getShooter() instanceof Player) {
             Player hitPlayer = (Player) event.getHitEntity();
             Player shooter = (Player) event.getEntity().getShooter();
@@ -46,6 +44,15 @@ public class DamageEvents implements Listener {
 
                 double damage;
                 double eyeToNeckLength = 0.25;
+
+                double damageDropoffPerTick = (double) event.getEntity().getMetadata("damageDropoffPerTick").get(0).value();
+                int ticksSinceFired = event.getEntity().getTicksLived();
+
+                double damageDropoffStartAfterTick = (double) event.getEntity().getMetadata("damageDropoffStartAfterTick").get(0).value();
+
+                double damageDropoff = damageDropoffPerTick*(ticksSinceFired-damageDropoffStartAfterTick);
+
+                damageDropoff = damageDropoff < 0 ? 0 : damageDropoff;
 
                 //Check if bullet was a headshot or not
                 //Maybe not hit when its too far away from body?
@@ -58,6 +65,8 @@ public class DamageEvents implements Listener {
                     damage = (double) event.getEntity().getMetadata("bodyDamage").get(0).value();
                     isHeadshot = false;
                 }
+
+                damage = damage-damageDropoff < 0 ? 0 : damage - damageDropoff;
 
                 double healthLeft = 20.0;
                 if(!hitPlayer.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {

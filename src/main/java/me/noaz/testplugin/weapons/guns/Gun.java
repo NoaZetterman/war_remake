@@ -85,7 +85,7 @@ public abstract class Gun implements Weapon {
 
         for(int i = 0; i < config.bulletsPerClick; i++) {
             new Bullet(player.getPlayer(), plugin, bulletDirection, config.bulletSpeed,
-                    config.range, config.bodyDamage, config.headDamage);
+                    config.range, config.bodyDamage, config.headDamage, config.damageDropoffPerTick, config.damageDropoffStartAfterTick);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
             if(config.gunType != GunType.SHOTGUN) {
                 currentClip--;
@@ -113,7 +113,7 @@ public abstract class Gun implements Weapon {
 
         for(int i = 0; i < config.bulletsPerClick; i++) {
             new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), config.bulletSpeed,
-                    config.range, config.bodyDamage, config.headDamage);
+                    config.range, config.bodyDamage, config.headDamage, config.damageDropoffPerTick, config.damageDropoffStartAfterTick);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
             if(config.gunType != GunType.SHOTGUN) {
                 currentClip--;

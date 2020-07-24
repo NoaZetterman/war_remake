@@ -497,7 +497,11 @@ public class PlayerExtension {
     }
 
     public Perk getSelectedPerk() {
-        return selectedPerk;
+        return playerInformation.getSelectedPerk();
+    }
+
+    public Killstreak getSelectedKillstreak() {
+        return playerInformation.getSelectedKillstreak();
     }
 
     public Grenade getSelectedLethal() {
@@ -538,6 +542,10 @@ public class PlayerExtension {
         playerInformation.setSelectedSecondaryGun(gunName);
     }
 
+    public void setSelectedKillstreak(Killstreak killstreak) {
+        playerInformation.setSelectedKillstreak(killstreak);
+    }
+
     public void setSelectedPerk(Perk perk) {
         playerInformation.setSelectedPerk(perk);
     }
@@ -554,6 +562,12 @@ public class PlayerExtension {
                 }
             }
         }
+    }
+
+    public void buyKillstreak(Killstreak killstreak) {
+            changeCredits(-killstreak.getCostToBuy());
+
+            playerInformation.addKillstreak(killstreak);
     }
 
     private Gun createGun(String gunName) {
@@ -633,6 +647,10 @@ public class PlayerExtension {
 
     public boolean ownsSecondaryGun(String name) {
         return playerInformation.hasSecondary(name);
+    }
+
+    public boolean ownsKillstreak(Killstreak killstreak) {
+        return playerInformation.hasKillstreak(killstreak);
     }
 
     public int getLevel() {

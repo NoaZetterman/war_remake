@@ -24,8 +24,8 @@ public class GunConfiguration {
     public final double accuracyNotScoped;
     public final double bodyDamage;
     public final double headDamage;
-    public final double damageDropoffPerTick = 0.1;
-    public final int damageDropoffStartAfterTick = 4;
+    public final double damageDropoffPerTick;
+    public final int damageDropoffStartAfterTick;
     //public double recoil; //Not added yet
     public final double bulletSpeed;
     public final int range;
@@ -46,13 +46,13 @@ public class GunConfiguration {
     public final int loadoutSlot;
     public final int costToBuy;
 
+    public final int scopeAnimations = 1; //Amount of animations in between normal and fully scoped
+    public final int scavengerAmmunition;
+    public final int maxResupplyAmmunition;
+
     public final Sound fireBulletSound;
     public final Sound fireWhileReloadingSound;
     public final Sound fireWithoutAmmoSound;
-
-    public final int scopeAnimations = 1; //Amount of animations in between normal and fully scoped
-    public final int scavengerAmmo = 10;
-    public final int resupplyAmmo = 50;
 
     /**
      * Configures a weapon
@@ -80,9 +80,10 @@ public class GunConfiguration {
      * @param fireWithoutAmmoSound The sound this gun maks when trying to fire a bullet without any ammo.
      */
     public GunConfiguration(int gunId, String name, String gunMaterial, String gunType, String firemode, double accuracyNotScoped,
-                            double accuracyScoped, double bodyDamage, double headDamage, double bulletSpeed, int range,
+                            double accuracyScoped, double bodyDamage, double headDamage, double damageDropoffPerTick,
+                            int damageDropoffStartAfterTick, double bulletSpeed, int range,
                             int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
-                            int clipSize, int loadoutSlot, int unlockLevel, int costToBuy,
+                            int clipSize, int loadoutSlot, int unlockLevel, int costToBuy, int scavengerAmmunition, int maxResupplyAmmunition,
                             String fireBulletSound, String fireWhileReloadingSound, String fireWithoutAmmoSound) {
         this.gunId = gunId;
         this.name = name;
@@ -93,6 +94,9 @@ public class GunConfiguration {
         this.accuracyScoped = accuracyScoped;
         this.bodyDamage = bodyDamage;
         this.headDamage = headDamage;
+        this.damageDropoffPerTick = damageDropoffPerTick;
+        this.damageDropoffStartAfterTick = damageDropoffStartAfterTick;
+
         this.bulletSpeed = bulletSpeed;
         this.range = range;
         this.reloadTime = convertToTicks(reloadTimeInMs);
@@ -105,10 +109,12 @@ public class GunConfiguration {
         this.unlockLevel = unlockLevel;
         this.costToBuy = costToBuy;
 
+        this.scavengerAmmunition = scavengerAmmunition;
+        this.maxResupplyAmmunition = maxResupplyAmmunition;
+
         this.fireBulletSound = Sound.valueOf(fireBulletSound);
         this.fireWhileReloadingSound = Sound.valueOf(fireWhileReloadingSound);
         this.fireWithoutAmmoSound = Sound.valueOf(fireWithoutAmmoSound);
-
 
         //Do some logic to show it in a more beautiful way
         weaponLore = new ArrayList<>();

@@ -194,8 +194,8 @@ public class PlayerExtension {
         }
 
         if(selectedPerk == Perk.SCAVENGER) {
-            primaryGun.addBullets(primaryGun.getConfiguration().scavengerAmmo);
-            secondaryGun.addBullets(secondaryGun.getConfiguration().scavengerAmmo);
+            primaryGun.addBullets(primaryGun.getConfiguration().scavengerAmmunition);
+            secondaryGun.addBullets(secondaryGun.getConfiguration().scavengerAmmunition);
         }
 
         if(team != null) {

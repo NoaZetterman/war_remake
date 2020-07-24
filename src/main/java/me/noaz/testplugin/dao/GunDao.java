@@ -33,6 +33,8 @@ public class GunDao {
                 float accuracyScoped = result.getFloat("accuracy_scoped");
                 float bodyDamage = result.getFloat("body_damage");
                 float headDamage = result.getFloat("head_damage");
+                float damageDropoffPerTick = result.getFloat("damage_dropoff_per_tick");
+                int damageDropoffStartAfterTick = result.getInt("damage_dropoff_start_after_tick");
                 float bulletSpeed = result.getFloat("bullet_speed");
                 int gunRange = result.getInt("gun_range");
                 int reloadTimeInMs = result.getInt("reload_time_in_ms");
@@ -44,15 +46,18 @@ public class GunDao {
                 int loadoutSlot = result.getInt("loadout_slot");
                 int unlockLevel = result.getInt("unlock_level");
                 int costToBuy = result.getInt("cost_to_buy");
+                int scavengerAmmunition = result.getInt("scavenger_ammunition");
+                int maxResupplyAmmunition = result.getInt("max_resupply_ammunition");
                 String fireBulletSound = result.getString("fire_bullet_sound");
                 String fireWhileReloadingSound = result.getString("fire_while_reloading_sound");
                 String fireWithoutAmmoSound = result.getString("fire_without_ammo_sound");
 
                 gunConfigurations.add(new GunConfiguration(gunId, name, gunMaterial, weaponType,
                         fireType, accuracyNotScoped, accuracyScoped, bodyDamage, headDamage,
+                        damageDropoffPerTick, damageDropoffStartAfterTick,
                         bulletSpeed, gunRange, reloadTimeInMs, burstDelayInMs, bulletsPerBurst,
                         bulletsPerClick, startingBullets, clipSize, loadoutSlot, unlockLevel,
-                        costToBuy, fireBulletSound, fireWhileReloadingSound, fireWithoutAmmoSound));
+                        costToBuy, scavengerAmmunition, maxResupplyAmmunition, fireBulletSound, fireWhileReloadingSound, fireWithoutAmmoSound));
 
 
             }

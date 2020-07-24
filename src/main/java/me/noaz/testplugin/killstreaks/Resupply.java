@@ -10,8 +10,8 @@ public class Resupply implements KillstreakInterface {
         Gun primaryGun = player.getPrimaryGun();
         Gun secondaryGun = player.getSecondaryGun();
 
-        primaryGun.addBullets(primaryGun.getConfiguration().resupplyAmmo);
-        secondaryGun.addBullets(secondaryGun.getConfiguration().resupplyAmmo);
+        primaryGun.addBullets(primaryGun.getConfiguration().maxResupplyAmmunition);
+        secondaryGun.addBullets(secondaryGun.getConfiguration().maxResupplyAmmunition);
 
         //Send message to player?
     }

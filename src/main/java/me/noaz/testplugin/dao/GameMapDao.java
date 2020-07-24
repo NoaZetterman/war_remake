@@ -1,5 +1,8 @@
 package me.noaz.testplugin.dao;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.noaz.testplugin.maps.CustomLocation;
 import me.noaz.testplugin.maps.GameMap;
 import org.bukkit.*;
@@ -14,12 +17,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GameMapDao {
     private static final String pathToNewMaps = "C:/Users/Noa/MinecraftBukkitServer/newMaps";
     private static final String pathToSavedMapsWithSigns = "C:/Users/Noa/MinecraftBukkitServer/mapsWithLocationSigns";
     private static final String pathToPlayableMaps = "C:/Users/Noa/MinecraftBukkitServer/maps";
+
+    private static final String jsonBlueSpawnKey = "bluespawn";
+    private static final String jsonRedSpawnKey = "redspawn";
+    private static final String jsonFreeForAllSpawnKey = "ffaspawn";
+    private static final String jsonRedflagKey = "redflag";
+    private static final String jsonBlueflagKey = "blueflag";
+
     private static Connection connection;
 
     public GameMapDao(Connection connection) {
@@ -43,22 +54,17 @@ public class GameMapDao {
                 boolean hasInfect = existingMaps.getBoolean("has_infect");
                 String mapCreator = existingMaps.getString("creator");
 
-                PreparedStatement getMapLocations = connection.prepareStatement("SELECT * FROM test.map_location " +
-                        "WHERE map_id=?");
-                getMapLocations.setInt(1, id);
+                JsonObject mapLocations = new JsonParser().parse(existingMaps.getString("map_locations")).getAsJsonObject();
 
-                ResultSet mapLocations = getMapLocations.executeQuery();
+                HashMap<String, List<CustomLocation>> locationHashMap = new HashMap<>();
 
-                List<CustomLocation> locations = new ArrayList<>();
+                locationHashMap.put(jsonBlueSpawnKey, JsonUtils.getJsonObjectAsListOfCustomLocations(JsonUtils.getJsonArrayFromKey(mapLocations, jsonBlueSpawnKey)));
+                locationHashMap.put(jsonRedSpawnKey, JsonUtils.getJsonObjectAsListOfCustomLocations(JsonUtils.getJsonArrayFromKey(mapLocations, jsonRedSpawnKey)));
+                locationHashMap.put(jsonFreeForAllSpawnKey, JsonUtils.getJsonObjectAsListOfCustomLocations(JsonUtils.getJsonArrayFromKey(mapLocations, jsonFreeForAllSpawnKey)));
+                locationHashMap.put(jsonRedflagKey, JsonUtils.getJsonObjectAsListOfCustomLocations(JsonUtils.getJsonArrayFromKey(mapLocations, jsonRedflagKey)));
+                locationHashMap.put(jsonBlueflagKey, JsonUtils.getJsonObjectAsListOfCustomLocations(JsonUtils.getJsonArrayFromKey(mapLocations, jsonBlueflagKey)));
 
-                while(mapLocations.next()) {
-                    locations.add(new CustomLocation(mapLocations.getString("location_type"),
-                            mapLocations.getDouble("x_location"),
-                            mapLocations.getDouble("y_location"),
-                            mapLocations.getDouble("z_location")));
-                }
-
-                maps.add(new GameMap(name, locations, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator));
+                maps.add(new GameMap(name, locationHashMap, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator));
 
                 System.out.println("Successfully configured map: " + name);
 
@@ -155,7 +161,21 @@ public class GameMapDao {
 
         gameWorld.setAutoSave(true);
 
-        List<CustomLocation> locations = new ArrayList<>();
+        HashMap<String, List<CustomLocation>> locations = new HashMap<>();
+        locations.put(jsonBlueSpawnKey, new ArrayList<>());
+        locations.put(jsonRedSpawnKey, new ArrayList<>());
+        locations.put(jsonFreeForAllSpawnKey, new ArrayList<>());
+        locations.put(jsonRedflagKey, new ArrayList<>());
+        locations.put(jsonBlueflagKey, new ArrayList<>());
+
+        JsonObject locationss = new JsonObject();
+
+
+        locationss.add(jsonBlueSpawnKey, new JsonArray());
+        locationss.add(jsonRedSpawnKey, new JsonArray());
+        locationss.add(jsonFreeForAllSpawnKey, new JsonArray());
+        locationss.add(jsonRedflagKey, new JsonArray());
+        locationss.add(jsonBlueflagKey, new JsonArray());
 
         boolean hasTdm = false;
         boolean hasCtf = false;
@@ -190,16 +210,16 @@ public class GameMapDao {
                         boolean isConfigSign = true;
 
                         switch (eventualSpawnOrConfig) {
-                            case "bluespawn":
-                            case "redspawn":
+                            case jsonBlueSpawnKey:
+                            case jsonRedSpawnKey:
                                 hasTdm = true;
                                 hasInfect = true;
                                 break;
-                            case "ffaspawn":
+                            case jsonFreeForAllSpawnKey:
                                 hasFfa = true;
                                 break;
-                            case "redflag":
-                            case "blueflag":
+                            case jsonRedflagKey:
+                            case jsonBlueflagKey:
                                 hasCtf = true;
                                 break;
                             default:
@@ -209,62 +229,43 @@ public class GameMapDao {
 
                         if (isConfigSign) {
                             signLocation.getBlock().setType(Material.AIR);
-                            locations.add(new CustomLocation(eventualSpawnOrConfig,
-                                    signLocation.getX(), signLocation.getY(), signLocation.getZ()));
+                            JsonArray location = new JsonArray();
+                            location.add(signLocation.getX());
+                            location.add(signLocation.getY());
+                            location.add(signLocation.getZ());
+
+                            locationss.getAsJsonArray(eventualSpawnOrConfig).add(location);
                         }
                     }
                 }
             }
         }
 
+
+        //Transform locations to pure json (or do so directly? no
+
         try {
             /*
             PreparedStatement createMap = connection.prepareStatement("REPLACE INTO test.map" +
                     "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?)");*/
             PreparedStatement createMap = connection.prepareStatement("INSERT INTO test.map" +
-                    "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?) " +
-                    "ON DUPLICATE KEY UPDATE name=?, has_tdm=?, has_ctf=?, has_ffa=?, has_infect=?");
+                    "(name, has_tdm, has_ctf, has_ffa, has_infect, map_locations) VALUES (?,?,?,?,?,?) " +
+                    "ON DUPLICATE KEY UPDATE name=?, has_tdm=?, has_ctf=?, has_ffa=?, has_infect=?, map_locations=?");
             createMap.setString(1, mapName);
             createMap.setBoolean(2, hasTdm);
             createMap.setBoolean(3, hasCtf);
             createMap.setBoolean(4, hasFfa);
             createMap.setBoolean(5, hasInfect);
+            createMap.setString(6, locationss.toString());
 
-            createMap.setString(6, mapName);
-            createMap.setBoolean(7, hasTdm);
-            createMap.setBoolean(8, hasCtf);
-            createMap.setBoolean(9, hasFfa);
-            createMap.setBoolean(10, hasInfect);
+            createMap.setString(7, mapName);
+            createMap.setBoolean(8, hasTdm);
+            createMap.setBoolean(9, hasCtf);
+            createMap.setBoolean(10, hasFfa);
+            createMap.setBoolean(11, hasInfect);
+            createMap.setString(12, locationss.toString());
             createMap.execute();
 
-            PreparedStatement getMapId = connection.prepareStatement("SELECT id FROM test.map " +
-                    "WHERE name=?");
-
-            getMapId.setString(1, mapName);
-            ResultSet resultId = getMapId.executeQuery();
-            int id = 0;
-
-            while(resultId.next()) {
-                id = resultId.getInt("id");
-            }
-
-            PreparedStatement removePreviousSigns = connection.prepareStatement("DELETE FROM test.map_location " +
-                    "WHERE map_id=?");
-            removePreviousSigns.setInt(1, id);
-            removePreviousSigns.execute();
-
-            for(CustomLocation location : locations) {
-                PreparedStatement insertMapLocation = connection.prepareStatement("INSERT INTO test.map_location" +
-                        "(map_id, location_type, x_location, y_location, z_location) VALUES (?,?,?,?,?)");
-
-                insertMapLocation.setInt(1, id);
-                insertMapLocation.setString(2, location.getLocationType());
-                insertMapLocation.setDouble(3, location.getX());
-                insertMapLocation.setDouble(4, location.getY());
-                insertMapLocation.setDouble(5, location.getZ());
-
-                insertMapLocation.execute();
-            }
         } catch(SQLException e) {
             e.printStackTrace();
         }

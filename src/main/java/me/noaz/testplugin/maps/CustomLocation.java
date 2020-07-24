@@ -10,13 +10,11 @@ import org.bukkit.World;
  * @version 2020-04-26
  */
 public class CustomLocation {
-    private String locationType;
     private double x;
     private double y;
     private double z;
 
-    public CustomLocation(String locationType, double x, double y, double z) {
-        this.locationType = locationType;
+    public CustomLocation(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -28,10 +26,6 @@ public class CustomLocation {
      */
     public Location getLocation(World world) {
         return new Location(world, x, y, z);
-    }
-
-    public String getLocationType() {
-        return locationType;
     }
 
     public double getX() {

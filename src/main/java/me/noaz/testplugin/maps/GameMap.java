@@ -3,12 +3,14 @@ package me.noaz.testplugin.maps;
 import org.bukkit.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 public class GameMap {
     private final String name;
-    private final List<CustomLocation> locations;
+    //private final List<CustomLocation> locations;
+    private final HashMap<String, List<CustomLocation>> locationHashMap;
     private final boolean hasTeamDeathMatch;
     private final boolean hasCaptureTheFlag;
     private final boolean hasFreeForAll;
@@ -18,7 +20,7 @@ public class GameMap {
 
     private World world;
 
-    public GameMap(String name, List<CustomLocation> locations, boolean hasTeamDeathMatch, boolean hasCaptureTheFlag, boolean hasFreeForAll, boolean hasInfect,
+    /*public GameMap(String name, List<CustomLocation> locations, boolean hasTeamDeathMatch, boolean hasCaptureTheFlag, boolean hasFreeForAll, boolean hasInfect,
                    String mapCreators) {
         this.name = name;
         this.locations = locations;
@@ -32,12 +34,29 @@ public class GameMap {
         } else {
             this.mapCreators = mapCreators;
         }
+    }*/
+
+    public GameMap(String name, HashMap<String, List<CustomLocation>> locationHashMap, boolean hasTeamDeathMatch,
+                   boolean hasCaptureTheFlag, boolean hasFreeForAll, boolean hasInfect, String mapCreators) {
+        this.name = name;
+
+        this.locationHashMap = locationHashMap;
+
+        this.hasTeamDeathMatch = hasTeamDeathMatch;
+        this.hasCaptureTheFlag = hasCaptureTheFlag;
+        this.hasFreeForAll = hasFreeForAll;
+        this.hasInfect = hasInfect;
+
+        if(mapCreators == null) {
+            this.mapCreators = "";
+        } else {
+            this.mapCreators = mapCreators;
+        }
     }
 
     public void loadMap() {
-        //TODO: Load the map on a different thread to prevent lagspike
+        //TODO: Load the map on a different thread to prevent lagspike (done?)
         if(world == null) {
-            //Typ?
             /*Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("TestPlugin"), () -> {
                 world = Bukkit.getServer().createWorld(new WorldCreator(name));
                 world.setDifficulty(Difficulty.PEACEFUL);
@@ -116,10 +135,9 @@ public class GameMap {
     public List<Location> getLocationsByName(String pointName) {
         List<Location> spawnpoints = new ArrayList<>();
 
-        for(CustomLocation location: locations) {
-            if(location.getLocationType().equals(pointName)) {
+
+        for(CustomLocation location: locationHashMap.get(pointName)) {
                 spawnpoints.add(location.getLocation(world));
-            }
         }
 
         return spawnpoints;

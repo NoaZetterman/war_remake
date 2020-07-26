@@ -163,7 +163,6 @@ public class PlayerExtension {
         } else {
             activePrimaryGun = createGun(playerInformation.getSelectedPrimaryGun());
             activeSecondaryGun = createGun(playerInformation.getSelectedSecondaryGun());
-            //Same with perk etc
 
             if(activePerk == Perk.LIGHTWEIGHT) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 0, false, false, false));
@@ -210,12 +209,16 @@ public class PlayerExtension {
         }
 
         if(enemyTeam != null) {
-            int kills = playerInformation.getKillstreak();
-            if(kills == Killstreak.RESUPPLY.getKillAmount()) {
+            int killstreak = playerInformation.getKillstreak();
+            if(activePerk == Perk.HARDLINE) {
+                killstreak++;
+            }
+
+            if(killstreak == Killstreak.RESUPPLY.getKillAmount()) {
                 Killstreak.RESUPPLY.use(this, team, enemyTeam);
-            } else if(kills == activeKillstreak.getKillAmount()) {
+            } else if(killstreak == activeKillstreak.getKillAmount()) {
                 activeKillstreak.use(this, team, enemyTeam);
-            } else if(kills == Killstreak.NUKE.getKillAmount()) {
+            } else if(killstreak == Killstreak.NUKE.getKillAmount()) {
                 Killstreak.NUKE.use(this, team, enemyTeam);
             }
         }

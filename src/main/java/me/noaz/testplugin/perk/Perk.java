@@ -6,7 +6,8 @@ public enum Perk {
     SCAVENGER(Material.APPLE, "Gives ammo back on kill", 0, 0, 9),
     SLEIGHT_OF_HAND(Material.APPLE, "Decreases reload time", 0, 0, 10),
     LIGHTWEIGHT(Material.APPLE, "Increases Speed", 0, 0, 11),
-    BANDOILER(Material.APPLE, "Increases spawning ammunition", 0, 0, 12);
+    BANDOILER(Material.APPLE, "Increases spawning ammunition", 0, 0, 12),
+    HARDLINE(Material.APPLE, "Killstreaks given one kill earlier", 0,0,13);
 
     Material material;
     String description;

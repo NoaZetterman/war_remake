@@ -26,9 +26,11 @@ public class LoadoutMenu {
     private final static String loadoutStartScreenTitle = "Loadout Selection";
     private final static String buyGunScreenTitle = "Buy gun";
     private final static String buyKillstreakScreenTitle = "Buy Killstreak";
+    private final static String buyPerkScreenTitle = "Buy Perk";
     private final static String primaryGunScreenTitle = "Select primary";
     private final static String secondaryGunScreenTitle = "Select secondary";
     private final static String selectKillstreakScreen = "Select Killstreak";
+    private final static String selectPerkScreen = "Select Perk";
 
     /**
      * React to a player clicking on a slot in the loadout, select a weapon if a weapon is clicked etc.
@@ -51,6 +53,9 @@ public class LoadoutMenu {
                             break;
                         case 11:
                             GunSelection.displaySecondaryScreen(player, gunConfigurations);
+                            break;
+                        case 16:
+                            PerkSelection.selectPerkScreen(player);
                             break;
                         case 29:
                             KillstreakSelection.selectKillstreakScreen(player);
@@ -101,6 +106,18 @@ public class LoadoutMenu {
                         }
                     }
                     break;
+                case selectPerkScreen:
+                    if(slot == 0) {
+                        loadoutStartScreen(player);
+                    } else {
+                        Perk perk = Perk.valueOf(clickedItemName);
+                        if(player.ownsPerk(perk)) {
+                            player.setSelectedPerk(perk);
+                        } else if(perk.getCostToBuy() <= player.getCredits()) {
+                            PerkSelection.createBuyScreen(player, perk);
+                        }
+                    }
+                    break;
                 case buyGunScreenTitle:
                     if(clickedItemName.equals("Cancel")) {
                         loadoutStartScreen(player);
@@ -118,6 +135,16 @@ public class LoadoutMenu {
                         String killstreak = inventory.getItem(22).getItemMeta().getDisplayName();
 
                         player.buyKillstreak(Killstreak.valueOf(killstreak));
+                        loadoutStartScreen(player);
+                    }
+                    break;
+                case buyPerkScreenTitle:
+                    if(clickedItemName.equals("Cancel")) {
+                        loadoutStartScreen(player);
+                    } else if(clickedItemName.equals("Buy")) {
+                        String perk = inventory.getItem(22).getItemMeta().getDisplayName();
+
+                        player.buyPerk(Perk.valueOf(perk));
                         loadoutStartScreen(player);
                     }
                     break;
@@ -145,7 +172,7 @@ public class LoadoutMenu {
         items[14] = tactical item
         */
 
-        items[16] = PerkSelection.createUnlockedPerk(player.getSelectedPerk());
+        items[16] = PerkSelection.createUnlockedItem(player.getSelectedPerk());
 
 
         //items[28] = first ks
@@ -200,17 +227,15 @@ public class LoadoutMenu {
         meta.setDisplayName("Cancel");
         //TODO: Add some extra explanation
 
-        meta = hideAttributes(meta);
+        hideAttributes(meta);
 
         item.setItemMeta(meta);
         return item;
     }
 
-    private static ItemMeta hideAttributes(ItemMeta meta) {
+    private static void hideAttributes(ItemMeta meta) {
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
-
-        return meta;
     }
 
 
@@ -293,7 +318,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             meta.setCustomModelData(DefaultCustomModelData.DEFAULT_VALUE.getValue());
 
@@ -315,7 +340,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
 
@@ -335,7 +360,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
 
@@ -355,7 +380,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
 
@@ -410,7 +435,7 @@ public class LoadoutMenu {
             meta.setDisplayName(killstreak.toString());
             //TODO: Add some extra explanation
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
             return item;
@@ -429,7 +454,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
 
@@ -449,7 +474,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
 
@@ -469,7 +494,7 @@ public class LoadoutMenu {
             meta.setDisplayName(name);
             meta.setLore(lore);
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
 
@@ -486,22 +511,118 @@ public class LoadoutMenu {
             inventory.setStorageContents(items);
             player.getPlayer().openInventory(inventory);
         }
-
-
     }
 
     private static class PerkSelection {
-        public static ItemStack createUnlockedPerk(Perk perk) {
+        public static void selectPerkScreen(PlayerExtension player) {
+            Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, selectPerkScreen);
+            ItemStack[] items = new ItemStack[inventorySize];
+
+
+            items[0] = new ItemStack(goBackArrow);
+
+            for(Perk perk : Perk.values()) {
+                if(perk.getLoadoutMenuSlot() > 0) {
+                    if (!player.ownsPerk(perk)) {
+                        if (perk.getUnlockLevel() > player.getLevel()) {
+                            items[perk.getLoadoutMenuSlot()] = createLockedItem(perk);
+                        } else if (perk.getCostToBuy() > player.getCredits()) {
+                            items[perk.getLoadoutMenuSlot()] = createLockedVisibleRedItem(perk);
+                        } else {
+                            items[perk.getLoadoutMenuSlot()] = createLockedVisibleGreenItem(perk);
+                        }
+                    } else {
+                        items[perk.getLoadoutMenuSlot()] = createUnlockedItem(perk);
+                    }
+                }
+
+            }
+
+            inventory.setStorageContents(items);
+            player.getPlayer().openInventory(inventory);
+        }
+
+        public static ItemStack createUnlockedItem(Perk perk) {
             ItemStack item = new ItemStack(perk.getMaterial());
             ItemMeta meta = item.getItemMeta();
 
-            meta.setDisplayName("Perk");
-            //TODO: Add some extra explanation
+            meta.setDisplayName(perk.toString());
 
-            meta = hideAttributes(meta);
+            hideAttributes(meta);
 
             item.setItemMeta(meta);
             return item;
+        }
+
+        public static ItemStack createLockedItem(Perk perk) {
+            Material material = Material.BARRIER;
+            String name = perk.toString();
+            List<String> lore = new ArrayList<>();
+            lore.add("Locked");
+            lore.add("Unlock level: " + perk.getUnlockLevel());
+
+            ItemStack item = new ItemStack(material);
+            ItemMeta meta = item.getItemMeta();
+
+            meta.setDisplayName(name);
+            meta.setLore(lore);
+
+            hideAttributes(meta);
+
+            item.setItemMeta(meta);
+
+            return item;
+        }
+
+        public static ItemStack createLockedVisibleGreenItem(Perk perk) {
+            Material material = Material.GREEN_STAINED_GLASS_PANE;
+            String name = perk.toString();
+            List<String> lore = new ArrayList<>();
+            lore.add("Buy by clicking");
+            lore.add("Cost: " + perk.getCostToBuy());
+
+            ItemStack item = new ItemStack(material);
+            ItemMeta meta = item.getItemMeta();
+
+            meta.setDisplayName(name);
+            meta.setLore(lore);
+
+            hideAttributes(meta);
+
+            item.setItemMeta(meta);
+
+            return item;
+        }
+
+        public static ItemStack createLockedVisibleRedItem(Perk perk) {
+            Material material = Material.RED_STAINED_GLASS_PANE;
+            String name = perk.name();
+            List<String> lore = new ArrayList<>();
+            lore.add("Not enough credits to buy");
+            lore.add("Cost: " + perk.getCostToBuy());
+
+            ItemStack item = new ItemStack(material);
+            ItemMeta meta = item.getItemMeta();
+
+            meta.setDisplayName(name);
+            meta.setLore(lore);
+
+            hideAttributes(meta);
+
+            item.setItemMeta(meta);
+
+            return item;
+        }
+
+        private static void createBuyScreen(PlayerExtension player, Perk perkToBuy) {
+            Inventory inventory = Bukkit.getServer().createInventory(null, buyScreenInventorySize, buyPerkScreenTitle);
+
+            ItemStack[] items = LoadoutMenu.createBuyScreenYesNoOptions();
+
+            items[22] = createUnlockedItem(perkToBuy);
+
+            inventory.setStorageContents(items);
+            player.getPlayer().openInventory(inventory);
         }
     }
 }

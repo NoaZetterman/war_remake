@@ -2,6 +2,7 @@ package me.noaz.testplugin.weapons.guns;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.messages.ActionBarMessage;
+import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.weapons.Weapon;
@@ -23,7 +24,7 @@ public abstract class Gun implements Weapon {
     protected TestPlugin plugin;
     protected PlayerExtension player;
     protected PlayerInformation statistics;
-    protected GunConfiguration config;
+    protected GunConfiguration gunConfiguration;
 
     protected int currentClip;
     protected int currentBullets;
@@ -42,17 +43,23 @@ public abstract class Gun implements Weapon {
      * @param plugin this plugin
      * @param player The player that should use this weapon
      * @param statistics That players statistics
-     * @param config The configuration of this weapon
+     * @param gunConfiguration The configuration of this weapon
      */
-    protected Gun(TestPlugin plugin, PlayerExtension player, PlayerInformation statistics, GunConfiguration config) {
+    protected Gun(TestPlugin plugin, PlayerExtension player, PlayerInformation statistics, GunConfiguration gunConfiguration) {
         this.plugin = plugin;
         this.player = player;
         this.statistics = statistics;
-        this.config = config;
-        this.currentClip = config.clipSize;
-        this.currentBullets = config.startingBullets-currentClip;
+        this.gunConfiguration = gunConfiguration;
 
-        inventorySlot = config.gunType == GunType.SECONDARY ? 2 : 1;
+        currentBullets = gunConfiguration.startingBullets;
+        if(player.getActivePerk() == Perk.BANDOILER) {
+            currentBullets *= 2;
+        }
+
+        currentClip = gunConfiguration.clipSize;
+        currentBullets -= currentClip;
+
+        inventorySlot = gunConfiguration.gunType == GunType.SECONDARY ? 2 : 1;
 
 
         //They have to be initialised now to not cause errors
@@ -83,23 +90,23 @@ public abstract class Gun implements Weapon {
     protected void fireBullet(Vector bulletDirection) {
         playFireBulletSound();
 
-        for(int i = 0; i < config.bulletsPerClick; i++) {
-            new Bullet(player.getPlayer(), plugin, bulletDirection, config.bulletSpeed,
-                    config.range, config.bodyDamage, config.headDamage, config.damageDropoffPerTick, config.damageDropoffStartAfterTick);
+        for(int i = 0; i < gunConfiguration.bulletsPerClick; i++) {
+            new Bullet(player.getPlayer(), plugin, bulletDirection, gunConfiguration.bulletSpeed,
+                    gunConfiguration.range, gunConfiguration.bodyDamage, gunConfiguration.headDamage, gunConfiguration.damageDropoffPerTick, gunConfiguration.damageDropoffStartAfterTick);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-            if(config.gunType != GunType.SHOTGUN) {
+            if(gunConfiguration.gunType != GunType.SHOTGUN) {
                 currentClip--;
             }
         }
 
-        if(config.gunType == GunType.SHOTGUN) {
+        if(gunConfiguration.gunType == GunType.SHOTGUN) {
             currentClip--;
         }
 
-        statistics.addBulletsShot(config.bulletsPerClick);
+        statistics.addBulletsShot(gunConfiguration.bulletsPerClick);
         player.updateGameScoreboard();
 
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -109,27 +116,27 @@ public abstract class Gun implements Weapon {
      */
     protected void fireBullet() {
         playFireBulletSound();
-        double accuracy = player.isScoping() ? config.accuracyScoped : config.accuracyNotScoped;
+        double accuracy = player.isScoping() ? gunConfiguration.accuracyScoped : gunConfiguration.accuracyNotScoped;
 
-        for(int i = 0; i < config.bulletsPerClick; i++) {
-            new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), config.bulletSpeed,
-                    config.range, config.bodyDamage, config.headDamage, config.damageDropoffPerTick, config.damageDropoffStartAfterTick);
+        for(int i = 0; i < gunConfiguration.bulletsPerClick; i++) {
+            new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), gunConfiguration.bulletSpeed,
+                    gunConfiguration.range, gunConfiguration.bodyDamage, gunConfiguration.headDamage, gunConfiguration.damageDropoffPerTick, gunConfiguration.damageDropoffStartAfterTick);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-            if(config.gunType != GunType.SHOTGUN) {
+            if(gunConfiguration.gunType != GunType.SHOTGUN) {
                 currentClip--;
             }
         }
 
-        if(config.gunType == GunType.SHOTGUN) {
+        if(gunConfiguration.gunType == GunType.SHOTGUN) {
             currentClip--;
         }
 
-        statistics.addBulletsShot(config.bulletsPerClick);
+        statistics.addBulletsShot(gunConfiguration.bulletsPerClick);
         player.updateGameScoreboard();
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -137,8 +144,10 @@ public abstract class Gun implements Weapon {
      */
     public void reload() {
         justStartedReloading = true;
-        if(!isReloading && currentClip != config.clipSize && currentBullets != 0) {
+        if(!isReloading && currentClip != gunConfiguration.clipSize && currentBullets != 0) {
             isReloading = true;
+
+            final int reloadTime = player.getActivePerk() == Perk.SLEIGHT_OF_HAND ? gunConfiguration.reloadTime/2 : gunConfiguration.reloadTime;
 
             reloadTask = new BukkitRunnable() {
                 int i = 0;
@@ -146,16 +155,16 @@ public abstract class Gun implements Weapon {
                 @Override
                 public void run() {
                     i++;
-                    if (i >= config.reloadTime) {
-                        int bulletsToReload = Math.min(config.clipSize-currentClip, currentBullets);
+                    if (i >= reloadTime) {
+                        int bulletsToReload = Math.min(gunConfiguration.clipSize-currentClip, currentBullets);
                         currentClip += bulletsToReload;
                         currentBullets -= bulletsToReload;
 
                         isReloading = false;
-                        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
+                        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
                         cancel();
                     } else {
-                        ActionBarMessage.reload(config.reloadTime, i, player, inventorySlot);
+                        ActionBarMessage.reload(reloadTime, i, player, inventorySlot);
                     }
 
                 }
@@ -184,7 +193,7 @@ public abstract class Gun implements Weapon {
             @Override
             public void run() {
                 i++;
-                if(i >= config.burstDelay) {
+                if(i >= gunConfiguration.burstDelay) {
                     isNextBulletReady = true;
                     this.cancel();
                 }
@@ -235,7 +244,7 @@ public abstract class Gun implements Weapon {
         velocity.add(orthogonalToVelocityAndPerpendicular.multiply(lengthOrthogonal));
 
         velocity.normalize();
-        velocity.multiply(config.bulletSpeed);
+        velocity.multiply(gunConfiguration.bulletSpeed);
 
         return velocity.clone();
     }
@@ -250,10 +259,10 @@ public abstract class Gun implements Weapon {
             burstDelayTask.cancel();
         isReloading = false;
         isNextBulletReady = true;
-        currentBullets = config.startingBullets - config.clipSize;
-        currentClip = config.clipSize;
+        currentBullets = gunConfiguration.startingBullets - gunConfiguration.clipSize;
+        currentClip = gunConfiguration.clipSize;
 
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -266,20 +275,20 @@ public abstract class Gun implements Weapon {
     }
 
     protected void playFireBulletSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireBulletSound, 1, 1);
+        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.fireBulletSound, 1, 1);
     }
 
     protected void playFireWhileReloadingSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWhileReloadingSound, 1, 1);
+        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.fireWhileReloadingSound, 1, 1);
     }
 
     protected void playFireWithoutAmmoSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), config.fireWithoutAmmoSound, 1, 1);
+        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.fireWithoutAmmoSound, 1, 1);
     }
 
     public void addBullets(int amount) {
         currentBullets += amount;
-        ActionBarMessage.ammunitionCurrentAndTotal(config.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
     }
 
     public boolean justStartedReloading() {
@@ -290,7 +299,7 @@ public abstract class Gun implements Weapon {
      * @return The material type of this weapon
      */
     public Material getMaterial() {
-        return config.gunMaterial;
+        return gunConfiguration.gunMaterial;
     }
 
     public int getInventorySlot() {
@@ -301,23 +310,23 @@ public abstract class Gun implements Weapon {
      * @return The material of this gun as an item stack
      */
     public ItemStack getMaterialAsItemStack() {
-        return new ItemStack(config.gunMaterial);
+        return new ItemStack(gunConfiguration.gunMaterial);
     }
 
     public int getStartingBullets() {
-        return config.startingBullets;
+        return gunConfiguration.startingBullets;
     }
 
     public List<String> getLore() {
-        return config.weaponLore;
+        return gunConfiguration.weaponLore;
     }
 
     public GunConfiguration getConfiguration() {
-        return config;
+        return gunConfiguration;
     }
 
     @Override
     public String toString() {
-        return config.name;
+        return gunConfiguration.name;
     }
 }

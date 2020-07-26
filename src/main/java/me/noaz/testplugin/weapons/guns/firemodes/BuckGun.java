@@ -66,7 +66,7 @@ public class BuckGun extends Gun {
      */
     private class FireAsIfPlayerHoldsRightClick extends BukkitRunnable {
         int i = 0;
-        int bulletsInBurst = config.bulletsPerBurst;
+        int bulletsInBurst = gunConfiguration.bulletsPerBurst;
         int firedBulletsInBurst = 0;
 
         @Override
@@ -96,7 +96,7 @@ public class BuckGun extends Gun {
         }
 
         private void end() {
-            bulletsInBurst = config.bulletsPerBurst;
+            bulletsInBurst = gunConfiguration.bulletsPerBurst;
             isShooting = false;
             this.cancel();
         }

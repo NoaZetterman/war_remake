@@ -1,5 +1,6 @@
 package me.noaz.testplugin.killstreaks;
 
+import me.noaz.testplugin.Buyable;
 import me.noaz.testplugin.gamemodes.misc.Team;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Material;
@@ -46,5 +47,9 @@ public enum Killstreak {
 
     public int getCostToBuy() {
         return 0;
+    }
+
+    public Buyable getAsBuyable() {
+        return new Buyable(name(), name(), getUnlockLevel(), getCostToBuy(), loadoutMenuSlot, material);
     }
 }//Turn into enum with a use method

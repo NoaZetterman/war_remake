@@ -23,9 +23,9 @@ public class BurstGun extends Gun {
     public synchronized void use() {
         if(!isReloading && currentClip != 0 && isNextBulletReady && !isShooting) {
             isShooting = true;
-            int totalBulletsInCurrentBurst = Math.min(currentClip, gunConfiguration.bulletsPerBurst);
+            int totalBulletsInCurrentBurst = Math.min(currentClip, gunConfiguration.getBulletsPerBurst());
 
-            double accuracy = player.isScoping() ? gunConfiguration.accuracyScoped : gunConfiguration.accuracyNotScoped;
+            double accuracy = player.isScoping() ? gunConfiguration.getAccuracyScoped() : gunConfiguration.getAccuracyNotScoped();
             Vector velocity = calculateBulletDirection(accuracy);
 
             BukkitRunnable task = new BukkitRunnable() {

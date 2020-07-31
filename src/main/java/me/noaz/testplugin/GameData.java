@@ -111,7 +111,7 @@ public class GameData {
     public List<String> getGunNames() {
         List<String> gunNames = new ArrayList<>();
         for(GunConfiguration configuration: gunConfigurations) {
-            gunNames.add(configuration.name);
+            gunNames.add(configuration.getDisplayName());
         }
 
         return gunNames;

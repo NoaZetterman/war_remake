@@ -51,15 +51,15 @@ public abstract class Gun implements Weapon {
         this.statistics = statistics;
         this.gunConfiguration = gunConfiguration;
 
-        currentBullets = gunConfiguration.startingBullets;
+        currentBullets = gunConfiguration.getStartingBullets();
         if(player.getActivePerk() == Perk.BANDOILER) {
             currentBullets *= 2;
         }
 
-        currentClip = gunConfiguration.clipSize;
+        currentClip = gunConfiguration.getClipSize();
         currentBullets -= currentClip;
 
-        inventorySlot = gunConfiguration.gunType == GunType.SECONDARY ? 2 : 1;
+        inventorySlot = gunConfiguration.getGunType() == GunType.SECONDARY ? 2 : 1;
 
 
         //They have to be initialised now to not cause errors
@@ -90,23 +90,24 @@ public abstract class Gun implements Weapon {
     protected void fireBullet(Vector bulletDirection) {
         playFireBulletSound();
 
-        for(int i = 0; i < gunConfiguration.bulletsPerClick; i++) {
-            new Bullet(player.getPlayer(), plugin, bulletDirection, gunConfiguration.bulletSpeed,
-                    gunConfiguration.range, gunConfiguration.bodyDamage, gunConfiguration.headDamage, gunConfiguration.damageDropoffPerTick, gunConfiguration.damageDropoffStartAfterTick);
+        for(int i = 0; i < gunConfiguration.getBulletsPerClick(); i++) {
+            new Bullet(player.getPlayer(), plugin, bulletDirection, gunConfiguration.getBulletSpeed(),
+                    gunConfiguration.getRange(), gunConfiguration.getBodyDamage(), gunConfiguration.getHeadDamage(),
+                    gunConfiguration.getDamageDropoffPerTick(), gunConfiguration.getDamageDropoffStartAfterTick());
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-            if(gunConfiguration.gunType != GunType.SHOTGUN) {
+            if(gunConfiguration.getGunType() != GunType.SHOTGUN) {
                 currentClip--;
             }
         }
 
-        if(gunConfiguration.gunType == GunType.SHOTGUN) {
+        if(gunConfiguration.getGunType() == GunType.SHOTGUN) {
             currentClip--;
         }
 
-        statistics.addBulletsShot(gunConfiguration.bulletsPerClick);
+        statistics.addBulletsShot(gunConfiguration.getBulletsPerClick());
         player.updateGameScoreboard();
 
-        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.getDisplayName(), currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -116,27 +117,28 @@ public abstract class Gun implements Weapon {
      */
     protected void fireBullet() {
         playFireBulletSound();
-        double accuracy = player.isScoping() ? gunConfiguration.accuracyScoped : gunConfiguration.accuracyNotScoped;
+        double accuracy = player.isScoping() ? gunConfiguration.getAccuracyScoped() : gunConfiguration.getAccuracyNotScoped();
 
-        for(int i = 0; i < gunConfiguration.bulletsPerClick; i++) {
-            new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), gunConfiguration.bulletSpeed,
-                    gunConfiguration.range, gunConfiguration.bodyDamage, gunConfiguration.headDamage, gunConfiguration.damageDropoffPerTick, gunConfiguration.damageDropoffStartAfterTick);
+        for(int i = 0; i < gunConfiguration.getBulletsPerClick(); i++) {
+            new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), gunConfiguration.getBulletSpeed(),
+                    gunConfiguration.getRange(), gunConfiguration.getBodyDamage(), gunConfiguration.getHeadDamage(),
+                    gunConfiguration.getDamageDropoffPerTick(), gunConfiguration.getDamageDropoffStartAfterTick());
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
-            if(gunConfiguration.gunType != GunType.SHOTGUN) {
+            if(gunConfiguration.getGunType() != GunType.SHOTGUN) {
                 currentClip--;
             }
         }
 
-        if(gunConfiguration.gunType == GunType.SHOTGUN) {
+        if(gunConfiguration.getGunType() == GunType.SHOTGUN) {
             currentClip--;
         }
 
-        statistics.addBulletsShot(gunConfiguration.bulletsPerClick);
+        statistics.addBulletsShot(gunConfiguration.getBulletsPerClick());
         player.updateGameScoreboard();
 
         player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
 
-        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.getDisplayName(), currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -144,10 +146,10 @@ public abstract class Gun implements Weapon {
      */
     public void reload() {
         justStartedReloading = true;
-        if(!isReloading && currentClip != gunConfiguration.clipSize && currentBullets != 0) {
+        if(!isReloading && currentClip != gunConfiguration.getClipSize() && currentBullets != 0) {
             isReloading = true;
 
-            final int reloadTime = player.getActivePerk() == Perk.SLEIGHT_OF_HAND ? gunConfiguration.reloadTime/2 : gunConfiguration.reloadTime;
+            final int reloadTime = player.getActivePerk() == Perk.SLEIGHT_OF_HAND ? gunConfiguration.getReloadTime()/2 : gunConfiguration.getReloadTime();
 
             reloadTask = new BukkitRunnable() {
                 int i = 0;
@@ -156,12 +158,12 @@ public abstract class Gun implements Weapon {
                 public void run() {
                     i++;
                     if (i >= reloadTime) {
-                        int bulletsToReload = Math.min(gunConfiguration.clipSize-currentClip, currentBullets);
+                        int bulletsToReload = Math.min(gunConfiguration.getClipSize()-currentClip, currentBullets);
                         currentClip += bulletsToReload;
                         currentBullets -= bulletsToReload;
 
                         isReloading = false;
-                        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
+                        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.getDisplayName(), currentClip, currentBullets, player, inventorySlot);
                         cancel();
                     } else {
                         ActionBarMessage.reload(reloadTime, i, player, inventorySlot);
@@ -193,7 +195,7 @@ public abstract class Gun implements Weapon {
             @Override
             public void run() {
                 i++;
-                if(i >= gunConfiguration.burstDelay) {
+                if(i >= gunConfiguration.getBurstDelay()) {
                     isNextBulletReady = true;
                     this.cancel();
                 }
@@ -244,7 +246,7 @@ public abstract class Gun implements Weapon {
         velocity.add(orthogonalToVelocityAndPerpendicular.multiply(lengthOrthogonal));
 
         velocity.normalize();
-        velocity.multiply(gunConfiguration.bulletSpeed);
+        velocity.multiply(gunConfiguration.getBulletSpeed());
 
         return velocity.clone();
     }
@@ -259,10 +261,10 @@ public abstract class Gun implements Weapon {
             burstDelayTask.cancel();
         isReloading = false;
         isNextBulletReady = true;
-        currentBullets = gunConfiguration.startingBullets - gunConfiguration.clipSize;
-        currentClip = gunConfiguration.clipSize;
+        currentBullets = gunConfiguration.getStartingBullets() - gunConfiguration.getClipSize();
+        currentClip = gunConfiguration.getClipSize();
 
-        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.getDisplayName(), currentClip, currentBullets, player, inventorySlot);
     }
 
     /**
@@ -275,20 +277,20 @@ public abstract class Gun implements Weapon {
     }
 
     protected void playFireBulletSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.fireBulletSound, 1, 1);
+        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.getFireBulletSound(), 1, 1);
     }
 
     protected void playFireWhileReloadingSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.fireWhileReloadingSound, 1, 1);
+        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.getFireWhileReloadingSound(), 1, 1);
     }
 
     protected void playFireWithoutAmmoSound() {
-        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.fireWithoutAmmoSound, 1, 1);
+        player.getPlayer().getWorld().playSound(player.getLocation(), gunConfiguration.getFireWithoutAmmoSound(), 1, 1);
     }
 
     public void addBullets(int amount) {
         currentBullets += amount;
-        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.name, currentClip, currentBullets, player, inventorySlot);
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.getDisplayName(), currentClip, currentBullets, player, inventorySlot);
     }
 
     public boolean justStartedReloading() {
@@ -299,7 +301,7 @@ public abstract class Gun implements Weapon {
      * @return The material type of this weapon
      */
     public Material getMaterial() {
-        return gunConfiguration.gunMaterial;
+        return gunConfiguration.getMaterial();
     }
 
     public int getInventorySlot() {
@@ -310,15 +312,15 @@ public abstract class Gun implements Weapon {
      * @return The material of this gun as an item stack
      */
     public ItemStack getMaterialAsItemStack() {
-        return new ItemStack(gunConfiguration.gunMaterial);
+        return new ItemStack(gunConfiguration.getMaterial());
     }
 
     public int getStartingBullets() {
-        return gunConfiguration.startingBullets;
+        return gunConfiguration.getStartingBullets();
     }
 
     public List<String> getLore() {
-        return gunConfiguration.weaponLore;
+        return gunConfiguration.getWeaponLore();
     }
 
     public GunConfiguration getConfiguration() {
@@ -327,6 +329,6 @@ public abstract class Gun implements Weapon {
 
     @Override
     public String toString() {
-        return gunConfiguration.name;
+        return gunConfiguration.getDisplayName();
     }
 }

@@ -11,7 +11,7 @@ public class Animation {
 
     public static void scopeAnimation(Player player, Gun gun, int slot, TestPlugin plugin) {
         int modelDataBaseValue = DefaultCustomModelData.SCOPE_START.getValue();
-        int animations = gun.getConfiguration().scopeAnimations;
+        int animations = gun.getConfiguration().getScopeAnimations();
 
         ItemStack item = player.getInventory().getItem(slot);
         ItemMeta meta = item.getItemMeta();
@@ -42,7 +42,7 @@ public class Animation {
 
         if(meta != null) {
             new BukkitRunnable() {
-                int i = gun.getConfiguration().scopeAnimations;
+                int i = gun.getConfiguration().getScopeAnimations();
 
                 @Override
                 public void run() {

@@ -200,8 +200,8 @@ public class PlayerExtension {
         }
 
         if(activePerk == Perk.SCAVENGER) {
-            activePrimaryGun.addBullets(activePrimaryGun.getConfiguration().scavengerAmmunition);
-            activeSecondaryGun.addBullets(activeSecondaryGun.getConfiguration().scavengerAmmunition);
+            activePrimaryGun.addBullets(activePrimaryGun.getConfiguration().getScavengerAmmunition());
+            activeSecondaryGun.addBullets(activeSecondaryGun.getConfiguration().getScavengerAmmunition());
         }
 
         if(team != null) {
@@ -487,7 +487,7 @@ public class PlayerExtension {
      */
     public GunConfiguration getPrimaryGunConfiguration() {
         for(GunConfiguration gun : gunConfigurations) {
-            if(gun.name.equals(playerInformation.getSelectedPrimaryGun())) {
+            if(gun.getDisplayName().equals(playerInformation.getSelectedPrimaryGun())) {
                 return gun;
             }
         }
@@ -499,7 +499,7 @@ public class PlayerExtension {
      */
     public GunConfiguration getSecondaryGunConfiguration() {
         for(GunConfiguration gun : gunConfigurations) {
-            if(gun.name.equals(playerInformation.getSelectedSecondaryGun())) {
+            if(gun.getDisplayName().equals(playerInformation.getSelectedSecondaryGun())) {
                 return gun;
             }
         }
@@ -570,10 +570,10 @@ public class PlayerExtension {
 
     public void buyGun(String gunName, List<GunConfiguration> gunConfigurations) {
         for(GunConfiguration gun: gunConfigurations) {
-            if(gun.name.equals(gunName)) {
-                changeCredits(-gun.costToBuy);
+            if(gun.getDisplayName().equals(gunName)) {
+                changeCredits(-gun.getCostToBuy());
 
-                if(gun.gunType == GunType.SECONDARY) {
+                if(gun.getGunType() == GunType.SECONDARY) {
                     playerInformation.addSecondary(gunName);
                 } else {
                     playerInformation.addPrimary(gunName);
@@ -597,12 +597,12 @@ public class PlayerExtension {
     private Gun createGun(String gunName) {
         GunConfiguration gunConfigurationForNewGun = null;
         for(GunConfiguration gun : gunConfigurations) {
-            if(gun.name.equals(gunName)) {
+            if(gun.getDisplayName().equals(gunName)) {
                 gunConfigurationForNewGun = gun;
             }
         }
 
-        FireType fireType = gunConfigurationForNewGun.fireType;
+        FireType fireType = gunConfigurationForNewGun.getFireType();
 
         Gun gunToChange;
 

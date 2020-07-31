@@ -1,8 +1,8 @@
 package me.noaz.testplugin.inventories;
 
+import me.noaz.testplugin.Buyable;
 import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
-import me.noaz.testplugin.player.DefaultCustomModelData;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.GunType;
@@ -31,6 +31,9 @@ public class LoadoutMenu {
     private final static String secondaryGunScreenTitle = "Select secondary";
     private final static String selectKillstreakScreen = "Select Killstreak";
     private final static String selectPerkScreen = "Select Perk";
+    private final static String cancelOption = "Cancel";
+    private final static String buyOption = "Buy";
+
 
     /**
      * React to a player clicking on a slot in the loadout, select a weapon if a weapon is clicked etc.
@@ -42,7 +45,7 @@ public class LoadoutMenu {
         if(inventory.getViewers().get(0) instanceof Player) {
             String inventoryName = player.getPlayer().getOpenInventory().getTitle();
 
-            String clickedItemName = inventory.getItem(slot).getItemMeta().getDisplayName();
+            String clickedItemName = inventory.getItem(slot).getItemMeta().getLocalizedName();
 
 
             switch(inventoryName) {
@@ -68,10 +71,10 @@ public class LoadoutMenu {
                         loadoutStartScreen(player);
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
-                            if(gun.name.equals(clickedItemName)) {
+                            if(gun.getDisplayName().equals(clickedItemName)) {
                                 if(player.ownsPrimaryGun(clickedItemName)) {
                                     player.setSelectedPrimaryGun(clickedItemName);
-                                } else if(gun.costToBuy <= player.getCredits()) {
+                                } else if(gun.getCostToBuy() <= player.getCredits()) {
                                     GunSelection.createBuyScreen(player, gun);
                                     //Take player to other screen of buying gun
                                 }
@@ -84,10 +87,10 @@ public class LoadoutMenu {
                         loadoutStartScreen(player);
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
-                            if(gun.name.equals(clickedItemName)) {
+                            if(gun.getDisplayName().equals(clickedItemName)) {
                                 if(player.ownsSecondaryGun(clickedItemName)) {
                                     player.setSelectedSecondaryGun(clickedItemName);
-                                } else if(gun.costToBuy <= player.getCredits()) {
+                                } else if(gun.getCostToBuy() <= player.getCredits()) {
                                     GunSelection.createBuyScreen(player, gun);
                                 }
                             }
@@ -119,30 +122,30 @@ public class LoadoutMenu {
                     }
                     break;
                 case buyGunScreenTitle:
-                    if(clickedItemName.equals("Cancel")) {
+                    if(clickedItemName.equals(cancelOption)) {
                         loadoutStartScreen(player);
-                    } else if(clickedItemName.equals("Buy")) {
-                        String gunName = inventory.getItem(22).getItemMeta().getDisplayName();
+                    } else if(clickedItemName.equals(buyOption)) {
+                        String gunName = inventory.getItem(22).getItemMeta().getLocalizedName();
 
                         player.buyGun(gunName, gunConfigurations);
                         loadoutStartScreen(player);
                     }
                     break;
                 case buyKillstreakScreenTitle:
-                    if(clickedItemName.equals("Cancel")) {
+                    if(clickedItemName.equals(cancelOption)) {
                         loadoutStartScreen(player);
-                    } else if(clickedItemName.equals("Buy")) {
-                        String killstreak = inventory.getItem(22).getItemMeta().getDisplayName();
+                    } else if(clickedItemName.equals(buyOption)) {
+                        String killstreak = inventory.getItem(22).getItemMeta().getLocalizedName();
 
                         player.buyKillstreak(Killstreak.valueOf(killstreak));
                         loadoutStartScreen(player);
                     }
                     break;
                 case buyPerkScreenTitle:
-                    if(clickedItemName.equals("Cancel")) {
+                    if(clickedItemName.equals(cancelOption)) {
                         loadoutStartScreen(player);
-                    } else if(clickedItemName.equals("Buy")) {
-                        String perk = inventory.getItem(22).getItemMeta().getDisplayName();
+                    } else if(clickedItemName.equals(buyOption)) {
+                        String perk = inventory.getItem(22).getItemMeta().getLocalizedName();
 
                         player.buyPerk(Perk.valueOf(perk));
                         loadoutStartScreen(player);
@@ -164,19 +167,19 @@ public class LoadoutMenu {
 
         ItemStack[] items = new ItemStack[inventorySize];
 
-        items[10] = GunSelection.createUnlockedItem(player.getPrimaryGunConfiguration());
-        items[11] = GunSelection.createUnlockedItem(player.getSecondaryGunConfiguration());
+        items[10] = BuyableSelection.createUnlockedItem(player.getPrimaryGunConfiguration());
+        items[11] = BuyableSelection.createUnlockedItem(player.getSecondaryGunConfiguration());
 
         /*
         items[13] = lethal item
         items[14] = tactical item
         */
 
-        items[16] = PerkSelection.createUnlockedItem(player.getSelectedPerk());
+        items[16] = BuyableSelection.createUnlockedItem(player.getSelectedPerk().getAsBuyable());
 
 
         //items[28] = first ks
-        items[29] = KillstreakSelection.createUnlockedItem(player.getSelectedKillstreak());
+        items[29] = BuyableSelection.createUnlockedItem(player.getSelectedKillstreak().getAsBuyable());
         //items[30] = third ks (= always nuke so ignore?)
 
         //Some knife stuff?
@@ -211,7 +214,8 @@ public class LoadoutMenu {
         ItemStack item = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName("Buy");
+        meta.setDisplayName(buyOption);
+        meta.setLocalizedName(buyOption);
         //TODO: Add some explanation as to what/how much it costs to buy this
 
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES , ItemFlag.HIDE_DESTROYS);
@@ -224,7 +228,8 @@ public class LoadoutMenu {
         ItemStack item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName("Cancel");
+        meta.setDisplayName(cancelOption);
+        meta.setLocalizedName(cancelOption);
         //TODO: Add some extra explanation
 
         hideAttributes(meta);
@@ -256,17 +261,17 @@ public class LoadoutMenu {
             //Loop through unlocked once and make a list of locked ones?
 
             for(GunConfiguration gun : configurations) {
-                if(gun.gunType != GunType.SECONDARY) {
-                    if (!player.ownsPrimaryGun(gun.name)) {
-                        if(gun.unlockLevel > player.getLevel()) {
-                            items[gun.loadoutSlot] = createLockedItem(gun);
-                        } else if(gun.costToBuy > player.getCredits()) {
-                            items[gun.loadoutSlot] = createLockedVisibleRedItem(gun);
+                if(gun.getGunType() != GunType.SECONDARY) {
+                    if (!player.ownsPrimaryGun(gun.getDisplayName())) {
+                        if(gun.getUnlockLevel() > player.getLevel()) {
+                            items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(gun);
+                        } else if(gun.getCostToBuy() > player.getCredits()) {
+                            items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleRedItem(gun);
                         } else {
-                            items[gun.loadoutSlot] = createLockedVisibleGreenItem(gun);
+                            items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleGreenItem(gun);
                         }
                     } else {
-                        items[gun.loadoutSlot] = createUnlockedItem(gun);
+                        items[gun.getLoadoutMenuSlot()] = BuyableSelection.createUnlockedItem(gun);
                     }
                 }
             }
@@ -288,17 +293,17 @@ public class LoadoutMenu {
             items[0] = new ItemStack(goBackArrow);
 
             for(GunConfiguration gun : configurations) {
-                if(gun.gunType == GunType.SECONDARY) {
-                    if (!player.ownsSecondaryGun(gun.name)) {
-                        if(gun.unlockLevel > player.getLevel()) {
-                            items[gun.loadoutSlot] = createLockedItem(gun);
-                        } else if(gun.costToBuy > player.getCredits()) {
-                            items[gun.loadoutSlot] = createLockedVisibleRedItem(gun);
+                if(gun.getGunType() == GunType.SECONDARY) {
+                    if (!player.ownsSecondaryGun(gun.getDisplayName())) {
+                        if(gun.getUnlockLevel() > player.getLevel()) {
+                            items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(gun);
+                        } else if(gun.getCostToBuy() > player.getCredits()) {
+                            items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleRedItem(gun);
                         } else {
-                            items[gun.loadoutSlot] = createLockedVisibleGreenItem(gun);
+                            items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleGreenItem(gun);
                         }
                     } else {
-                        items[gun.loadoutSlot] = createLockedItem(gun);
+                        items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(gun);
                     }
                 }
             }
@@ -307,95 +312,10 @@ public class LoadoutMenu {
             player.getPlayer().openInventory(inventory);
         }
 
-        private static ItemStack createUnlockedItem(GunConfiguration configuration) {
-            Material material = configuration.gunMaterial;
-            String name = configuration.name;
-            List<String> lore = configuration.weaponLore;
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            meta.setCustomModelData(DefaultCustomModelData.DEFAULT_VALUE.getValue());
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedItem(GunConfiguration configuration) {
-            Material material = Material.BARRIER;
-            String name = configuration.name;
-            List<String> lore = new ArrayList<>();
-            lore.add("Locked");
-            lore.add("Unlock level: " + configuration.unlockLevel);
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedVisibleGreenItem(GunConfiguration configuration) {
-            Material material = Material.GREEN_STAINED_GLASS_PANE;
-            String name = configuration.name;
-            List<String> lore = new ArrayList<>();
-            lore.add("Buy by clicking");
-            lore.add("Cost: " + configuration.costToBuy);
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedVisibleRedItem(GunConfiguration configuration) {
-            Material material = Material.RED_STAINED_GLASS_PANE;
-            String name = configuration.name;
-            List<String> lore = new ArrayList<>();
-            lore.add("Not enough credits to buy");
-            lore.add("Cost: " + configuration.costToBuy);
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
         private static void createBuyScreen(PlayerExtension player, GunConfiguration gunToBuy) {
             Inventory inventory = Bukkit.getServer().createInventory(null, buyScreenInventorySize, buyGunScreenTitle);
 
-            ItemStack[] items = LoadoutMenu.createBuyScreenYesNoOptions();
-
-            items[22] = createUnlockedItem(gunToBuy);
-
-            inventory.setStorageContents(items);
-            player.getPlayer().openInventory(inventory);
+            BuyableSelection.createBuyScreen(player, gunToBuy, inventory);
         }
     }
 
@@ -411,14 +331,14 @@ public class LoadoutMenu {
                 if(killstreak.getLoadoutMenuSlot() > 0) {
                     if (!player.ownsKillstreak(killstreak)) {
                         if (killstreak.getUnlockLevel() > player.getLevel()) {
-                            items[killstreak.getLoadoutMenuSlot()] = createLockedItem(killstreak);
+                            items[killstreak.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(killstreak.getAsBuyable());
                         } else if (killstreak.getCostToBuy() > player.getCredits()) {
-                            items[killstreak.getLoadoutMenuSlot()] = createLockedVisibleRedItem(killstreak);
+                            items[killstreak.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleRedItem(killstreak.getAsBuyable());
                         } else {
-                            items[killstreak.getLoadoutMenuSlot()] = createLockedVisibleGreenItem(killstreak);
+                            items[killstreak.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleGreenItem(killstreak.getAsBuyable());
                         }
                     } else {
-                        items[killstreak.getLoadoutMenuSlot()] = createUnlockedItem(killstreak);
+                        items[killstreak.getLoadoutMenuSlot()] = BuyableSelection.createUnlockedItem(killstreak.getAsBuyable());
                     }
                 }
 
@@ -428,88 +348,10 @@ public class LoadoutMenu {
             player.getPlayer().openInventory(inventory);
         }
 
-        public static ItemStack createUnlockedItem(Killstreak killstreak) {
-            ItemStack item = new ItemStack(killstreak.getMaterial());
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(killstreak.toString());
-            //TODO: Add some extra explanation
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-            return item;
-        }
-
-        public static ItemStack createLockedItem(Killstreak killstreak) {
-            Material material = Material.BARRIER;
-            String name = killstreak.toString();
-            List<String> lore = new ArrayList<>();
-            lore.add("Locked");
-            lore.add("Unlock level: " + killstreak.getUnlockLevel());
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedVisibleGreenItem(Killstreak killstreak) {
-            Material material = Material.GREEN_STAINED_GLASS_PANE;
-            String name = killstreak.toString();
-            List<String> lore = new ArrayList<>();
-            lore.add("Buy by clicking");
-            lore.add("Cost: " + killstreak.getCostToBuy());
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedVisibleRedItem(Killstreak killstreak) {
-            Material material = Material.RED_STAINED_GLASS_PANE;
-            String name = killstreak.name();
-            List<String> lore = new ArrayList<>();
-            lore.add("Not enough credits to buy");
-            lore.add("Cost: " + killstreak.getCostToBuy());
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
         private static void createBuyScreen(PlayerExtension player, Killstreak killstreakToBuy) {
             Inventory inventory = Bukkit.getServer().createInventory(null, buyScreenInventorySize, buyKillstreakScreenTitle);
 
-            ItemStack[] items = LoadoutMenu.createBuyScreenYesNoOptions();
-
-            items[22] = createUnlockedItem(killstreakToBuy);
-
-            inventory.setStorageContents(items);
-            player.getPlayer().openInventory(inventory);
+            BuyableSelection.createBuyScreen(player, killstreakToBuy.getAsBuyable(), inventory);
         }
     }
 
@@ -525,14 +367,14 @@ public class LoadoutMenu {
                 if(perk.getLoadoutMenuSlot() > 0) {
                     if (!player.ownsPerk(perk)) {
                         if (perk.getUnlockLevel() > player.getLevel()) {
-                            items[perk.getLoadoutMenuSlot()] = createLockedItem(perk);
+                            items[perk.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(perk.getAsBuyable());
                         } else if (perk.getCostToBuy() > player.getCredits()) {
-                            items[perk.getLoadoutMenuSlot()] = createLockedVisibleRedItem(perk);
+                            items[perk.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleRedItem(perk.getAsBuyable());
                         } else {
-                            items[perk.getLoadoutMenuSlot()] = createLockedVisibleGreenItem(perk);
+                            items[perk.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleGreenItem(perk.getAsBuyable());
                         }
                     } else {
-                        items[perk.getLoadoutMenuSlot()] = createUnlockedItem(perk);
+                        items[perk.getLoadoutMenuSlot()] = BuyableSelection.createUnlockedItem(perk.getAsBuyable());
                     }
                 }
 
@@ -542,84 +384,94 @@ public class LoadoutMenu {
             player.getPlayer().openInventory(inventory);
         }
 
-        public static ItemStack createUnlockedItem(Perk perk) {
-            ItemStack item = new ItemStack(perk.getMaterial());
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(perk.toString());
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-            return item;
-        }
-
-        public static ItemStack createLockedItem(Perk perk) {
-            Material material = Material.BARRIER;
-            String name = perk.toString();
-            List<String> lore = new ArrayList<>();
-            lore.add("Locked");
-            lore.add("Unlock level: " + perk.getUnlockLevel());
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedVisibleGreenItem(Perk perk) {
-            Material material = Material.GREEN_STAINED_GLASS_PANE;
-            String name = perk.toString();
-            List<String> lore = new ArrayList<>();
-            lore.add("Buy by clicking");
-            lore.add("Cost: " + perk.getCostToBuy());
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
-        public static ItemStack createLockedVisibleRedItem(Perk perk) {
-            Material material = Material.RED_STAINED_GLASS_PANE;
-            String name = perk.name();
-            List<String> lore = new ArrayList<>();
-            lore.add("Not enough credits to buy");
-            lore.add("Cost: " + perk.getCostToBuy());
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-
-            hideAttributes(meta);
-
-            item.setItemMeta(meta);
-
-            return item;
-        }
-
         private static void createBuyScreen(PlayerExtension player, Perk perkToBuy) {
             Inventory inventory = Bukkit.getServer().createInventory(null, buyScreenInventorySize, buyPerkScreenTitle);
 
+            BuyableSelection.createBuyScreen(player, perkToBuy.getAsBuyable(), inventory);
+        }
+    }
+
+    private static class BuyableSelection {
+        public static ItemStack createUnlockedItem(Buyable item) {
+            ItemStack itemStack = new ItemStack(item.getMaterial());
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            itemMeta.setDisplayName(item.getDisplayName());
+            itemMeta.setLocalizedName(item.getName());
+
+            hideAttributes(itemMeta);
+
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }
+
+        public static ItemStack createLockedItem(Buyable item) {
+            Material material = Material.BARRIER;
+            String name = item.getDisplayName();
+            List<String> lore = new ArrayList<>();
+            lore.add("Locked");
+            lore.add("Unlock level: " + item.getUnlockLevel());
+
+            ItemStack itemStack = new ItemStack(material);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            itemMeta.setDisplayName(name);
+            itemMeta.setLocalizedName(item.getName());
+            itemMeta.setLore(lore);
+
+            hideAttributes(itemMeta);
+
+            itemStack.setItemMeta(itemMeta);
+
+            return itemStack;
+        }
+
+        public static ItemStack createLockedVisibleGreenItem(Buyable item) {
+            Material material = Material.GREEN_STAINED_GLASS_PANE;
+            String name = item.getDisplayName();
+            List<String> lore = new ArrayList<>();
+            lore.add("Buy by clicking");
+            lore.add("Cost: " + item.getCostToBuy());
+
+            ItemStack itemStack = new ItemStack(material);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            itemMeta.setDisplayName(name);
+            itemMeta.setLocalizedName(item.getName());
+            itemMeta.setLore(lore);
+
+            hideAttributes(itemMeta);
+
+            itemStack.setItemMeta(itemMeta);
+
+            return itemStack;
+        }
+
+        public static ItemStack createLockedVisibleRedItem(Buyable item) {
+            Material material = Material.RED_STAINED_GLASS_PANE;
+            String name = item.getDisplayName();
+            List<String> lore = new ArrayList<>();
+            lore.add("Not enough credits to buy");
+            lore.add("Cost: " + item.getCostToBuy());
+
+            ItemStack itemStack = new ItemStack(material);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            itemMeta.setDisplayName(name);
+            itemMeta.setLocalizedName(item.getName());
+            itemMeta.setLore(lore);
+
+            hideAttributes(itemMeta);
+
+            itemStack.setItemMeta(itemMeta);
+
+            return itemStack;
+        }
+
+        private static void createBuyScreen(PlayerExtension player, Buyable buyableToBuy, Inventory inventory) {
             ItemStack[] items = LoadoutMenu.createBuyScreenYesNoOptions();
 
-            items[22] = createUnlockedItem(perkToBuy);
+            items[22] = createUnlockedItem(buyableToBuy);
 
             inventory.setStorageContents(items);
             player.getPlayer().openInventory(inventory);

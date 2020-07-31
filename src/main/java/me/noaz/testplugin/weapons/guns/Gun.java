@@ -61,8 +61,9 @@ public abstract class Gun implements Weapon {
 
         inventorySlot = gunConfiguration.getGunType() == GunType.SECONDARY ? 2 : 1;
 
+        ActionBarMessage.ammunitionCurrentAndTotal(gunConfiguration.getDisplayName(), currentClip, currentBullets, player, inventorySlot);
 
-        //They have to be initialised now to not cause errors
+        //They have to be initialised to not cause errors
         reloadTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -270,7 +271,7 @@ public abstract class Gun implements Weapon {
     /**
      * Stops the gun from shooting
      *
-     * Only used for guns that fires fast such as fully automatic.
+     * Only used for guns that fires faster than delay in between clicks, such as fully automatic.
      */
     public void stopShooting() {
         //??

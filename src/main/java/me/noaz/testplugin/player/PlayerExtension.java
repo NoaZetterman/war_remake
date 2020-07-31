@@ -98,7 +98,7 @@ public class PlayerExtension {
     }
 
     /**
-     * Respawn the player in a one spawnpoint belonging to its team.
+     * Respawn the player at a spawnpoint belonging to its team.
      */
     public void respawn(Player killer) {
         isDead = true;
@@ -657,8 +657,12 @@ public class PlayerExtension {
      * Updates the players action bar corresponding to the current held item.
      */
     public void updateActionBar() {
-        int itemSlot = player.getInventory().getHeldItemSlot();
-        TTA_Methods.sendActionBar(player, actionBarMessage[itemSlot]);
+        if(!isDead) {
+            int itemSlot = player.getInventory().getHeldItemSlot();
+            TTA_Methods.sendActionBar(player, actionBarMessage[itemSlot]);
+        } else {
+            TTA_Methods.sendActionBar(player, "");
+        }
     }
 
     public boolean isDead() {

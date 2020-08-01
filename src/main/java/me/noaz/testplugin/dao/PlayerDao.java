@@ -8,7 +8,6 @@ import me.noaz.testplugin.player.Resourcepack;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +66,23 @@ public class PlayerDao {
     }
 
     public static PlayerInformation get(Player player) {
+        boolean exists = false;
+        try {
+            PreparedStatement s = connection.prepareStatement("SELECT EXISTS(SELECT * FROM test.player WHERE uuid=?)");
+            s.setString(1, player.getUniqueId().toString());
+            ResultSet resultSet = s.executeQuery();
+            while(resultSet.next()) {
+                exists = resultSet.getBoolean(1);
+                System.out.println(exists + " " + player.getName());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if(!exists) {
+            add(player);
+        }
+
         int totalKills = 0;
         int totalDeaths = 0;
         int totalFiredBullets = 0;
@@ -87,7 +103,8 @@ public class PlayerDao {
         JsonObject ownedEquipmentAsJson = new JsonObject();
 
         try {
-            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE uuid=\"" + player.getUniqueId() + "\";");
+            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE uuid=?;");
+            getPlayerData.setString(1, player.getUniqueId().toString());
             ResultSet playerDataResultSet = getPlayerData.executeQuery();
             while(playerDataResultSet.next()) {
                 totalKills = playerDataResultSet.getInt("kills");
@@ -126,10 +143,9 @@ public class PlayerDao {
 
     }
 
-    public static void add(Player player) {
-        //Redo
+    private static void add(Player player) {
         try {
-            PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT IGNORE INTO test.player (uuid) VALUES (?)");
+            PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT INTO test.player (uuid) VALUES (?)");
             createPlayerIfNotExist.setString(1, player.getUniqueId().toString());
             createPlayerIfNotExist.execute();
         } catch (SQLException e) {

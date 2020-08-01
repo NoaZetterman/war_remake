@@ -44,8 +44,6 @@ public class LogInOutEvents implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        PlayerDao.add(event.getPlayer());
-
         //Temp
         PlayerListMessage.setFooter(event.getPlayer());
 

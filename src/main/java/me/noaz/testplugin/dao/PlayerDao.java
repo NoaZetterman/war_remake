@@ -36,28 +36,30 @@ public class PlayerDao {
                     .collect(Collectors.toList())));
 
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
-                    "kills=?, deaths=?, bullets_fired=?, bullets_hit=?, " +
-                    "level=?, credits=?, xp_on_level=?, headshots=?, seconds_online=?, last_online=?, " +
+                    "kills=?, deaths=?,  bullets_hit=?, bullets_fired=?, headshots=?," +
+                    "level=?, credits=?, xp_on_level=?, flag_captures=?, free_for_all_wins=?, seconds_online=?, last_online=?, " +
                     "selected_primary=?, selected_secondary=?, " +
                     "selected_perk=?, selected_killstreak=?, selected_resourcepack=?, owned_equipment=? WHERE uuid=?");
 
             updatePlayerData.setInt(1, playerInformation.getTotalKills());
             updatePlayerData.setInt(2, playerInformation.getTotalDeaths());
-            updatePlayerData.setInt(3, playerInformation.getTotalFiredBullets());
-            updatePlayerData.setInt(4, playerInformation.getTotalFiredBulletsThatHitEnemy());
-            updatePlayerData.setInt(5, playerInformation.getLevel());
-            updatePlayerData.setInt(6, playerInformation.getCredits());
-            updatePlayerData.setInt(7, playerInformation.getXpOnCurrentLevel());
-            updatePlayerData.setInt(8, playerInformation.getTotalHeadshotKills());
-            updatePlayerData.setLong(9, playerInformation.getTotalOnlineTimeInSeconds());
-            updatePlayerData.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
-            updatePlayerData.setString(11, playerInformation.getSelectedPrimaryGun());
-            updatePlayerData.setString(12, playerInformation.getSelectedSecondaryGun());
-            updatePlayerData.setString(13, playerInformation.getSelectedPerk().name());
-            updatePlayerData.setString(14, playerInformation.getSelectedKillstreak().name());
-            updatePlayerData.setString(15, playerInformation.getSelectedResourcepack().name());
-            updatePlayerData.setString(16, ownedEquipmentAsJson.toString());
-            updatePlayerData.setString(17, playerInformation.getPlayer().getUniqueId().toString());
+            updatePlayerData.setInt(3, playerInformation.getTotalFiredBulletsThatHitEnemy());
+            updatePlayerData.setInt(4, playerInformation.getTotalFiredBullets());
+            updatePlayerData.setInt(5, playerInformation.getTotalHeadshotKills());
+            updatePlayerData.setInt(6, playerInformation.getLevel());
+            updatePlayerData.setInt(7, playerInformation.getCredits());
+            updatePlayerData.setInt(8, playerInformation.getTotalFlagCaptures());
+            updatePlayerData.setInt(9, playerInformation.getFreeForAllWins());
+            updatePlayerData.setInt(10, playerInformation.getXpOnCurrentLevel());
+            updatePlayerData.setLong(11, playerInformation.getTotalOnlineTimeInSeconds());
+            updatePlayerData.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+            updatePlayerData.setString(13, playerInformation.getSelectedPrimaryGun());
+            updatePlayerData.setString(14, playerInformation.getSelectedSecondaryGun());
+            updatePlayerData.setString(15, playerInformation.getSelectedPerk().name());
+            updatePlayerData.setString(16, playerInformation.getSelectedKillstreak().name());
+            updatePlayerData.setString(17, playerInformation.getSelectedResourcepack().name());
+            updatePlayerData.setString(18, ownedEquipmentAsJson.toString());
+            updatePlayerData.setString(19, playerInformation.getPlayer().getUniqueId().toString());
 
             updatePlayerData.execute();
         } catch (SQLException e) {
@@ -85,12 +87,14 @@ public class PlayerDao {
 
         int totalKills = 0;
         int totalDeaths = 0;
-        int totalFiredBullets = 0;
         int totalFiredBulletsThatHitEnemy = 0;
-        int xpOnCurrentLevel = 0;
+        int totalFiredBullets = 0;
+        int totalHeadshotKills = 0;
         int level = -1;
         int credits = 0;
-        int totalHeadshotKills = 0;
+        int xpOnCurrentLevel = 0;
+        int flagCaptures = 0;
+        int freeForAllWins = 0;
 
 
         String selectedPrimaryGun = "";
@@ -109,12 +113,14 @@ public class PlayerDao {
             while(playerDataResultSet.next()) {
                 totalKills = playerDataResultSet.getInt("kills");
                 totalDeaths = playerDataResultSet.getInt("deaths");
-                totalFiredBullets = playerDataResultSet.getInt("bullets_fired");
                 totalFiredBulletsThatHitEnemy = playerDataResultSet.getInt("bullets_hit");
-                xpOnCurrentLevel = playerDataResultSet.getInt("xp_on_level");
+                totalFiredBullets = playerDataResultSet.getInt("bullets_fired");
+                totalHeadshotKills = playerDataResultSet.getInt("headshots");
                 level = playerDataResultSet.getInt("level");
                 credits = playerDataResultSet.getInt("credits");
-                totalHeadshotKills = playerDataResultSet.getInt("headshots");
+                xpOnCurrentLevel = playerDataResultSet.getInt("xp_on_level");
+                flagCaptures = playerDataResultSet.getInt("flag_captures");
+                freeForAllWins = playerDataResultSet.getInt("free_for_all_wins");
                 selectedPrimaryGun = playerDataResultSet.getString("selected_primary");
                 selectedSecondaryGun = playerDataResultSet.getString("selected_secondary");
                 selectedPerk = Perk.valueOf(playerDataResultSet.getString("selected_perk"));
@@ -139,7 +145,7 @@ public class PlayerDao {
 
         return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, ownedKillstreaks, selectedPrimaryGun,
                 selectedSecondaryGun, selectedPerk, selectedKillstreak, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
-                totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills);
+                totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills, flagCaptures, freeForAllWins);
 
     }
 

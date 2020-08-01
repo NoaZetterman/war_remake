@@ -1,7 +1,5 @@
 package me.noaz.testplugin.player;
 
-import me.noaz.testplugin.commands.Resource;
-import me.noaz.testplugin.dao.PlayerDao;
 import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.lethals.Grenade;
@@ -47,7 +45,8 @@ public class PlayerInformation {
     private int totalFiredBulletsThatHitEnemy;
     private int totalHeadshotKills;
     private int credits;
-    private int totalCaptures;
+    private int totalFlagCaptures;
+    private int freeForAllWins;
 
     private int kills = 0;
     private int deaths = 0;
@@ -56,14 +55,15 @@ public class PlayerInformation {
     private int firedBulletsThatHitEnemy = 0;
     private int creditsThisGame;
     private int xpThisGame;
-    private int captures = 0;
+    private int flagCapturesThisGame = 0;
 
     public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
                              List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, String selectedPrimaryGun,
                              String selectedSecondaryGun, Perk selectedPerk, Killstreak selectedKillstreak,
                              Resourcepack selectedResourcepack, Long totalOnlineTimeInSeconds,
                              int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
-                             int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills) {
+                             int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills,
+                             int totalFlagCaptures, int freeForAllWins) {
         this.player = player;
 
         this.totalOnlineTimeInSeconds = totalOnlineTimeInSeconds;
@@ -89,6 +89,8 @@ public class PlayerInformation {
         this.level = level;
         this.credits = credits;
         this.totalHeadshotKills = totalHeadshotKills;
+        this.freeForAllWins = freeForAllWins;
+        this.totalFlagCaptures = totalFlagCaptures;
 
         //Redo lvls
         levels = new int[] {100, 120, 150, 200, 325, 450, 700, 1000, 1500, 3000, 5000, 8500, 12000, 15000, 20000, 30000,
@@ -195,8 +197,8 @@ public class PlayerInformation {
         return totalHeadshotKills;
     }
 
-    public int getTotalCaptures() {
-        return totalCaptures;
+    public int getTotalFlagCaptures() {
+        return totalFlagCaptures;
     }
 
     /**
@@ -251,6 +253,10 @@ public class PlayerInformation {
 
     public int getXpThisGame() {
         return xpThisGame;
+    }
+
+    public int getFreeForAllWins() {
+        return freeForAllWins;
     }
 
     public void addPrimary(String name) {
@@ -344,7 +350,11 @@ public class PlayerInformation {
     }
 
     public void addCapture() {
-        captures++;
+        flagCapturesThisGame++;
+    }
+
+    public void addFreeForAllWin() {
+        freeForAllWins++;
     }
 
     /**
@@ -379,6 +389,7 @@ public class PlayerInformation {
         totalDeaths += deaths;
         totalFiredBullets += firedBullets;
         totalFiredBulletsThatHitEnemy += firedBulletsThatHitEnemy;
+        totalFlagCaptures += flagCapturesThisGame;
 
         kills = 0;
         deaths = 0;
@@ -387,7 +398,7 @@ public class PlayerInformation {
         firedBulletsThatHitEnemy = 0;
         xpThisGame = 0;
         creditsThisGame = 0;
-        captures = 0;
+        flagCapturesThisGame = 0;
 
         long currentTimeInSeconds = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
         long passedTimeInSeconds = currentTimeInSeconds - lastSavedTimeInSeconds;

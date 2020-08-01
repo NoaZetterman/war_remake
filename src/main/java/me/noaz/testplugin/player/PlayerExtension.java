@@ -295,6 +295,10 @@ public class PlayerExtension {
     }
 
     public void endGame(PlayerExtension winner, int winnerKills) {
+        if(winner == this) {
+            playerInformation.addFreeForAllWin();
+        }
+
         ChatMessage.displayFreeForAllEndGame(winner, winnerKills, player);
         ChatMessage.displayPersonalStats(player, playerInformation.getKillsThisGame(), playerInformation.getDeathsThisGame(),
                 playerInformation.getTotalKills(), playerInformation.getTotalDeaths(), playerInformation.getXpThisGame(), playerInformation.getCreditsThisGame());

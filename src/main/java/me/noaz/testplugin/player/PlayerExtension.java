@@ -29,7 +29,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -71,7 +70,7 @@ public class PlayerExtension {
      * @param player the player this handler belongs to
      */
     public PlayerExtension(TestPlugin plugin, Player player, ScoreManager scoreManager,
-                           List<GunConfiguration> gunConfigurations, Connection connection) {
+                           List<GunConfiguration> gunConfigurations) {
         this.plugin = plugin;
         this.player = player;
         this.scoreManager = scoreManager;
@@ -128,6 +127,7 @@ public class PlayerExtension {
 
         if(killer != null && killer.getGameMode() != GameMode.SPECTATOR) {
             player.setSpectatorTarget(killer);
+            player.setHealth(killer.getHealth());
         }
 
         respawnCountdown = new BukkitRunnable() {

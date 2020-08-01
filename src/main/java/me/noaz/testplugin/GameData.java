@@ -78,8 +78,8 @@ public class GameData {
         return null;
     }
 
-    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager, Connection connection) {
-        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations(), connection));
+    public void addPlayer(TestPlugin plugin, Player player, ScoreManager scoreManager) {
+        playerExtensions.put(player, new PlayerExtension(plugin, player, scoreManager, getGunConfigurations()));
     }
 
     public void removePlayer(Player player) {

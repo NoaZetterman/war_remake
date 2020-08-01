@@ -51,7 +51,7 @@ public class LogInOutEvents implements Listener {
 
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
 
-        data.addPlayer(plugin, event.getPlayer(), scoreManager, connection);
+        data.addPlayer(plugin, event.getPlayer(), scoreManager);
         plugin.getServer().getBossBar(NamespacedKey.minecraft("timer")).addPlayer(event.getPlayer());
     }
 

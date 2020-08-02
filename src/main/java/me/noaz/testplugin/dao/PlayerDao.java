@@ -48,9 +48,9 @@ public class PlayerDao {
             updatePlayerData.setInt(5, playerInformation.getTotalHeadshotKills());
             updatePlayerData.setInt(6, playerInformation.getLevel());
             updatePlayerData.setInt(7, playerInformation.getCredits());
-            updatePlayerData.setInt(8, playerInformation.getTotalFlagCaptures());
-            updatePlayerData.setInt(9, playerInformation.getFreeForAllWins());
-            updatePlayerData.setInt(10, playerInformation.getXpOnCurrentLevel());
+            updatePlayerData.setInt(8, playerInformation.getXpOnCurrentLevel());
+            updatePlayerData.setInt(9, playerInformation.getTotalFlagCaptures());
+            updatePlayerData.setInt(10, playerInformation.getFreeForAllWins());
             updatePlayerData.setLong(11, playerInformation.getTotalOnlineTimeInSeconds());
             updatePlayerData.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
             updatePlayerData.setString(13, playerInformation.getSelectedPrimaryGun());

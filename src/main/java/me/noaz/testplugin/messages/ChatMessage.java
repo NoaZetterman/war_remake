@@ -99,6 +99,23 @@ public class ChatMessage {
         killer.sendMessage(message);
     }
 
+    public static void playerMolotovKilled(Player killer, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.MOLOTOV_KILL.getXp();
+        int credits = Reward.MOLOTOV_KILL.getCredits();
+
+        String message;
+        if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
+            message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
+        } else {
+            message = ChatColor.GRAY + "[+] ";
+        }
+
+        message += "Burned " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$";
+
+        killer.sendMessage(message);
+    }
+
 
 
     //Death messages
@@ -133,6 +150,11 @@ public class ChatMessage {
 
     public static void playerWasGrenadedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
         killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Grenaded by " +
+                killerColor + killer.getName());
+    }
+
+    public static void playerWasBurnedByMolotov(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Burned by " +
                 killerColor + killer.getName());
     }
 

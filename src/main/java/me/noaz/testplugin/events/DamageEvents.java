@@ -164,6 +164,7 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onEntityDamageEntity(EntityDamageByEntityEvent event) {
+        System.out.println("EntityDamageByEntityEvent trigger " + event.getCause());
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
                 Player damagedPlayer = (Player) event.getEntity();
                 Player damager = (Player) event.getDamager();
@@ -178,6 +179,7 @@ public class DamageEvents implements Listener {
                             if (gameLoop.getCurrentGamemode() == Gamemode.INFECT && damagedPlayerExtension.getTeamColor() != Color.GREEN) {
                                 //Put the player on the zombie team if human
                                 event.setCancelled(true);
+
 
                                 ChatMessage.playerWasInfectedDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
                                 ChatMessage.playerInfectedKilled(damager, damagedPlayer, damagedPlayerExtension.getTeamChatColor());
@@ -215,6 +217,22 @@ public class DamageEvents implements Listener {
                                 damagedPlayerExtension.addDeath();
                             }
                             break;
+                        case FIRE:
+                            event.setCancelled(true);
+                            if (damagedPlayer.getHealth() <= event.getDamage()) {
+                                ChatMessage.playerWasBurnedByMolotov(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                                ChatMessage.playerMolotovKilled(damager, damagedPlayer,
+                                        damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+
+                                damagerExtension.addKill(Reward.MOLOTOV_KILL);
+
+                                damagedPlayerExtension.respawn(damager);
+                                damagedPlayerExtension.addDeath();
+                            } else {
+                                damagedPlayer.setHealth(damagedPlayer.getHealth() - event.getDamage());
+                                damagedPlayer.damage(0, damager); //Only for the damage effect
+                            }
+                            break;
                         default:
                             break;
 
@@ -227,9 +245,13 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
+        if(event instanceof EntityDamageByEntityEvent) {
+            System.out.println("Instance of dmgbyentity but is entitydmg event");
+        }
         if(event.getEntity() instanceof Player) {
             Player damagedPlayer = (Player) event.getEntity();
             PlayerExtension damagedPlayerExtension = data.getPlayerExtension(damagedPlayer);
+            System.out.println("EntityDamageEvent triggered " + event.getCause());
 
             switch(event.getCause()) {
                 case VOID:
@@ -248,7 +270,6 @@ public class DamageEvents implements Listener {
 
                     //TODO: Get last damage that wasn't void
                     break;
-                //Add more cases(?)
                 case FALL:
                     if(event.getDamage() > damagedPlayer.getHealth()) {
                         if(damagedPlayerExtension.isPlayingGame()) {
@@ -259,6 +280,10 @@ public class DamageEvents implements Listener {
                         }
                         event.setCancelled(true);
                     }
+                    break;
+                case FIRE:
+                case CUSTOM:
+                    event.setCancelled(true);
                     break;
                 default:
                     break;

@@ -3,6 +3,7 @@ package me.noaz.testplugin.inventories;
 import me.noaz.testplugin.player.DefaultCustomModelData;
 import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.lethals.Grenade;
+import me.noaz.testplugin.weapons.lethals.Lethal;
 import org.bukkit.Material;
 import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
@@ -47,14 +48,14 @@ public class DefaultInventories {
      * @param primaryGun The players primary weapon
      * @param secondaryGun The playrs secondary weapon
      */
-    public static void giveDefaultInGameInventory(PlayerInventory inventory, Color teamColor, Gun primaryGun, Gun secondaryGun, Grenade grenade) {
+    public static void giveDefaultInGameInventory(PlayerInventory inventory, Color teamColor, Gun primaryGun, Gun secondaryGun, Lethal lethal) {
         inventory.clear();
         setArmor(inventory, teamColor);
 
         inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
         inventory.setItem(1, customItem(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
         inventory.setItem(2, customItem(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
-        inventory.setItem(3, customItem(grenade.getMaterialAsItemStack(), "", secondaryGun.getLore()));
+        inventory.setItem(3, customItem(lethal.getMaterialAsItemStack(), "", secondaryGun.getLore()));
     }
 
     /**

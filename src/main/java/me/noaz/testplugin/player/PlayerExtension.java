@@ -22,6 +22,8 @@ import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
 import me.noaz.testplugin.weapons.lethals.Grenade;
+import me.noaz.testplugin.weapons.lethals.Lethal;
+import me.noaz.testplugin.weapons.lethals.Molotov;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -53,7 +55,7 @@ public class PlayerExtension {
     private Gun activePrimaryGun;
     private Gun activeSecondaryGun;
     private Perk activePerk;
-    private Grenade activeLethal;
+    private Lethal activeLethal;
     private Killstreak activeKillstreak;
 
     private String[] actionBarMessage;
@@ -267,7 +269,7 @@ public class PlayerExtension {
         updateGameScoreboard();
 
 
-        activeLethal = new Grenade(plugin, this, map);
+        activeLethal = new Molotov(this, map, plugin);
 
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
@@ -518,7 +520,7 @@ public class PlayerExtension {
         return playerInformation.getSelectedKillstreak();
     }
 
-    public Grenade getActiveLethal() {
+    public Lethal getActiveLethal() {
         return activeLethal;
     }
 

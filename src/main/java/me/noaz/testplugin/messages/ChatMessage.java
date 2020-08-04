@@ -158,6 +158,10 @@ public class ChatMessage {
                 killerColor + killer.getName());
     }
 
+    public static void playerBurnedToDeath(Player killedPlayer) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Burned to death");
+    }
+
     //Capture flag
 
     public static void playerCapturedFlag(Player playerWhoCaptured, ChatColor flagColor) {

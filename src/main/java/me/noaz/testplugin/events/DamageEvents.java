@@ -18,6 +18,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.Objects;
+
 public class DamageEvents implements Listener {
     private GameData data;
     private GameLoop gameLoop;
@@ -59,7 +61,6 @@ public class DamageEvents implements Listener {
                 boolean isHeadshot;
                 if (hitPlayer.getEyeLocation().getY() - eyeToNeckLength <= event.getEntity().getLocation().getY()) {
                     damage = (double) event.getEntity().getMetadata("headDamage").get(0).value();
-                    //Headshot
                     isHeadshot = true;
                 } else {
                     damage = (double) event.getEntity().getMetadata("bodyDamage").get(0).value();
@@ -108,6 +109,7 @@ public class DamageEvents implements Listener {
 
                 shooterExtension.getPlayerInformation().addBulletHit();
                 shooterExtension.updateGameScoreboard();
+                hitPlayerExtension.setLastDamager(shooterExtension);
             }
         } else if(event.getHitBlock() != null && event.getHitBlock().getType().equals(Material.GLASS_PANE)) {
             event.getHitBlock().setType(Material.AIR);
@@ -164,7 +166,6 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onEntityDamageEntity(EntityDamageByEntityEvent event) {
-        System.out.println("EntityDamageByEntityEvent trigger " + event.getCause());
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
                 Player damagedPlayer = (Player) event.getEntity();
                 Player damager = (Player) event.getDamager();
@@ -172,6 +173,9 @@ public class DamageEvents implements Listener {
                 PlayerExtension damagerExtension = data.getPlayerExtension(damager);
 
                 if (gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerExtension)) {
+                    if(event.getCause() == EntityDamageEvent.DamageCause.FIRE) {
+                        damagedPlayerExtension.setLastDamager(null);
+                    }
                     event.setCancelled(true);
                 } else {
                     switch (event.getCause()) {
@@ -228,9 +232,11 @@ public class DamageEvents implements Listener {
 
                                 damagedPlayerExtension.respawn(damager);
                                 damagedPlayerExtension.addDeath();
+                                damagedPlayerExtension.setLastDamager(damagerExtension);
                             } else {
                                 damagedPlayer.setHealth(damagedPlayer.getHealth() - event.getDamage());
                                 damagedPlayer.damage(0, damager); //Only for the damage effect
+                                damagedPlayerExtension.setLastDamager(damagerExtension);
                             }
                             break;
                         default:
@@ -245,14 +251,10 @@ public class DamageEvents implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if(event instanceof EntityDamageByEntityEvent) {
-            System.out.println("Instance of dmgbyentity but is entitydmg event");
-        }
         if(event.getEntity() instanceof Player) {
             Player damagedPlayer = (Player) event.getEntity();
             PlayerExtension damagedPlayerExtension = data.getPlayerExtension(damagedPlayer);
-            System.out.println("EntityDamageEvent triggered " + event.getCause());
-
+            PlayerExtension damagerPlayerExtension = damagedPlayerExtension.getLastDamager();
             switch(event.getCause()) {
                 case VOID:
                     if(!damagedPlayerExtension.isDead()) {
@@ -267,8 +269,6 @@ public class DamageEvents implements Listener {
 
                     event.setCancelled(true);
 
-
-                    //TODO: Get last damage that wasn't void
                     break;
                 case FALL:
                     if(event.getDamage() > damagedPlayer.getHealth()) {
@@ -284,6 +284,38 @@ public class DamageEvents implements Listener {
                 case FIRE:
                 case CUSTOM:
                     event.setCancelled(true);
+                    break;
+                case FIRE_TICK:
+                    System.out.println("LAst dmg cause: (Maybe pre this?)" + Objects.requireNonNull(damagedPlayer.getLastDamageCause()).getCause());
+                    System.out.println("Damager: " + damagerPlayerExtension);
+                    if(damagerPlayerExtension != null &&
+                            !gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerPlayerExtension)) {
+                        event.setDamage(event.getDamage() * 2);
+                        if(event.getDamage()*2 > damagedPlayer.getHealth()) {
+                            if (damagedPlayerExtension.isPlayingGame()) {
+                                damagedPlayer.setFireTicks(0);
+                                event.setCancelled(true);
+
+                                if(damagedPlayerExtension != damagerPlayerExtension) {
+                                    damagerPlayerExtension.addKill(Reward.MOLOTOV_KILL);
+
+                                    ChatMessage.playerWasBurnedByMolotov(damagedPlayer, damagerPlayerExtension.getPlayer(),
+                                            damagerPlayerExtension.getTeamChatColor());
+                                    ChatMessage.playerMolotovKilled(damagerPlayerExtension.getPlayer(), damagedPlayer,
+                                            damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                                } else {
+                                    ChatMessage.playerBurnedToDeath(damagedPlayer);
+                                }
+
+
+                                damagedPlayerExtension.addDeath();
+                                damagedPlayerExtension.respawn(damagedPlayerExtension.getLastDamager().getPlayer());
+                            }
+                        }
+                    } else {
+                        damagedPlayer.setFireTicks(0);
+                        event.setCancelled(true);
+                    }
                     break;
                 default:
                     break;

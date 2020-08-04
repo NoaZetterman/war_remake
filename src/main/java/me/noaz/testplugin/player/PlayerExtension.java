@@ -60,6 +60,7 @@ public class PlayerExtension {
 
     private String[] actionBarMessage;
     private boolean isDead = false;
+    private PlayerExtension lastDamager = null;
 
     private BukkitRunnable respawnCountdown;
 
@@ -721,5 +722,13 @@ public class PlayerExtension {
 
     private void updateLobbyScoreboard() {
         scoreManager.giveLobbyScoreboard(player.getUniqueId(), playerInformation);
+    }
+
+    public PlayerExtension getLastDamager() {
+        return lastDamager;
+    }
+
+    public void setLastDamager(PlayerExtension lastDamager) {
+        this.lastDamager = lastDamager;
     }
 }

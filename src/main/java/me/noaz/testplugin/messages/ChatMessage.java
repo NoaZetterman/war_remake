@@ -116,6 +116,23 @@ public class ChatMessage {
         killer.sendMessage(message);
     }
 
+    public static void playerTomahawkKilled(Player killer, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.TOMAHAWK_KILL.getXp();
+        int credits = Reward.TOMAHAWK_KILL.getCredits();
+
+        String message;
+        if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
+            message = ChatColor.GRAY + "[" + ChatColor.GOLD + "+" + ChatColor.GRAY + "] ";
+        } else {
+            message = ChatColor.GRAY + "[+] ";
+        }
+
+        message += "Tomahawked " +
+                killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$";
+
+        killer.sendMessage(message);
+    }
+
 
 
     //Death messages
@@ -155,6 +172,11 @@ public class ChatMessage {
 
     public static void playerWasBurnedByMolotov(Player killedPlayer, Player killer, ChatColor killerColor) {
         killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Burned by " +
+                killerColor + killer.getName());
+    }
+
+    public static void playerWasTomahawkKilled(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Tomahawked by " +
                 killerColor + killer.getName());
     }
 

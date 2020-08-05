@@ -5,6 +5,7 @@ import me.noaz.testplugin.messages.ActionBarMessage;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerInformation;
+import me.noaz.testplugin.weapons.CustomDamageType;
 import me.noaz.testplugin.weapons.Weapon;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -94,7 +95,8 @@ public abstract class Gun implements Weapon {
         for(int i = 0; i < gunConfiguration.getBulletsPerClick(); i++) {
             new Bullet(player.getPlayer(), plugin, bulletDirection, gunConfiguration.getBulletSpeed(),
                     gunConfiguration.getRange(), gunConfiguration.getBodyDamage(), gunConfiguration.getHeadDamage(),
-                    gunConfiguration.getDamageDropoffPerTick(), gunConfiguration.getDamageDropoffStartAfterTick());
+                    gunConfiguration.getDamageDropoffPerTick(), gunConfiguration.getDamageDropoffStartAfterTick(), false,
+                    CustomDamageType.GUN);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
             if(gunConfiguration.getGunType() != GunType.SHOTGUN) {
                 currentClip--;
@@ -123,7 +125,8 @@ public abstract class Gun implements Weapon {
         for(int i = 0; i < gunConfiguration.getBulletsPerClick(); i++) {
             new Bullet(player.getPlayer(), plugin, calculateBulletDirection(accuracy), gunConfiguration.getBulletSpeed(),
                     gunConfiguration.getRange(), gunConfiguration.getBodyDamage(), gunConfiguration.getHeadDamage(),
-                    gunConfiguration.getDamageDropoffPerTick(), gunConfiguration.getDamageDropoffStartAfterTick());
+                    gunConfiguration.getDamageDropoffPerTick(), gunConfiguration.getDamageDropoffStartAfterTick(), false,
+                    CustomDamageType.GUN);
             player.getPlayer().setVelocity(player.getLocation().getDirection().multiply(-0.08).setY(-0.1));
             if(gunConfiguration.getGunType() != GunType.SHOTGUN) {
                 currentClip--;

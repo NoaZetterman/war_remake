@@ -24,6 +24,7 @@ import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
 import me.noaz.testplugin.weapons.lethals.Grenade;
 import me.noaz.testplugin.weapons.lethals.Lethal;
 import me.noaz.testplugin.weapons.lethals.Molotov;
+import me.noaz.testplugin.weapons.lethals.Tomahawk;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -270,7 +271,7 @@ public class PlayerExtension {
         updateGameScoreboard();
 
 
-        activeLethal = new Molotov(this, map, plugin);
+        activeLethal = new Tomahawk(this, map, plugin);
 
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff

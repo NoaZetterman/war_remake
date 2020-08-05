@@ -8,7 +8,8 @@ public enum Reward {
     ZOMBIE_KILL_HUMAN(25, 1),
     NUKE_KILL(25,1),
     GRENADE_KILL(45, 3),
-    MOLOTOV_KILL(50, 4);
+    MOLOTOV_KILL(50, 4),
+    TOMAHAWK_KILL(50,3);
 
     private int xp;
     private int credits;

@@ -22,11 +22,12 @@ public abstract class ThrowableItem implements Weapon {
     protected final int itemSlot;
     protected final int amount;
     protected final int cooldownTimeInTicks;
+    protected final int damageOnImpact;
 
     protected boolean hasCooldown = false;
 
     public ThrowableItem(PlayerExtension playerExtension, GameMap map, TestPlugin plugin, Material material,
-                         float range, float throwingSpeed, int itemSlot, int amount, int cooldownTimeInTicks) {
+                         float range, float throwingSpeed, int itemSlot, int amount, int cooldownTimeInTicks, int damageOnImpact) {
         this.playerExtension = playerExtension;
         this.map = map;
         this.plugin = plugin;
@@ -36,6 +37,7 @@ public abstract class ThrowableItem implements Weapon {
         this.itemSlot = itemSlot;
         this.amount = amount;
         this.cooldownTimeInTicks = cooldownTimeInTicks;
+        this.damageOnImpact = damageOnImpact;
     }
 
     public void use() {
@@ -43,7 +45,7 @@ public abstract class ThrowableItem implements Weapon {
             Vector velocity = playerExtension.getPlayer().getLocation().getDirection();
 
             velocity.normalize().multiply(throwingSpeed);
-            ItemStack stack = playerExtension.getPlayer().getInventory().getItem(3);
+            ItemStack stack = playerExtension.getPlayer().getInventory().getItem(itemSlot);
             if (stack.getAmount() == 1) {
                 playerExtension.getPlayer().getInventory().setItem(itemSlot, null);
             } else {
@@ -53,7 +55,7 @@ public abstract class ThrowableItem implements Weapon {
 
             item.setPickupDelay(10000000);
             item.setVelocity(velocity);
-            item.setMetadata("damage", new FixedMetadataValue(plugin, 30));
+            item.setMetadata("damage", new FixedMetadataValue(plugin, 0));
 
             startCooldown();
 

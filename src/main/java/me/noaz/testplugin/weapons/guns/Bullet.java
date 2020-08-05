@@ -1,6 +1,7 @@
 package me.noaz.testplugin.weapons.guns;
 
 import me.noaz.testplugin.TestPlugin;
+import me.noaz.testplugin.weapons.CustomDamageType;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -25,19 +26,37 @@ public class Bullet {
      * @param headDamage The damage this bullet should do when it hits the players head
      */
     public Bullet(Player player, TestPlugin plugin, Vector velocity, double bulletSpeed, int range,
-                  double bodyDamage, double headDamage, double damageDropoffPerTick, int damageDropoffStartAfterTick) {
+                  double bodyDamage, double headDamage, double damageDropoffPerTick, int damageDropoffStartAfterTick,
+                  boolean hasGravity, CustomDamageType customDamageType) {
 
         Entity bullet = player.launchProjectile(Snowball.class);
 
-        bullet.setGravity(false);
+        bullet.setGravity(hasGravity);
         bullet.setVelocity(velocity);
 
         bullet.setMetadata("bodyDamage", new FixedMetadataValue(plugin, bodyDamage));
         bullet.setMetadata("headDamage", new FixedMetadataValue(plugin, headDamage));
         bullet.setMetadata("damageDropoffPerTick", new FixedMetadataValue(plugin, damageDropoffPerTick));
         bullet.setMetadata("damageDropoffStartAfterTick", new FixedMetadataValue(plugin, damageDropoffStartAfterTick));
+        bullet.setMetadata("damageType", new FixedMetadataValue(plugin, customDamageType));
 
         Bukkit.getServer().getScheduler().runTaskLater(plugin, new ActivateGravity(bullet), (int) Math.ceil(range/bulletSpeed)); //Delay = range with respect to speed (time=dist/speed)
+    }
+
+    public Bullet(Player player, TestPlugin plugin, Vector velocity,
+                  double bodyDamage, double headDamage, double damageDropoffPerTick, int damageDropoffStartAfterTick,
+                  CustomDamageType customDamageType) {
+
+        Entity bullet = player.launchProjectile(Snowball.class);
+
+        bullet.setGravity(true);
+        bullet.setVelocity(velocity);
+
+        bullet.setMetadata("bodyDamage", new FixedMetadataValue(plugin, bodyDamage));
+        bullet.setMetadata("headDamage", new FixedMetadataValue(plugin, headDamage));
+        bullet.setMetadata("damageDropoffPerTick", new FixedMetadataValue(plugin, damageDropoffPerTick));
+        bullet.setMetadata("damageDropoffStartAfterTick", new FixedMetadataValue(plugin, damageDropoffStartAfterTick));
+        bullet.setMetadata("damageType", new FixedMetadataValue(plugin, customDamageType));
     }
 
     /**

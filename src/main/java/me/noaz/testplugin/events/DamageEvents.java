@@ -6,6 +6,7 @@ import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.ChatMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.Reward;
+import me.noaz.testplugin.weapons.CustomDamageType;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -44,6 +45,8 @@ public class DamageEvents implements Listener {
 
             if(!gameLoop.getCurrentGame().playersOnSameTeam(hitPlayerExtension, shooterExtension) && hitPlayer.getHealth() != 0) {
 
+                CustomDamageType customDamageType = (CustomDamageType) event.getEntity().getMetadata("damageType").get(0).value();
+
                 double damage;
                 double eyeToNeckLength = 0.25;
 
@@ -77,20 +80,28 @@ public class DamageEvents implements Listener {
                 if(healthLeft <= 0) {
                     hitPlayerExtension.addDeath();
                     hitPlayerExtension.respawn(shooter);
+                    switch (customDamageType) {
+                        case GUN:
+                            if (isHeadshot) {
+                                ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                                ChatMessage.playerHeadshotKilled(shooter, hitPlayer,
+                                        hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                                shooterExtension.addKill(Reward.HEADSHOT_KILL);
+                            } else{
+                                ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                                ChatMessage.playerShotKilled(shooter, hitPlayer,
+                                        hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                    if(isHeadshot) {
-                        ChatMessage.playerWasHeadshotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
-                        ChatMessage.playerHeadshotKilled(shooter, hitPlayer,
-                                hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                                shooterExtension.addKill(Reward.BODYSHOT_KILL);
+                            }
+                            break;
+                        case TOMAHAWK:
+                            shooterExtension.addKill(Reward.TOMAHAWK_KILL);
+                            ChatMessage.playerWasTomahawkKilled(hitPlayer, shooter, shooterExtension.getTeamChatColor());
+                            ChatMessage.playerTomahawkKilled(shooter, hitPlayer,
+                                    hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
+                }
 
-                        shooterExtension.addKill(Reward.HEADSHOT_KILL);
-                    } else {
-                        ChatMessage.playerWasShotToDeath(hitPlayer, shooter, shooterExtension.getTeamChatColor());
-                        ChatMessage.playerShotKilled(shooter, hitPlayer,
-                                hitPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
-
-                        shooterExtension.addKill(Reward.BODYSHOT_KILL);
-                    }
 
                     //Print death messages before adding the kills to print
                     //eventual killstreaks after player gets killed,
@@ -98,7 +109,7 @@ public class DamageEvents implements Listener {
 
                 } else {
 
-                    hitPlayer.damage(0.1, shooter); //To get the damage animation and correct player hit
+                    hitPlayer.damage(0, shooter); //To get the damage animation and correct player hit
 
                     hitPlayer.setHealth(healthLeft);
 
@@ -107,7 +118,9 @@ public class DamageEvents implements Listener {
                     hitPlayer.setVelocity(knockback);
                 }
 
-                shooterExtension.getPlayerInformation().addBulletHit();
+                if(customDamageType == CustomDamageType.GUN) {
+                    shooterExtension.getPlayerInformation().addBulletHit();
+                }
                 shooterExtension.updateGameScoreboard();
                 hitPlayerExtension.setLastDamager(shooterExtension);
             }

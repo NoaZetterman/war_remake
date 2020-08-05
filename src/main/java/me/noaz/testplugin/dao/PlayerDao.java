@@ -75,7 +75,6 @@ public class PlayerDao {
             ResultSet resultSet = s.executeQuery();
             while(resultSet.next()) {
                 exists = resultSet.getBoolean(1);
-                System.out.println(exists + " " + player.getName());
             }
         } catch (SQLException e) {
             e.printStackTrace();

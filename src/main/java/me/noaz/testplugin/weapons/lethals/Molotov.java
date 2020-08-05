@@ -37,14 +37,16 @@ public class Molotov extends ThrowableItem implements Lethal {
             public void run() {
                 i++;
 
-                if(i < 200) {
-                    map.getWorld().spawnParticle(Particle.FLAME, itemLocation, 40, 2, 0.30, 2, 0);
+                if(i < 1000) {
+                    map.getWorld().spawnParticle(Particle.FLAME, itemLocation.clone().add(0,0.15,0), 25, 1, 0.20, 1, 0);
 
-                    Collection<Entity> nearbyEntities = map.getWorld().getNearbyEntities(itemLocation, 2.5, 1, 2.5);
-                    for(Entity entity : nearbyEntities) {
-                        if(entity instanceof Player && !playersAlreadyInFire.contains(entity)) {
+                    Collection<Entity> entitiesInWorld = map.getWorld().getEntities();;
+                    for(Entity entity : entitiesInWorld) {
+                        if(entity instanceof Player && !playersAlreadyInFire.contains(entity)
+                                && ((Player) entity).getGameMode() != GameMode.SPECTATOR &&
+                                isInDamagingRange((Player)entity, itemLocation)) {
+
                             Player player = (Player) entity;
-
                             playersAlreadyInFire.add(player);
                             damagePlayer(player, itemLocation);
                         }
@@ -80,13 +82,14 @@ public class Molotov extends ThrowableItem implements Lethal {
 
             @Override
             public void run() {
-                if(player.getGameMode() == GameMode.SPECTATOR) {
+                if(player.getGameMode() == GameMode.SPECTATOR ||
+                        !isInDamagingRange(player, molotovCenter)) {
                     playersAlreadyInFire.remove(player);
-                    this.cancel();
-                    //Possibly just x/z plane?
-                } else if(molotovCenter.distance(player.getLocation()) > 3) {
-                    player.setFireTicks(100);
-                    playersAlreadyInFire.remove(player);
+                    if(i != 0 && player.getGameMode() != GameMode.SPECTATOR) {
+                        player.setFireTicks(100);
+                    } else {
+                        player.setFireTicks(0);
+                    }
                     this.cancel();
                 } else if(i % noDamageTicksInMolotovArea == 0){
                     EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(playerExtension.getPlayer(),
@@ -97,6 +100,12 @@ public class Molotov extends ThrowableItem implements Lethal {
                 i++;
             }
         }.runTaskTimer(plugin, 0, 1);
+    }
+
+    private boolean isInDamagingRange(Player player, Location molotovCenter) {
+        return Math.sqrt(Math.pow((molotovCenter.getX()-player.getLocation().getX()),2) +
+                Math.pow((molotovCenter.getZ()-player.getLocation().getZ()),2)) < 2.4 &&
+                (player.getLocation().getY() - molotovCenter.getY()) < 1 && (player.getLocation().getY() - molotovCenter.getY()) > -2;
     }
 
     @Override

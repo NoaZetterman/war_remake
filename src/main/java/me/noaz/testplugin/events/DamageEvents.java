@@ -286,8 +286,6 @@ public class DamageEvents implements Listener {
                     event.setCancelled(true);
                     break;
                 case FIRE_TICK:
-                    System.out.println("LAst dmg cause: (Maybe pre this?)" + Objects.requireNonNull(damagedPlayer.getLastDamageCause()).getCause());
-                    System.out.println("Damager: " + damagerPlayerExtension);
                     if(damagerPlayerExtension != null &&
                             !gameLoop.getCurrentGame().playersOnSameTeam(damagedPlayerExtension, damagerPlayerExtension)) {
                         event.setDamage(event.getDamage() * 2);

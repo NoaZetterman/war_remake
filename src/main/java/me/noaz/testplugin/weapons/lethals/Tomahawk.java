@@ -1,32 +1,22 @@
 package me.noaz.testplugin.weapons.lethals;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.CustomDamageType;
 import me.noaz.testplugin.weapons.guns.Bullet;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Tomahawk implements Lethal {
     private PlayerExtension playerExtension;
     private TestPlugin plugin;
-    private Material material = Material.APPLE;
     private boolean hasCooldown = false;
-    private int itemSlot = 3;
-    private int cooldownTimeInTicks = 20;
-    private int amount = 10;
+    private final int cooldownTimeInTicks;
 
-    public Tomahawk(PlayerExtension playerExtension, TestPlugin plugin) {
+    public Tomahawk(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
         this.playerExtension = playerExtension;
         this.plugin = plugin;
-    }
-
-
-    @Override
-    public Material getMaterial() {
-        return material;
+        this.cooldownTimeInTicks = cooldownTimeInTicks;
     }
 
     @Override
@@ -55,11 +45,5 @@ public class Tomahawk implements Lethal {
                 hasCooldown = false;
             }
         }.runTaskLater(plugin, cooldownTimeInTicks);
-    }
-
-
-    @Override
-    public ItemStack getMaterialAsItemStack() {
-        return new ItemStack(material, amount);
     }
 }

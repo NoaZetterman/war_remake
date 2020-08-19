@@ -11,17 +11,21 @@ import org.bukkit.inventory.ItemStack;
  * and common factors between different lethals.
  */
 public enum LethalEnum {
-    MOLOTOV(10, Material.APPLE),
-    GRENADE(11, Material.APPLE),
-    TOMAHAWK(12, Material.APPLE),
-    NONE(-1, Material.AIR);
+    MOLOTOV(10, Material.APPLE, 2, 20),
+    GRENADE(11, Material.APPLE, 2, 20),
+    TOMAHAWK(12, Material.APPLE, 1, 20),
+    NONE(-1, Material.AIR, 0, 0);
 
     int loadoutMenuSlot;
     Material material;
+    int amount;
+    int cooldownTimeInTicks;
 
-    LethalEnum(int loadoutMenuSlot, Material material) {
+    LethalEnum(int loadoutMenuSlot, Material material, int amount, int cooldownTimeInTicks) {
         this.loadoutMenuSlot = loadoutMenuSlot;
         this.material = material;
+        this.amount = amount;
+        this.cooldownTimeInTicks = cooldownTimeInTicks;
 
     }
 
@@ -29,14 +33,21 @@ public enum LethalEnum {
         return loadoutMenuSlot;
     }
 
+    /**
+     * Get the object to activating this enum.
+     *
+     * @param playerExtension The players playerExtension
+     * @param plugin This plugin
+     * @return An object that can trigger an action of this enum type.
+     */
     public Lethal getAsWeapon(PlayerExtension playerExtension, TestPlugin plugin) {
         switch(this) {
             case TOMAHAWK:
-                return new Tomahawk(playerExtension, plugin);
+                return new Tomahawk(playerExtension, plugin, cooldownTimeInTicks);
             case GRENADE:
-                return new Grenade(playerExtension, plugin);
+                return new Grenade(playerExtension, plugin, cooldownTimeInTicks);
             case MOLOTOV:
-                return new Molotov(playerExtension, plugin);
+                return new Molotov(playerExtension, plugin, cooldownTimeInTicks);
             case NONE:
                 return new NoLethal();
             default:
@@ -58,7 +69,7 @@ public enum LethalEnum {
     }
 
     public ItemStack getMaterialAsItemStack() {
-        return new ItemStack(material);
+        return new ItemStack(material, amount);
     }
 
     public Buyable getAsBuyable() {

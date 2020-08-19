@@ -1,12 +1,10 @@
 package me.noaz.testplugin.weapons.lethals;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.ThrowableItem;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -24,8 +22,8 @@ public class Molotov extends ThrowableItem implements Lethal {
     private double damageWhenInMolotovArea = 1;
     List<Player> playersAlreadyInFire = new ArrayList<>();
 
-    public Molotov(PlayerExtension playerExtension, TestPlugin plugin) {
-        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin, Material.APPLE, 5, 1.3f, 3, 2, 20, 0);
+    public Molotov(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
+        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin,5, 1.3f, itemSlot, cooldownTimeInTicks, 0);
     }
 
     @Override
@@ -109,10 +107,5 @@ public class Molotov extends ThrowableItem implements Lethal {
         return Math.sqrt(Math.pow((molotovCenter.getX()-player.getLocation().getX()),2) +
                 Math.pow((molotovCenter.getZ()-player.getLocation().getZ()),2)) < 2.4 &&
                 (player.getLocation().getY() - molotovCenter.getY()) < 1 && (player.getLocation().getY() - molotovCenter.getY()) > -2;
-    }
-
-    @Override
-    public Material getMaterial() {
-        return material;
     }
 }

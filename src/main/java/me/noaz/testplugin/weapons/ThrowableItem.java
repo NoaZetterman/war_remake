@@ -3,7 +3,6 @@ package me.noaz.testplugin.weapons;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -16,26 +15,22 @@ public abstract class ThrowableItem implements Weapon {
     protected World world;
     protected TestPlugin plugin;
 
-    protected final Material material;
     protected final float range;
     protected final float throwingSpeed;
-    protected final int itemSlot;
-    protected final int amount;
+    protected final int itemSlotInHotbar;
     protected final int cooldownTimeInTicks;
     protected final int damageOnImpact;
 
     protected boolean hasCooldown = false;
 
-    public ThrowableItem(PlayerExtension playerExtension, World world, TestPlugin plugin, Material material,
-                         float range, float throwingSpeed, int itemSlot, int amount, int cooldownTimeInTicks, int damageOnImpact) {
+    public ThrowableItem(PlayerExtension playerExtension, World world, TestPlugin plugin,
+                         float range, float throwingSpeed, int itemSlotInHotbar, int cooldownTimeInTicks, int damageOnImpact) {
         this.playerExtension = playerExtension;
         this.world = world;
         this.plugin = plugin;
-        this.material = material;
         this.range = range;
         this.throwingSpeed = throwingSpeed;
-        this.itemSlot = itemSlot;
-        this.amount = amount;
+        this.itemSlotInHotbar = itemSlotInHotbar;
         this.cooldownTimeInTicks = cooldownTimeInTicks;
         this.damageOnImpact = damageOnImpact;
     }
@@ -45,9 +40,9 @@ public abstract class ThrowableItem implements Weapon {
             Vector velocity = playerExtension.getPlayer().getLocation().getDirection();
 
             velocity.normalize().multiply(throwingSpeed);
-            ItemStack stack = playerExtension.getPlayer().getInventory().getItem(itemSlot);
+            ItemStack stack = playerExtension.getPlayer().getInventory().getItem(itemSlotInHotbar);
             if (stack.getAmount() == 1) {
-                playerExtension.getPlayer().getInventory().setItem(itemSlot, null);
+                playerExtension.getPlayer().getInventory().setItem(itemSlotInHotbar, null);
             } else {
                 stack.setAmount(stack.getAmount() - 1);
             }
@@ -61,10 +56,6 @@ public abstract class ThrowableItem implements Weapon {
 
             flyUntilRemove(item);
         }
-    }
-
-    public ItemStack getMaterialAsItemStack() {
-        return new ItemStack(material, amount);
     }
 
     private void startCooldown() {

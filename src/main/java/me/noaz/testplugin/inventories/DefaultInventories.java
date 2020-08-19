@@ -54,7 +54,7 @@ public class DefaultInventories {
         inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
         inventory.setItem(1, customItem(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
         inventory.setItem(2, customItem(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
-        if(lethal != null) {
+        if(lethal != LethalEnum.NONE) {
             inventory.setItem(3, customItem(lethal.getMaterialAsItemStack(), "Lethal", secondaryGun.getLore()));
         }
     }

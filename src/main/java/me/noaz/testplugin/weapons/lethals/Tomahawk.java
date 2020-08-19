@@ -30,7 +30,7 @@ public class Tomahawk implements Lethal {
             }
 
             new Bullet(playerExtension.getPlayer(), plugin, playerExtension.getPlayer().getLocation().getDirection().multiply(0.9),
-                    15, 20, 0, 0, CustomDamageType.TOMAHAWK);
+                    20, 20, 0, 0, CustomDamageType.TOMAHAWK);
 
             startCooldown();
         }

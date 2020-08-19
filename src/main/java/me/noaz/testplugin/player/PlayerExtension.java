@@ -21,10 +21,7 @@ import me.noaz.testplugin.weapons.guns.firemodes.BuckGun;
 import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
-import me.noaz.testplugin.weapons.lethals.Grenade;
-import me.noaz.testplugin.weapons.lethals.Lethal;
-import me.noaz.testplugin.weapons.lethals.Molotov;
-import me.noaz.testplugin.weapons.lethals.Tomahawk;
+import me.noaz.testplugin.weapons.lethals.*;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -56,7 +53,7 @@ public class PlayerExtension {
     private Gun activePrimaryGun;
     private Gun activeSecondaryGun;
     private Perk activePerk;
-    private Lethal activeLethal;
+    private LethalEnum activeLethal;
     private Killstreak activeKillstreak;
 
     private String[] actionBarMessage;
@@ -92,6 +89,7 @@ public class PlayerExtension {
 
         activePerk = playerInformation.getSelectedPerk();
         activeKillstreak = playerInformation.getSelectedKillstreak();
+        activeLethal = playerInformation.getSelectedLethal();
         //Get current used guns from database instead
 
         setSelectedResourcepack(playerInformation.getSelectedResourcepack());
@@ -159,6 +157,7 @@ public class PlayerExtension {
 
         activePerk = playerInformation.getSelectedPerk();
         activeKillstreak = playerInformation.getSelectedKillstreak();
+        activeLethal = playerInformation.getSelectedLethal();
 
         if(team.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
@@ -269,9 +268,6 @@ public class PlayerExtension {
      */
     public void startPlayingGame(GameMap map) {
         updateGameScoreboard();
-
-
-        activeLethal = new Tomahawk(this, map, plugin);
 
         player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
@@ -427,7 +423,7 @@ public class PlayerExtension {
         } else if(player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()) {
             return activeSecondaryGun;
         } else if(player.getInventory().getItemInMainHand().getType() == activeLethal.getMaterial()) {
-            return activeLethal;
+            return activeLethal.getAsWeapon(this, plugin);
         } else {
             return null;
         }
@@ -518,12 +514,16 @@ public class PlayerExtension {
         return playerInformation.getSelectedPerk();
     }
 
+    public LethalEnum getSelectedLethal() {
+        return playerInformation.getSelectedLethal();
+    }
+
     public Killstreak getSelectedKillstreak() {
         return playerInformation.getSelectedKillstreak();
     }
 
     public Lethal getActiveLethal() {
-        return activeLethal;
+        return activeLethal.getAsWeapon(this, plugin);
     }
 
     public Perk getActivePerk() {
@@ -576,6 +576,10 @@ public class PlayerExtension {
         playerInformation.setSelectedPerk(perk);
     }
 
+    public void setSelectedLethal(LethalEnum lethal) {
+        playerInformation.setSelectedLethal(lethal);
+    }
+
     public void buyGun(String gunName, List<GunConfiguration> gunConfigurations) {
         for(GunConfiguration gun: gunConfigurations) {
             if(gun.getDisplayName().equals(gunName)) {
@@ -600,6 +604,12 @@ public class PlayerExtension {
         changeCredits(-perk.getCostToBuy());
 
         playerInformation.addPerk(perk);
+    }
+
+    public void buyLethal(LethalEnum lethal) {
+        changeCredits(-lethal.getCostToBuy());
+
+        playerInformation.addLethal(lethal);
     }
 
     private Gun createGun(String gunName) {
@@ -691,6 +701,10 @@ public class PlayerExtension {
 
     public boolean ownsPerk(Perk perk) {
         return playerInformation.hasPerk(perk);
+    }
+
+    public boolean ownsLethal(LethalEnum lethal) {
+        return playerInformation.hasLethal(lethal);
     }
 
     public int getLevel() {

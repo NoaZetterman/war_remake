@@ -1,10 +1,10 @@
 package me.noaz.testplugin.weapons;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -13,7 +13,7 @@ import org.bukkit.util.Vector;
 
 public abstract class ThrowableItem implements Weapon {
     protected PlayerExtension playerExtension;
-    protected GameMap map;
+    protected World world;
     protected TestPlugin plugin;
 
     protected final Material material;
@@ -26,10 +26,10 @@ public abstract class ThrowableItem implements Weapon {
 
     protected boolean hasCooldown = false;
 
-    public ThrowableItem(PlayerExtension playerExtension, GameMap map, TestPlugin plugin, Material material,
+    public ThrowableItem(PlayerExtension playerExtension, World world, TestPlugin plugin, Material material,
                          float range, float throwingSpeed, int itemSlot, int amount, int cooldownTimeInTicks, int damageOnImpact) {
         this.playerExtension = playerExtension;
-        this.map = map;
+        this.world = world;
         this.plugin = plugin;
         this.material = material;
         this.range = range;
@@ -51,7 +51,7 @@ public abstract class ThrowableItem implements Weapon {
             } else {
                 stack.setAmount(stack.getAmount() - 1);
             }
-            Item item = map.getWorld().dropItem(playerExtension.getPlayer().getEyeLocation(), stack);
+            Item item = world.dropItem(playerExtension.getPlayer().getEyeLocation(), stack);
 
             item.setPickupDelay(10000000);
             item.setVelocity(velocity);

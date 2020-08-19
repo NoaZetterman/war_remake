@@ -40,6 +40,10 @@ public class Buyable {
     }
 
     public Material getMaterial() {
-        return material;
+        if(material == Material.AIR) {
+            return Material.BARRIER;
+        } else {
+            return material;
+        }
     }
 }

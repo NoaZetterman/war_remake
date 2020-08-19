@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class Tomahawk implements Lethal {
     private PlayerExtension playerExtension;
-    private GameMap gameMap;
     private TestPlugin plugin;
     private Material material = Material.APPLE;
     private boolean hasCooldown = false;
@@ -19,9 +18,8 @@ public class Tomahawk implements Lethal {
     private int cooldownTimeInTicks = 20;
     private int amount = 10;
 
-    public Tomahawk(PlayerExtension playerExtension, GameMap map, TestPlugin plugin) {
+    public Tomahawk(PlayerExtension playerExtension, TestPlugin plugin) {
         this.playerExtension = playerExtension;
-        this.gameMap = map;
         this.plugin = plugin;
     }
 

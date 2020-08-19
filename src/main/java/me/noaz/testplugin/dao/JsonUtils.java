@@ -21,8 +21,10 @@ public class JsonUtils {
 
         JsonArray jsonArray = getJsonArrayFromKey(jsonObjectToRetrieveFrom, jsonKey);
 
-        for(JsonElement element : jsonArray) {
-            list.add(element.getAsJsonPrimitive().getAsString());
+        if(jsonArray != null) {
+            for (JsonElement element : jsonArray) {
+                list.add(element.getAsJsonPrimitive().getAsString());
+            }
         }
 
         return list;

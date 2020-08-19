@@ -3,6 +3,7 @@ package me.noaz.testplugin.player;
 import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.lethals.Grenade;
+import me.noaz.testplugin.weapons.lethals.LethalEnum;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -27,11 +28,12 @@ public class PlayerInformation {
     private List<String> ownedSecondaryGuns;
     private List<Perk> ownedPerks;
     private List<Killstreak> ownedKillstreaks;
+    private List<LethalEnum> ownedLethals;
 
     private String selectedPrimaryGun;
     private String selectedSecondaryGun;
     private Perk selectedPerk;
-    private Grenade selectedLethal;
+    private LethalEnum selectedLethal;
     private Killstreak selectedKillstreak;
 
     private int[] levels;
@@ -58,8 +60,8 @@ public class PlayerInformation {
     private int flagCapturesThisGame = 0;
 
     public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
-                             List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, String selectedPrimaryGun,
-                             String selectedSecondaryGun, Perk selectedPerk, Killstreak selectedKillstreak,
+                             List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, List<LethalEnum> ownedLethals, String selectedPrimaryGun,
+                             String selectedSecondaryGun, Perk selectedPerk, Killstreak selectedKillstreak, LethalEnum selectedLethal,
                              Resourcepack selectedResourcepack, Long totalOnlineTimeInSeconds,
                              int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
                              int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills,
@@ -75,11 +77,13 @@ public class PlayerInformation {
         this.ownedSecondaryGuns = ownedSecondaryGuns;
         this.ownedPerks = ownedPerks;
         this.ownedKillstreaks = ownedKillstreaks;
+        this.ownedLethals = ownedLethals;
 
         this.selectedPrimaryGun = selectedPrimaryGun;
         this.selectedSecondaryGun = selectedSecondaryGun;
         this.selectedPerk = selectedPerk;
         this.selectedKillstreak = selectedKillstreak;
+        this.selectedLethal = selectedLethal;
 
         this.totalKills = totalKills;
         this.totalDeaths = totalDeaths;
@@ -125,6 +129,10 @@ public class PlayerInformation {
         return ownedPerks.contains(perk);
     }
 
+    public boolean hasLethal(LethalEnum lethal) {
+        return ownedLethals.contains(lethal);
+    }
+
     public boolean hasKillstreak(Killstreak killstreak) {
         return ownedKillstreaks.contains(killstreak);
     }
@@ -145,6 +153,10 @@ public class PlayerInformation {
         return ownedKillstreaks;
     }
 
+    public List<LethalEnum> getOwnedLethals() {
+        return ownedLethals;
+    }
+
     public String getSelectedPrimaryGun() {
         return selectedPrimaryGun;
     }
@@ -157,7 +169,7 @@ public class PlayerInformation {
         return selectedPerk;
     }
 
-    public Grenade getSelectedLethal() {
+    public LethalEnum getSelectedLethal() {
         return selectedLethal;
     }
 
@@ -271,6 +283,10 @@ public class PlayerInformation {
         ownedPerks.add(perk);
     }
 
+    public void addLethal(LethalEnum lethal) {
+        ownedLethals.add(lethal);
+    }
+
     public void addKillstreak(Killstreak killstreak) {
         ownedKillstreaks.add(killstreak);
     }
@@ -292,7 +308,7 @@ public class PlayerInformation {
         this.selectedKillstreak = selectedKillstreak;
     }
 
-    public void setSelectedLethal(Grenade lethal) {
+    public void setSelectedLethal(LethalEnum lethal) {
         this.selectedLethal = lethal;
     }
 

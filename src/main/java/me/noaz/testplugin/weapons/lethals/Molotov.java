@@ -24,8 +24,8 @@ public class Molotov extends ThrowableItem implements Lethal {
     private double damageWhenInMolotovArea = 1;
     List<Player> playersAlreadyInFire = new ArrayList<>();
 
-    public Molotov(PlayerExtension playerExtension, GameMap map, TestPlugin plugin) {
-        super(playerExtension, map, plugin, Material.APPLE, 5, 1.3f, 3, 2, 20, 0);
+    public Molotov(PlayerExtension playerExtension, TestPlugin plugin) {
+        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin, Material.APPLE, 5, 1.3f, 3, 2, 20, 0);
     }
 
     @Override
@@ -38,11 +38,11 @@ public class Molotov extends ThrowableItem implements Lethal {
                 i++;
 
                 if(i < 100) {
-                    map.getWorld().spawnParticle(Particle.FLAME, itemLocation.clone().add(0,0.15,0), 25, 1, 0.20, 1, 0);
+                    world.spawnParticle(Particle.FLAME, itemLocation.clone().add(0,0.15,0), 25, 1, 0.20, 1, 0);
                     //map.getWorld().spawnParticle(Particle.FLAME, itemLocation.clone().add(0,0.15,0), 1, 0, 0, 0, 0);
                     //Use something like above, but with clone().add(Random in range -2 to 2, random 0 - 0.15, random range -2 to 2 but considering previous
 
-                    Collection<Entity> entitiesInWorld = map.getWorld().getEntities();
+                    Collection<Entity> entitiesInWorld = world.getEntities();
                     for(Entity entity : entitiesInWorld) {
                         if(entity instanceof Player && !playersAlreadyInFire.contains(entity)
                                 && ((Player) entity).getGameMode() != GameMode.SPECTATOR &&

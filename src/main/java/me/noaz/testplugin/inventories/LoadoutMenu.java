@@ -6,6 +6,7 @@ import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.GunType;
+import me.noaz.testplugin.weapons.lethals.LethalEnum;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,10 +28,13 @@ public class LoadoutMenu {
     private final static String buyGunScreenTitle = "Buy gun";
     private final static String buyKillstreakScreenTitle = "Buy Killstreak";
     private final static String buyPerkScreenTitle = "Buy Perk";
+    private final static String buyLethalScreenTitle = "Buy Lethal";
+
     private final static String primaryGunScreenTitle = "Select primary";
     private final static String secondaryGunScreenTitle = "Select secondary";
     private final static String selectKillstreakScreen = "Select Killstreak";
     private final static String selectPerkScreen = "Select Perk";
+    private final static String selectLethalScreen = "Select Lethal";
     private final static String cancelOption = "Cancel";
     private final static String buyOption = "Buy";
 
@@ -56,6 +60,9 @@ public class LoadoutMenu {
                             break;
                         case 11:
                             GunSelection.displaySecondaryScreen(player, gunConfigurations);
+                            break;
+                        case 13:
+                            LethalSelection.selectLethalScreen(player);
                             break;
                         case 16:
                             PerkSelection.selectPerkScreen(player);
@@ -121,6 +128,18 @@ public class LoadoutMenu {
                         }
                     }
                     break;
+                case selectLethalScreen:
+                    if(slot == 0) {
+                        loadoutStartScreen(player);
+                    } else {
+                        LethalEnum lethal = LethalEnum.valueOf(clickedItemName);
+                        if(player.ownsLethal(lethal)) {
+                            player.setSelectedLethal(lethal);
+                        } else if(lethal.getCostToBuy() <= player.getCredits()) {
+                            LethalSelection.createBuyScreen(player, lethal);
+                        }
+                    }
+                    break;
                 case buyGunScreenTitle:
                     if(clickedItemName.equals(cancelOption)) {
                         loadoutStartScreen(player);
@@ -151,6 +170,16 @@ public class LoadoutMenu {
                         loadoutStartScreen(player);
                     }
                     break;
+                case buyLethalScreenTitle:
+                    if(clickedItemName.equals(cancelOption)) {
+                        loadoutStartScreen(player);
+                    } else if(clickedItemName.equals(buyOption)) {
+                        String lethal = inventory.getItem(22).getItemMeta().getLocalizedName();
+
+                        player.buyLethal(LethalEnum.valueOf(lethal));
+                        loadoutStartScreen(player);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -170,9 +199,9 @@ public class LoadoutMenu {
         items[10] = BuyableSelection.createUnlockedItem(player.getPrimaryGunConfiguration());
         items[11] = BuyableSelection.createUnlockedItem(player.getSecondaryGunConfiguration());
 
-        /*
-        items[13] = lethal item
-        items[14] = tactical item
+
+        items[13] = BuyableSelection.createUnlockedItem(player.getSelectedLethal().getAsBuyable());
+        /*items[14] = tactical item
         */
 
         items[16] = BuyableSelection.createUnlockedItem(player.getSelectedPerk().getAsBuyable());
@@ -388,6 +417,42 @@ public class LoadoutMenu {
             Inventory inventory = Bukkit.getServer().createInventory(null, buyScreenInventorySize, buyPerkScreenTitle);
 
             BuyableSelection.createBuyScreen(player, perkToBuy.getAsBuyable(), inventory);
+        }
+    }
+
+    private static class LethalSelection {
+        public static void selectLethalScreen(PlayerExtension player) {
+            Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, selectLethalScreen);
+            ItemStack[] items = new ItemStack[inventorySize];
+
+
+            items[0] = new ItemStack(goBackArrow);
+
+            for(LethalEnum lethal : LethalEnum.values()) {
+                if(lethal.getLoadoutMenuSlot() > 0) {
+                    if (!player.ownsLethal(lethal)) {
+                        if (lethal.getUnlockLevel() > player.getLevel()) {
+                            items[lethal.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(lethal.getAsBuyable());
+                        } else if (lethal.getCostToBuy() > player.getCredits()) {
+                            items[lethal.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleRedItem(lethal.getAsBuyable());
+                        } else {
+                            items[lethal.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleGreenItem(lethal.getAsBuyable());
+                        }
+                    } else {
+                        items[lethal.getLoadoutMenuSlot()] = BuyableSelection.createUnlockedItem(lethal.getAsBuyable());
+                    }
+                }
+
+            }
+
+            inventory.setStorageContents(items);
+            player.getPlayer().openInventory(inventory);
+        }
+
+        private static void createBuyScreen(PlayerExtension player, LethalEnum lethalToBuy) {
+            Inventory inventory = Bukkit.getServer().createInventory(null, buyScreenInventorySize, buyLethalScreenTitle);
+
+            BuyableSelection.createBuyScreen(player, lethalToBuy.getAsBuyable(), inventory);
         }
     }
 

@@ -14,6 +14,7 @@ public enum LethalEnum {
     MOLOTOV(10, Material.APPLE, 2, 20),
     GRENADE(11, Material.APPLE, 2, 20),
     TOMAHAWK(12, Material.APPLE, 1, 20),
+    C4(13, Material.LEVER, 1, 20),
     NONE(-1, Material.AIR, 0, 0);
 
     int loadoutMenuSlot;
@@ -48,6 +49,8 @@ public enum LethalEnum {
                 return new Grenade(playerExtension, plugin, cooldownTimeInTicks);
             case MOLOTOV:
                 return new Molotov(playerExtension, plugin, cooldownTimeInTicks);
+            case C4:
+                return new C4(playerExtension, plugin, cooldownTimeInTicks);
             case NONE:
                 return new NoLethal();
             default:

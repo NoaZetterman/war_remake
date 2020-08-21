@@ -3,6 +3,7 @@ package me.noaz.testplugin.events;
 import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.inventories.LoadoutMenu;
 import me.noaz.testplugin.player.PlayerExtension;
+import me.noaz.testplugin.weapons.lethals.C4;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;

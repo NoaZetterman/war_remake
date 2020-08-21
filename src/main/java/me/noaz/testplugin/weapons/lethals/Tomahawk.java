@@ -13,6 +13,10 @@ public class Tomahawk implements Lethal {
     private boolean hasCooldown = false;
     private final int cooldownTimeInTicks;
 
+    private final double bulletSpeed = 1.1;
+    private final int damage = 20;
+
+
     public Tomahawk(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
         this.playerExtension = playerExtension;
         this.plugin = plugin;
@@ -29,8 +33,8 @@ public class Tomahawk implements Lethal {
                 stack.setAmount(stack.getAmount() - 1);
             }
 
-            new Bullet(playerExtension.getPlayer(), plugin, playerExtension.getPlayer().getLocation().getDirection().multiply(0.9),
-                    20, 20, 0, 0, CustomDamageType.TOMAHAWK);
+            new Bullet(playerExtension.getPlayer(), plugin, playerExtension.getPlayer().getLocation().getDirection().multiply(bulletSpeed),
+                    damage, damage, 0, 0, CustomDamageType.TOMAHAWK);
 
             startCooldown();
         }

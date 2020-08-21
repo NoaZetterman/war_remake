@@ -53,7 +53,8 @@ public class PlayerExtension {
     private Gun activePrimaryGun;
     private Gun activeSecondaryGun;
     private Perk activePerk;
-    private LethalEnum activeLethal;
+    private LethalEnum activeLethalEnum;
+    private Lethal activeLethal;
     private Killstreak activeKillstreak;
 
     private String[] actionBarMessage;
@@ -89,7 +90,7 @@ public class PlayerExtension {
 
         activePerk = playerInformation.getSelectedPerk();
         activeKillstreak = playerInformation.getSelectedKillstreak();
-        activeLethal = playerInformation.getSelectedLethal();
+        activeLethalEnum = playerInformation.getSelectedLethal();
         //Get current used guns from database instead
 
         setSelectedResourcepack(playerInformation.getSelectedResourcepack());
@@ -157,7 +158,8 @@ public class PlayerExtension {
 
         activePerk = playerInformation.getSelectedPerk();
         activeKillstreak = playerInformation.getSelectedKillstreak();
-        activeLethal = playerInformation.getSelectedLethal();
+        activeLethalEnum = playerInformation.getSelectedLethal();
+        activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
 
         if(team.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
@@ -171,7 +173,7 @@ public class PlayerExtension {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 0, false, false, false));
             }
 
-            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), activePrimaryGun, activeSecondaryGun, activeLethal);
+            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), activePrimaryGun, activeSecondaryGun, activeLethalEnum);
         }
 
         if(hasWeaponInMainHand() && playerInformation.getSelectedResourcepack() == Resourcepack.PACK_3D_DEFAULT) {
@@ -422,8 +424,8 @@ public class PlayerExtension {
             return activePrimaryGun;
         } else if(player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()) {
             return activeSecondaryGun;
-        } else if(player.getInventory().getItemInMainHand().getType() == activeLethal.getMaterial()) {
-            return activeLethal.getAsWeapon(this, plugin);
+        } else if(player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()) {
+            return activeLethal;
         } else {
             return null;
         }
@@ -444,13 +446,13 @@ public class PlayerExtension {
         return (isPlayingGame()
                 && player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
             || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeLethal.getMaterial());
+            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial());
     }
 
     public boolean hasGunInMainHand() {
         return (isPlayingGame()
-                && player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
-                || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial());
+                && (player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
+                || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()));
     }
 
     public void changeMainHand(int newSlot) {
@@ -522,8 +524,8 @@ public class PlayerExtension {
         return playerInformation.getSelectedKillstreak();
     }
 
-    public Lethal getActiveLethal() {
-        return activeLethal.getAsWeapon(this, plugin);
+    public Lethal getActiveLethalEnum() {
+        return activeLethal;
     }
 
     public Perk getActivePerk() {

@@ -82,9 +82,9 @@ public class ChatMessage {
                 killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$");
     }
 
-    public static void playerGrenadeKilled(Player killer, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
-        int xp = Reward.GRENADE_KILL.getXp();
-        int credits = Reward.GRENADE_KILL.getCredits();
+    public static void playerExplodeKilled(Player killer, Player killedPlayer, ChatColor killedColor, Gamemode gamemode) {
+        int xp = Reward.EXPLOSION_KILL.getXp();
+        int credits = Reward.EXPLOSION_KILL.getCredits();
 
         String message;
         if(gamemode == Gamemode.TEAM_DEATHMATCH || gamemode == Gamemode.FREE_FOR_ALL) {
@@ -93,7 +93,7 @@ public class ChatMessage {
             message = ChatColor.GRAY + "[+] ";
         }
 
-        message += "Grenaded " +
+        message += "Exploded " +
                 killedColor + killedPlayer.getName() + " " + ChatColor.YELLOW + "+" + xp + "xp +" + credits + "$";
 
         killer.sendMessage(message);
@@ -165,8 +165,8 @@ public class ChatMessage {
         killedPlayer.sendMessage(ChatColor.GRAY + "[-] Out of the map!");
     }
 
-    public static void playerWasGrenadedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
-        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Grenaded by " +
+    public static void playerWasExplodedToDeath(Player killedPlayer, Player killer, ChatColor killerColor) {
+        killedPlayer.sendMessage(ChatColor.GRAY + "[-] " + ChatColor.GRAY + "Exploded by " +
                 killerColor + killer.getName());
     }
 

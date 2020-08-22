@@ -8,7 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
-import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,7 +29,7 @@ public class C4 implements Lethal {
     private Material detonatorMaterial;
     private Material explosiveMaterial;
 
-    private LinkedList<Block> placedExplosives = new LinkedList<Block>();
+    private LinkedList<Block> placedExplosives = new LinkedList<>();
 
     public C4(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks, Material explosiveMaterial,
               Material detonatorMaterial) {
@@ -52,15 +51,9 @@ public class C4 implements Lethal {
 
             startCooldown();
         }
-
-        //Blows the C4
-        //Block block = playerExtension.getPlayer().getLastTwoTargetBlocks(null,10).get(0);
-        //block.setType(Material.LEVER);
-        //Its a lever boi that gets placed where the player clicks to place it
     }
 
     private void explode() {
-        System.out.println(placedExplosives.peekLast());
         while(placedExplosives.peekLast() != null) {
             Block block = placedExplosives.removeLast();
             block.setType(Material.AIR);
@@ -94,7 +87,7 @@ public class C4 implements Lethal {
                             ((Switch) blockData).setFace(Switch.Face.FLOOR);
                             break;
                         default:
-                            //((Switch) blockData).setFace(Switch.Face.WALL);
+                            ((Switch) blockData).setFace(Switch.Face.WALL);
                             ((Switch) blockData).setFacing(blockFace);
                             break;
                     }
@@ -102,16 +95,18 @@ public class C4 implements Lethal {
                     blockToChange.setBlockData(blockData);
                 }
                 placedExplosives.add(blockToChange);
+
                 ItemStack stack = playerExtension.getPlayer().getInventory().getItem(itemSlot);
                 if (stack.getAmount() == 1) {
                     playerExtension.getPlayer().getInventory().setItem(itemSlot, null);
                 } else {
                     stack.setAmount(stack.getAmount() - 1);
                 }
+
+                playerExtension.getPlayer().getInventory().setItem(additionalItemSlot, new ItemStack(detonatorMaterial));
             }
         }
 
-        playerExtension.getPlayer().getInventory().setItem(additionalItemSlot, new ItemStack(detonatorMaterial));
 
     }
 

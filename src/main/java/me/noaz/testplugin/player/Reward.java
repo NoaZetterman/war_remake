@@ -7,7 +7,7 @@ public enum Reward {
     KNIFE_KILL(25, 1),
     ZOMBIE_KILL_HUMAN(25, 1),
     NUKE_KILL(25,1),
-    GRENADE_KILL(45, 3),
+    EXPLOSION_KILL(45, 3),
     MOLOTOV_KILL(50, 4),
     TOMAHAWK_KILL(50,3);
 

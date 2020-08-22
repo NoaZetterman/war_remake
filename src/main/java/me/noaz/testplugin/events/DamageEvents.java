@@ -19,8 +19,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.Objects;
-
 public class DamageEvents implements Listener {
     private GameData data;
     private GameLoop gameLoop;
@@ -224,11 +222,11 @@ public class DamageEvents implements Listener {
                             } else if (damagedPlayer.getHealth() - event.getDamage() <= 0) {
                                 event.setCancelled(true);
 
-                                ChatMessage.playerWasGrenadedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
-                                ChatMessage.playerGrenadeKilled(damager, damagedPlayer,
+                                ChatMessage.playerWasExplodedToDeath(damagedPlayer, damager, damagerExtension.getTeamChatColor());
+                                ChatMessage.playerExplodeKilled(damager, damagedPlayer,
                                         damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                                damagerExtension.addKill(Reward.GRENADE_KILL);
+                                damagerExtension.addKill(Reward.EXPLOSION_KILL);
 
                                 damagedPlayerExtension.respawn(damager);
                                 damagedPlayerExtension.addDeath();

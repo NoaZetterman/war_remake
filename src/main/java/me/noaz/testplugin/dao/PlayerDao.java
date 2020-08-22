@@ -6,6 +6,7 @@ import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.player.Resourcepack;
 import me.noaz.testplugin.weapons.lethals.LethalEnum;
+import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
@@ -19,6 +20,7 @@ public class PlayerDao {
     private static final String jsonPerksKey = "perks";
     private static final String jsonKillstreakKey = "killstreaks";
     private static final String jsonLethalKey = "lethals";
+    private static final String jsonTacticalKey = "tacticals";
 
     public PlayerDao(Connection connection) {
         PlayerDao.connection = connection;
@@ -39,12 +41,15 @@ public class PlayerDao {
             ownedEquipmentAsJson.add(jsonLethalKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedLethals().stream()
                     .map(Enum::name)
                     .collect(Collectors.toList())));
+            ownedEquipmentAsJson.add(jsonTacticalKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedTacticals().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList())));
 
             PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
                     "kills=?, deaths=?,  bullets_hit=?, bullets_fired=?, headshots=?," +
                     "level=?, credits=?, xp_on_level=?, flag_captures=?, free_for_all_wins=?, seconds_online=?, last_online=?, " +
                     "selected_primary=?, selected_secondary=?, selected_perk=?, selected_killstreak=?, " +
-                    "selected_lethal=?, selected_resourcepack=?, owned_equipment=? WHERE uuid=?");
+                    "selected_lethal=?, selected_tactical=?, selected_resourcepack=?, owned_equipment=? WHERE uuid=?");
 
             updatePlayerData.setInt(1, playerInformation.getTotalKills());
             updatePlayerData.setInt(2, playerInformation.getTotalDeaths());
@@ -63,9 +68,10 @@ public class PlayerDao {
             updatePlayerData.setString(15, playerInformation.getSelectedPerk().name());
             updatePlayerData.setString(16, playerInformation.getSelectedKillstreak().name());
             updatePlayerData.setString(17, playerInformation.getSelectedLethal().name());
-            updatePlayerData.setString(18, playerInformation.getSelectedResourcepack().name());
-            updatePlayerData.setString(19, ownedEquipmentAsJson.toString());
-            updatePlayerData.setString(20, playerInformation.getPlayer().getUniqueId().toString());
+            updatePlayerData.setString(18, playerInformation.getSelectedTactical().name());
+            updatePlayerData.setString(19, playerInformation.getSelectedResourcepack().name());
+            updatePlayerData.setString(20, ownedEquipmentAsJson.toString());
+            updatePlayerData.setString(21, playerInformation.getPlayer().getUniqueId().toString());
 
             updatePlayerData.execute();
         } catch (SQLException e) {
@@ -107,6 +113,7 @@ public class PlayerDao {
         Perk selectedPerk = Perk.SCAVENGER;
         Killstreak selectedKillstreak = Killstreak.EMP;
         LethalEnum selectedLethal = LethalEnum.NONE;
+        TacticalEnum selectedTactical = TacticalEnum.NONE;
         Resourcepack selectedResourcepack = Resourcepack.PACK_2D_16X16;
         long timePlayedInMinutes = 0;
 
@@ -131,6 +138,7 @@ public class PlayerDao {
                 selectedSecondaryGun = playerDataResultSet.getString("selected_secondary");
                 selectedPerk = Perk.valueOf(playerDataResultSet.getString("selected_perk"));
                 selectedLethal = LethalEnum.valueOf(playerDataResultSet.getString("selected_lethal"));
+                selectedTactical = TacticalEnum.valueOf(playerDataResultSet.getString("selected_tactical"));
                 selectedKillstreak = Killstreak.valueOf(playerDataResultSet.getString("selected_killstreak"));
                 selectedResourcepack = Resourcepack.valueOf(playerDataResultSet.getString("selected_resourcepack"));
                 ownedEquipmentAsJson = new JsonParser().parse(playerDataResultSet.getString("owned_equipment")).getAsJsonObject();
@@ -152,9 +160,12 @@ public class PlayerDao {
         List<LethalEnum> ownedLethals = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonLethalKey).stream()
                 .map(LethalEnum::valueOf)
                 .collect(Collectors.toList());
+        List<TacticalEnum> ownedTacticals = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonTacticalKey).stream()
+                .map(TacticalEnum::valueOf)
+                .collect(Collectors.toList());
 
-        return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, ownedKillstreaks, ownedLethals, selectedPrimaryGun,
-                selectedSecondaryGun, selectedPerk, selectedKillstreak, selectedLethal, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
+        return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, ownedKillstreaks, ownedLethals, ownedTacticals, selectedPrimaryGun,
+                selectedSecondaryGun, selectedPerk, selectedKillstreak, selectedLethal, selectedTactical, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
                 totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills, flagCaptures, freeForAllWins);
 
     }

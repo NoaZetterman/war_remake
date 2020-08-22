@@ -4,6 +4,8 @@ import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.lethals.Grenade;
 import me.noaz.testplugin.weapons.lethals.LethalEnum;
+import me.noaz.testplugin.weapons.tacticals.Tactical;
+import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -29,11 +31,13 @@ public class PlayerInformation {
     private List<Perk> ownedPerks;
     private List<Killstreak> ownedKillstreaks;
     private List<LethalEnum> ownedLethals;
+    private List<TacticalEnum> ownedTacticals;
 
     private String selectedPrimaryGun;
     private String selectedSecondaryGun;
     private Perk selectedPerk;
     private LethalEnum selectedLethal;
+    private TacticalEnum selectedTactical;
     private Killstreak selectedKillstreak;
 
     private int[] levels;
@@ -60,8 +64,10 @@ public class PlayerInformation {
     private int flagCapturesThisGame = 0;
 
     public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
-                             List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, List<LethalEnum> ownedLethals, String selectedPrimaryGun,
+                             List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, List<LethalEnum> ownedLethals,
+                             List<TacticalEnum> ownedTacticals, String selectedPrimaryGun,
                              String selectedSecondaryGun, Perk selectedPerk, Killstreak selectedKillstreak, LethalEnum selectedLethal,
+                             TacticalEnum selectedTactical,
                              Resourcepack selectedResourcepack, Long totalOnlineTimeInSeconds,
                              int totalKills, int totalDeaths, int totalFiredBullets, int totalFiredBulletsThatHitEnemy,
                              int xpOnCurrentLevel, int level, int credits, int totalHeadshotKills,
@@ -78,12 +84,14 @@ public class PlayerInformation {
         this.ownedPerks = ownedPerks;
         this.ownedKillstreaks = ownedKillstreaks;
         this.ownedLethals = ownedLethals;
+        this.ownedTacticals = ownedTacticals;
 
         this.selectedPrimaryGun = selectedPrimaryGun;
         this.selectedSecondaryGun = selectedSecondaryGun;
         this.selectedPerk = selectedPerk;
         this.selectedKillstreak = selectedKillstreak;
         this.selectedLethal = selectedLethal;
+        this.selectedTactical = selectedTactical;
 
         this.totalKills = totalKills;
         this.totalDeaths = totalDeaths;
@@ -133,6 +141,10 @@ public class PlayerInformation {
         return ownedLethals.contains(lethal);
     }
 
+    public boolean hasTactical(TacticalEnum tactical) {
+        return ownedTacticals.contains(tactical);
+    }
+
     public boolean hasKillstreak(Killstreak killstreak) {
         return ownedKillstreaks.contains(killstreak);
     }
@@ -157,6 +169,10 @@ public class PlayerInformation {
         return ownedLethals;
     }
 
+    public List<TacticalEnum> getOwnedTacticals() {
+        return ownedTacticals;
+    }
+
     public String getSelectedPrimaryGun() {
         return selectedPrimaryGun;
     }
@@ -171,6 +187,10 @@ public class PlayerInformation {
 
     public LethalEnum getSelectedLethal() {
         return selectedLethal;
+    }
+
+    public TacticalEnum getSelectedTactical() {
+        return selectedTactical;
     }
 
     public Killstreak getSelectedKillstreak() {
@@ -287,6 +307,10 @@ public class PlayerInformation {
         ownedLethals.add(lethal);
     }
 
+    public void addTactical(TacticalEnum tactical) {
+        ownedTacticals.add(tactical);
+    }
+
     public void addKillstreak(Killstreak killstreak) {
         ownedKillstreaks.add(killstreak);
     }
@@ -310,6 +334,10 @@ public class PlayerInformation {
 
     public void setSelectedLethal(LethalEnum lethal) {
         this.selectedLethal = lethal;
+    }
+
+    public void setSelectedTactical(TacticalEnum tactical) {
+        this.selectedTactical = tactical;
     }
 
     public void setSelectedResourcepack(Resourcepack resourcepack) {

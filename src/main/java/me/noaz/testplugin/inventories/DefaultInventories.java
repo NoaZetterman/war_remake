@@ -3,6 +3,7 @@ package me.noaz.testplugin.inventories;
 import me.noaz.testplugin.player.DefaultCustomModelData;
 import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.lethals.LethalEnum;
+import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.Material;
 import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
@@ -47,7 +48,8 @@ public class DefaultInventories {
      * @param primaryGun The players primary weapon
      * @param secondaryGun The playrs secondary weapon
      */
-    public static void giveDefaultInGameInventory(PlayerInventory inventory, Color teamColor, Gun primaryGun, Gun secondaryGun, LethalEnum lethal) {
+    public static void giveDefaultInGameInventory(PlayerInventory inventory, Color teamColor, Gun primaryGun, Gun secondaryGun,
+                                                  LethalEnum lethal, TacticalEnum tactical) {
         inventory.clear();
         setArmor(inventory, teamColor);
 
@@ -56,6 +58,9 @@ public class DefaultInventories {
         inventory.setItem(2, customItem(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
         if(lethal != LethalEnum.NONE) {
             inventory.setItem(3, customItem(lethal.getMaterialAsItemStack(), "Lethal", secondaryGun.getLore()));
+        }
+        if(tactical != TacticalEnum.NONE) {
+            inventory.setItem(4, customItem(tactical.getMaterialAsItemStack(), "Tactical", secondaryGun.getLore()));
         }
     }
 

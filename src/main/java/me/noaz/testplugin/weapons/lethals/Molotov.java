@@ -23,7 +23,7 @@ public class Molotov extends ThrowableItem implements Lethal {
     List<Player> playersAlreadyInFire = new ArrayList<>();
 
     public Molotov(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
-        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin,5, 1.3f, itemSlot, cooldownTimeInTicks, 0);
+        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin,-1, 1.3f, itemSlot, cooldownTimeInTicks, 0);
     }
 
     @Override

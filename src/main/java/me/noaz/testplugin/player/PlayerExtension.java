@@ -22,6 +22,8 @@ import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
 import me.noaz.testplugin.weapons.lethals.*;
+import me.noaz.testplugin.weapons.tacticals.Tactical;
+import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -55,6 +57,8 @@ public class PlayerExtension {
     private Perk activePerk;
     private LethalEnum activeLethalEnum;
     private Lethal activeLethal;
+    private TacticalEnum activeTacticalEnum;
+    private Tactical activeTactical;
     private Killstreak activeKillstreak;
 
     private String[] actionBarMessage;
@@ -160,6 +164,9 @@ public class PlayerExtension {
         activeKillstreak = playerInformation.getSelectedKillstreak();
         activeLethalEnum = playerInformation.getSelectedLethal();
         activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
+        activeTacticalEnum = playerInformation.getSelectedTactical();
+        activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
+
 
         if(team.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
@@ -173,7 +180,8 @@ public class PlayerExtension {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 0, false, false, false));
             }
 
-            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), activePrimaryGun, activeSecondaryGun, activeLethalEnum);
+            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), activePrimaryGun,
+                    activeSecondaryGun, activeLethalEnum, activeTacticalEnum);
         }
 
         if(hasWeaponInMainHand() && playerInformation.getSelectedResourcepack() == Resourcepack.PACK_3D_DEFAULT) {
@@ -426,9 +434,13 @@ public class PlayerExtension {
             return activeSecondaryGun;
         } else if (player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()) {
             return activeLethal;
-        } else if(player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()) {
+        } else if (player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()) {
             return activeLethal;
-        } else {
+        } else if (player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getMaterial()) {
+            return activeTactical;
+        } else if (player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getAdditionalMaterial()) {
+            return activeTactical;
+        }else {
             return null;
         }
     }
@@ -449,7 +461,9 @@ public class PlayerExtension {
                 && player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
             || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()
             || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial());
+            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()
+            || player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getMaterial()
+            || player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getAdditionalMaterial());
     }
 
     public boolean hasGunInMainHand() {
@@ -523,11 +537,15 @@ public class PlayerExtension {
         return playerInformation.getSelectedLethal();
     }
 
+    public TacticalEnum getSelectedTactical() {
+        return playerInformation.getSelectedTactical();
+    }
+
     public Killstreak getSelectedKillstreak() {
         return playerInformation.getSelectedKillstreak();
     }
 
-    public Lethal getActiveLethalEnum() {
+    public Lethal getActiveLethal() {
         return activeLethal;
     }
 
@@ -585,6 +603,10 @@ public class PlayerExtension {
         playerInformation.setSelectedLethal(lethal);
     }
 
+    public void setSelectedTactical(TacticalEnum tactical) {
+        playerInformation.setSelectedTactical(tactical);
+    }
+
     public void buyGun(String gunName, List<GunConfiguration> gunConfigurations) {
         for(GunConfiguration gun: gunConfigurations) {
             if(gun.getDisplayName().equals(gunName)) {
@@ -615,6 +637,12 @@ public class PlayerExtension {
         changeCredits(-lethal.getCostToBuy());
 
         playerInformation.addLethal(lethal);
+    }
+
+    public void buyTactical(TacticalEnum tactical) {
+        changeCredits(-tactical.getCostToBuy());
+
+        playerInformation.addTactical(tactical);
     }
 
     private Gun createGun(String gunName) {
@@ -710,6 +738,10 @@ public class PlayerExtension {
 
     public boolean ownsLethal(LethalEnum lethal) {
         return playerInformation.hasLethal(lethal);
+    }
+
+    public boolean ownsTactical(TacticalEnum tactical) {
+        return playerInformation.hasTactical(tactical);
     }
 
     public int getLevel() {

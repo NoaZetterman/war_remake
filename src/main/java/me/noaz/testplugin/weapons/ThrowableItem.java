@@ -46,15 +46,15 @@ public abstract class ThrowableItem implements Weapon {
             } else {
                 stack.setAmount(stack.getAmount() - 1);
             }
-            Item item = world.dropItem(playerExtension.getPlayer().getEyeLocation(), stack);
+
+            Item item = world.dropItem(playerExtension.getPlayer().getEyeLocation(), new ItemStack(stack.getType(),1));
 
             item.setPickupDelay(10000000);
             item.setVelocity(velocity);
-            item.setMetadata("damage", new FixedMetadataValue(plugin, 0));
-
-            startCooldown();
 
             flyUntilRemove(item);
+
+            startCooldown();
         }
     }
 

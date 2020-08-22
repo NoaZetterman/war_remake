@@ -95,8 +95,7 @@ public class PlayerExtension {
         activePerk = playerInformation.getSelectedPerk();
         activeKillstreak = playerInformation.getSelectedKillstreak();
         activeLethalEnum = playerInformation.getSelectedLethal();
-        //Get current used guns from database instead
-
+        activeTacticalEnum = playerInformation.getSelectedTactical();
         setSelectedResourcepack(playerInformation.getSelectedResourcepack());
 
         actionBarMessage = new String[9];
@@ -162,10 +161,8 @@ public class PlayerExtension {
 
         activePerk = playerInformation.getSelectedPerk();
         activeKillstreak = playerInformation.getSelectedKillstreak();
-        activeLethalEnum = playerInformation.getSelectedLethal();
-        activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
         activeTacticalEnum = playerInformation.getSelectedTactical();
-        activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
+        activeLethalEnum = playerInformation.getSelectedLethal();
 
 
         if(team.getTeamColor() == Color.GREEN) {
@@ -194,6 +191,9 @@ public class PlayerExtension {
         player.setGameMode(GameMode.ADVENTURE);
 
         player.teleport(team.getSpawnPoint());
+
+        activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
+        activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
 
 
     }

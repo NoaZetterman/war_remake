@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public enum TacticalEnum {
-    FLASHBANG(11, Material.APPLE, null, 2, 20),
+    FLASHBANG(11, Material.DIAMOND_ORE, null, 10, 20),
     NONE(-1, Material.AIR, null,0, 0);
 
     int loadoutMenuSlot;

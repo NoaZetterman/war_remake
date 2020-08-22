@@ -783,4 +783,8 @@ public class PlayerExtension {
     public void setLastDamager(PlayerExtension lastDamager) {
         this.lastDamager = lastDamager;
     }
+
+    public boolean playerIsOnEnemyTeam(Player player) {
+        return enemyTeam.playerIsOnTeam(player);
+    }
 }

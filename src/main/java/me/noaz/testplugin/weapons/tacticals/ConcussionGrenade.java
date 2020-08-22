@@ -14,19 +14,17 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collection;
 
-public class Flashbang extends ThrowableItem implements Tactical {
+public class ConcussionGrenade extends ThrowableItem implements Tactical {
     private int duration = 20 * 5;
 
 
-    public Flashbang(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
+    public ConcussionGrenade(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
         super(playerExtension, playerExtension.getPlayer().getWorld(), plugin, 4, 1.3f, itemSlot, cooldownTimeInTicks, 0);
     }
 
     @Override
     protected void activateItem(Location itemLocation) {
         world.spawnParticle(Particle.FLASH, itemLocation, 10, 1, 0.20, 1, 1);
-        //System.out.println(Particle.FLASH.getDataType()); = Void
-
         Collection<Entity> entitiesInWorld = world.getEntities();
         for (Entity entity : entitiesInWorld) {
             if (entity instanceof Player
@@ -36,19 +34,26 @@ public class Flashbang extends ThrowableItem implements Tactical {
 
                 Player player = (Player) entity;
 
-                PotionEffect currentBlindnessEffect = player.getPotionEffect(PotionEffectType.BLINDNESS);
-                if(currentBlindnessEffect != null && currentBlindnessEffect.getDuration() < 5) {
-                    player.removePotionEffect(PotionEffectType.BLINDNESS);
+                PotionEffect currentSlownessEffect = player.getPotionEffect(PotionEffectType.SLOW);
+                if(currentSlownessEffect != null && currentSlownessEffect.getDuration() < 5) {
+                    player.removePotionEffect(PotionEffectType.SLOW);
                 }
 
-                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration, 4, false, false, false));
+                PotionEffect currentNauseaEffect = player.getPotionEffect(PotionEffectType.CONFUSION);
+                if(currentNauseaEffect != null && currentNauseaEffect.getDuration() < 5) {
+                    player.removePotionEffect(PotionEffectType.CONFUSION);
+                }
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, duration, 4, false, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration, 4, false, false, false));
             }
         }
     }
 
     private boolean isInRange(Player player, Location center) {
         return Math.sqrt(Math.pow((center.getX()-player.getLocation().getX()),2) +
-                Math.pow((center.getZ()-player.getLocation().getZ()),2)) < 3.4 &&
+                Math.pow((center.getZ()-player.getLocation().getZ()),2)) < 2.4 &&
                 (player.getLocation().getY() - center.getY()) < 1 && (player.getLocation().getY() - center.getY()) > -2;
     }
 }
+

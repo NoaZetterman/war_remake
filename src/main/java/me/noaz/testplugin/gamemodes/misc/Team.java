@@ -68,6 +68,17 @@ public class Team {
         return players.contains(player);
     }
 
+    public boolean playerIsOnTeam(Player player) {
+        for (PlayerExtension playerExtension:
+                players) {
+            if(player == playerExtension.getPlayer()) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
     /**
      * @return Returns the amount of players in this team
      */

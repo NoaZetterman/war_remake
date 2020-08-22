@@ -44,7 +44,8 @@ public class Molotov extends ThrowableItem implements Lethal {
                     for(Entity entity : entitiesInWorld) {
                         if(entity instanceof Player && !playersAlreadyInFire.contains(entity)
                                 && ((Player) entity).getGameMode() != GameMode.SPECTATOR &&
-                                isInDamagingRange((Player)entity, itemLocation)) {
+                                isInDamagingRange((Player)entity, itemLocation) &&
+                                playerExtension.playerIsOnEnemyTeam((Player) entity)) {
 
                             Player player = (Player) entity;
 

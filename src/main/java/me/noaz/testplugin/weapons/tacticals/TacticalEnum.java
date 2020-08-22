@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 
 public enum TacticalEnum {
     FLASHBANG(11, Material.DIAMOND_ORE, null, 10, 20),
+    CONCUSSION_GRENADE(12, Material.DIAMOND_ORE, null, 10, 20),
+    SENSOR_GRENADE(13, Material.DIAMOND_ORE, null, 10, 20),
     NONE(-1, Material.AIR, null,0, 0);
 
     int loadoutMenuSlot;
@@ -40,6 +42,10 @@ public enum TacticalEnum {
         switch(this) {
             case FLASHBANG:
                 return new Flashbang(playerExtension, plugin, cooldownTimeInTicks);
+            case CONCUSSION_GRENADE:
+                return new ConcussionGrenade(playerExtension, plugin, cooldownTimeInTicks);
+            case SENSOR_GRENADE:
+                return new SensorGrenade(playerExtension, plugin, cooldownTimeInTicks);
             case NONE:
                 return new NoTactical();
             default:

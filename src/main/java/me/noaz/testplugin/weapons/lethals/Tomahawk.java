@@ -24,7 +24,7 @@ public class Tomahawk implements Lethal {
     }
 
     @Override
-    public void use() {
+    public synchronized void use() {
         if(!hasCooldown) {
             ItemStack stack = playerExtension.getPlayer().getInventory().getItem(itemSlot);
             if (stack.getAmount() == 1) {

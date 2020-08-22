@@ -11,20 +11,22 @@ import org.bukkit.inventory.ItemStack;
  * and common factors between different lethals.
  */
 public enum LethalEnum {
-    MOLOTOV(10, Material.APPLE, 2, 20),
-    GRENADE(11, Material.APPLE, 2, 20),
-    TOMAHAWK(12, Material.APPLE, 1, 20),
-    C4(13, Material.LEVER, 1, 20),
-    NONE(-1, Material.AIR, 0, 0);
+    MOLOTOV(10, Material.APPLE, null, 2, 20),
+    GRENADE(11, Material.APPLE, null,2, 20),
+    TOMAHAWK(12, Material.APPLE, null,1, 20),
+    C4(13, Material.LEVER, Material.OAK_DOOR,10, 20),
+    NONE(-1, Material.AIR, null,0, 0);
 
     int loadoutMenuSlot;
     Material material;
+    Material additionalMaterial;
     int amount;
     int cooldownTimeInTicks;
 
-    LethalEnum(int loadoutMenuSlot, Material material, int amount, int cooldownTimeInTicks) {
+    LethalEnum(int loadoutMenuSlot, Material material, Material additionalMaterial,int amount, int cooldownTimeInTicks) {
         this.loadoutMenuSlot = loadoutMenuSlot;
         this.material = material;
+        this.additionalMaterial = additionalMaterial;
         this.amount = amount;
         this.cooldownTimeInTicks = cooldownTimeInTicks;
 
@@ -50,7 +52,7 @@ public enum LethalEnum {
             case MOLOTOV:
                 return new Molotov(playerExtension, plugin, cooldownTimeInTicks);
             case C4:
-                return new C4(playerExtension, plugin, cooldownTimeInTicks);
+                return new C4(playerExtension, plugin, cooldownTimeInTicks, material, additionalMaterial);
             case NONE:
                 return new NoLethal();
             default:
@@ -61,6 +63,14 @@ public enum LethalEnum {
 
     public Material getMaterial() {
         return material;
+    }
+
+    /**
+     * May be null
+     * @return Returns an additional material that belongs to a Lethal. Such as C4 Detonator.
+     */
+    public Material getAdditionalMaterial() {
+        return additionalMaterial;
     }
 
     public int getUnlockLevel() {

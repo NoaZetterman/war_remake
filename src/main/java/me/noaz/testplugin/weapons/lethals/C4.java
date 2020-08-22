@@ -2,38 +2,74 @@ package me.noaz.testplugin.weapons.lethals;
 
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
-import org.bukkit.Axis;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.data.type.Switch;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.List;
-
+import java.util.*;
+//Does no work properly, can "detonate" not yet placed c4s,
+//Removes 2 items at once.:c
 
 public class C4 implements Lethal {
     private PlayerExtension playerExtension;
     private TestPlugin plugin;
     private int cooldownTimeInTicks;
     private int placeRange = 4;
+    private int explosionRange = 2;
+    private boolean hasCooldown = false;
 
-    public C4(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
+    private int additionalItemSlot = 7;
+
+    private Material detonatorMaterial;
+    private Material explosiveMaterial;
+
+    private LinkedList<Block> placedExplosives = new LinkedList<Block>();
+
+    public C4(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks, Material explosiveMaterial,
+              Material detonatorMaterial) {
         this.playerExtension = playerExtension;
         this.plugin = plugin;
         this.cooldownTimeInTicks = cooldownTimeInTicks;
+        this.explosiveMaterial = explosiveMaterial;
+        this.detonatorMaterial = detonatorMaterial;
     }
 
     @Override
-    public void use() {
-        placeLever(playerExtension.getPlayer().getLastTwoTargetBlocks(null, placeRange));
-        //ONLY slab type top/bottom left (+ testing?)
+    public synchronized void use() {
+        if(!hasCooldown) {
+            if (playerExtension.getPlayer().getInventory().getItemInMainHand().getType() == explosiveMaterial) {
+                placeLever(playerExtension.getPlayer().getLastTwoTargetBlocks(null, placeRange));
+            } else if (playerExtension.getPlayer().getInventory().getItemInMainHand().getType() == detonatorMaterial) {
+                explode();
+            }
+
+            startCooldown();
+        }
 
         //Blows the C4
         //Block block = playerExtension.getPlayer().getLastTwoTargetBlocks(null,10).get(0);
         //block.setType(Material.LEVER);
         //Its a lever boi that gets placed where the player clicks to place it
+    }
+
+    private void explode() {
+        System.out.println(placedExplosives.peekLast());
+        while(placedExplosives.peekLast() != null) {
+            Block block = placedExplosives.removeLast();
+            block.setType(Material.AIR);
+            Location location = block.getLocation();
+            location.getWorld().createExplosion(location, explosionRange,false,false, playerExtension.getPlayer());
+        }
+
+        playerExtension.getPlayer().getInventory().setItem(additionalItemSlot, null);
+
     }
 
     private void placeLever(List<Block> lastTwoTargetBlocksBlocks) {
@@ -42,13 +78,11 @@ public class C4 implements Lethal {
         Block blockToChange = lastTwoTargetBlocksBlocks.get(0);
 
         BlockFace blockFace = clickedBlock.getFace(blockToChange);
-        System.out.println("BlockFace " + blockFace);
 
-        if(blockFace != null && isOkToPlaceOnBlock(clickedBlock)) {
+        if(blockFace != null && isOkToPlaceOnBlock(clickedBlock, blockFace)) {
 
-            System.out.println("Block to change type: " + blockToChange.getType());
             if (blockToChange.getType() == Material.AIR) {
-            blockToChange.setType(Material.LEVER);
+                blockToChange.setType(Material.LEVER);
 
                 BlockData blockData = blockToChange.getBlockData();
                 if (blockData instanceof Switch) {
@@ -60,18 +94,39 @@ public class C4 implements Lethal {
                             ((Switch) blockData).setFace(Switch.Face.FLOOR);
                             break;
                         default:
-                            ((Switch) blockData).setFace(Switch.Face.WALL);
+                            //((Switch) blockData).setFace(Switch.Face.WALL);
                             ((Switch) blockData).setFacing(blockFace);
                             break;
                     }
 
                     blockToChange.setBlockData(blockData);
                 }
+                placedExplosives.add(blockToChange);
+                ItemStack stack = playerExtension.getPlayer().getInventory().getItem(itemSlot);
+                if (stack.getAmount() == 1) {
+                    playerExtension.getPlayer().getInventory().setItem(itemSlot, null);
+                } else {
+                    stack.setAmount(stack.getAmount() - 1);
+                }
             }
         }
+
+        playerExtension.getPlayer().getInventory().setItem(additionalItemSlot, new ItemStack(detonatorMaterial));
+
     }
 
-    private boolean isOkToPlaceOnBlock(Block clickedBlock) {
+    private void startCooldown() {
+        hasCooldown = true;
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                hasCooldown = false;
+            }
+        }.runTaskLater(plugin, cooldownTimeInTicks);
+    }
+
+    private boolean isOkToPlaceOnBlock(Block clickedBlock, BlockFace blockFace) {
         switch(clickedBlock.getType()) {
             case BARRIER:
                 return false;
@@ -130,10 +185,10 @@ public class C4 implements Lethal {
 
         if(clickedBlock.getBlockData() instanceof Slab) {
             Slab slab = (Slab) clickedBlock.getBlockData();
-            if(slab.getType() == Slab.Type.DOUBLE) {
+            if(slab.getType() == Slab.Type.DOUBLE ||
+                    slab.getType() == Slab.Type.TOP && blockFace == BlockFace.UP ||
+                    slab.getType() == Slab.Type.BOTTOM && blockFace == BlockFace.DOWN) {
                 return true;
-            } else if(slab.getType() == Slab.Type.TOP /*+ blockface stuff*/) {
-
             }
 
         }

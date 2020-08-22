@@ -228,7 +228,7 @@ public class DamageEvents implements Listener {
                                 ChatMessage.playerGrenadeKilled(damager, damagedPlayer,
                                         damagedPlayerExtension.getTeamChatColor(), gameLoop.getCurrentGamemode());
 
-                                damagerExtension.addKill(Reward.KNIFE_KILL);
+                                damagerExtension.addKill(Reward.GRENADE_KILL);
 
                                 damagedPlayerExtension.respawn(damager);
                                 damagedPlayerExtension.addDeath();

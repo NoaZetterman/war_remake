@@ -35,7 +35,7 @@ public abstract class ThrowableItem implements Weapon {
         this.damageOnImpact = damageOnImpact;
     }
 
-    public void use() {
+    public synchronized void use() {
         if(!hasCooldown) {
             Vector velocity = playerExtension.getPlayer().getLocation().getDirection();
 

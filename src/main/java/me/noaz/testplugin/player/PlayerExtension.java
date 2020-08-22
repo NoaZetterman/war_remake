@@ -420,11 +420,13 @@ public class PlayerExtension {
      * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
     public Weapon getWeaponInMainHand() {
-        if(player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()) {
+        if (player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()) {
             return activePrimaryGun;
-        } else if(player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()) {
+        } else if (player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()) {
             return activeSecondaryGun;
-        } else if(player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()) {
+        } else if (player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()) {
+            return activeLethal;
+        } else if(player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()) {
             return activeLethal;
         } else {
             return null;
@@ -446,7 +448,8 @@ public class PlayerExtension {
         return (isPlayingGame()
                 && player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
             || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial());
+            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()
+            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial());
     }
 
     public boolean hasGunInMainHand() {

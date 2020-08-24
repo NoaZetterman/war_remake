@@ -21,6 +21,7 @@ import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
 import me.noaz.testplugin.weapons.lethals.*;
+import me.noaz.testplugin.weapons.tacticals.TacInsert;
 import me.noaz.testplugin.weapons.tacticals.Tactical;
 import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.*;
@@ -189,12 +190,16 @@ public class PlayerExtension {
         player.setHealth(20D);
         player.setGameMode(GameMode.ADVENTURE);
 
-        player.teleport(customTeam.getSpawnPoint());
+        //If player uses TacInsert and has picked a new spawn location, spawn at that location instead of
+        // a given spawnpoint.
+        if(activeTactical instanceof TacInsert && ((TacInsert) activeTactical).hasSavedLocation()) {
+            player.teleport(((TacInsert) activeTactical).getSavedLocation());
+        } else {
+            player.teleport(customTeam.getSpawnPoint());
+        }
 
         activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
         activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
-
-
     }
 
     /**

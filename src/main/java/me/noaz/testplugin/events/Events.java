@@ -53,21 +53,24 @@ public class Events implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-        Action action = event.getAction();
+        if(event.getItem() != null && !event.getItem().getType().isEdible()) {
 
-        if(player.isPlayingGame() && player.hasWeaponInMainHand() && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
-            player.getWeaponInMainHand().use();
-        } else if(event.getPlayer().getInventory().getItemInMainHand().getType() == Material.DIAMOND_BLOCK) {
-            LoadoutMenu.loadoutStartScreen(player);
-        }
+            PlayerExtension player = data.getPlayerExtension(event.getPlayer());
+            Action action = event.getAction();
 
-        if(action == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
-            if(player.hasGunInMainHand()) {
-                changeScopeWhenArmswingIsActivatedByRightclick(event.getClickedBlock().getType(), player);
+            if (player.isPlayingGame() && player.hasWeaponInMainHand() && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
+                player.getWeaponInMainHand().use();
+            } else if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.DIAMOND_BLOCK) {
+                LoadoutMenu.loadoutStartScreen(player);
             }
 
-            cancelClickActions(event);
+            if (action == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
+                if (player.hasGunInMainHand()) {
+                    changeScopeWhenArmswingIsActivatedByRightclick(event.getClickedBlock().getType(), player);
+                }
+
+                cancelClickActions(event);
+            }
         }
     }
 
@@ -240,6 +243,15 @@ public class Events implements Listener {
                 player.getWeaponInMainHand().use();
             }
         }
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerConsumeItemEvent(PlayerItemConsumeEvent event) {
+        if(event.getItem().getType() == Material.GOLDEN_APPLE) {
+            data.getPlayerExtension(event.getPlayer()).getWeaponInMainHand().use();
+        }
+
         event.setCancelled(true);
     }
 

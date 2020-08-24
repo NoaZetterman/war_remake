@@ -6,10 +6,10 @@ import me.noaz.testplugin.weapons.ThrowableItem;
 import net.minecraft.server.v1_14_R1.MobEffect;
 import net.minecraft.server.v1_14_R1.MobEffectList;
 import net.minecraft.server.v1_14_R1.PacketPlayOutEntityEffect;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -19,7 +19,6 @@ import java.util.Collection;
 
 public class SensorGrenade extends ThrowableItem implements Tactical {
         private int duration = 20 * 5;
-
 
         public SensorGrenade(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
             super(playerExtension, playerExtension.getPlayer().getWorld(), plugin, 4, 1.3f, itemSlot, cooldownTimeInTicks, 0);

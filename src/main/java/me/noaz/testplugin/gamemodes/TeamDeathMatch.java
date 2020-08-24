@@ -1,9 +1,8 @@
 package me.noaz.testplugin.gamemodes;
 
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
-import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
@@ -18,10 +17,10 @@ public class TeamDeathMatch extends Game {
         this.players = players;
         this.map = map;
 
-        teams = new Team[] {new Team(Color.RED, ChatColor.RED), new Team(Color.BLUE, ChatColor.BLUE)};
+        customTeams = new CustomTeam[] {new CustomTeam(Color.RED, ChatColor.RED), new CustomTeam(Color.BLUE, ChatColor.BLUE)};
 
-        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
-        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
+        customTeams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
+        customTeams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
         assignTeamToAllPlayers(players);
     }
@@ -32,21 +31,21 @@ public class TeamDeathMatch extends Game {
      */
     @Override
     public void assignTeam(PlayerExtension player) {
-        if(teams[1].getTeamSize() == teams[0].getTeamSize()) {
+        if(customTeams[1].getTeamSize() == customTeams[0].getTeamSize()) {
             Random random = new Random();
             if(random.nextInt(2) == 0) {
-                teams[1].addPlayer(player);
-                player.setTeam(teams[1], teams[0]);
+                customTeams[1].addPlayer(player);
+                player.setTeam(customTeams[1], customTeams[0]);
             } else {
-                teams[0].addPlayer(player);
-                player.setTeam(teams[0], teams[1]);
+                customTeams[0].addPlayer(player);
+                player.setTeam(customTeams[0], customTeams[1]);
             }
-        } else if(teams[1].getTeamSize() > teams[0].getTeamSize()) {
-            teams[0].addPlayer(player);
-            player.setTeam(teams[0], teams[1]);
+        } else if(customTeams[1].getTeamSize() > customTeams[0].getTeamSize()) {
+            customTeams[0].addPlayer(player);
+            player.setTeam(customTeams[0], customTeams[1]);
         } else {
-            teams[1].addPlayer(player);
-            player.setTeam(teams[1], teams[0]);
+            customTeams[1].addPlayer(player);
+            player.setTeam(customTeams[1], customTeams[0]);
         }
     }
 
@@ -58,26 +57,26 @@ public class TeamDeathMatch extends Game {
     @Override
     public void updatePlayerList() {
         for(Player player : players.keySet()) {
-            PlayerListMessage.setTeamDeathMatchHeader(player, teams[0].getKills(), teams[1].getKills());
+            PlayerListMessage.setTeamDeathMatchHeader(player, customTeams[0].getKills(), customTeams[1].getKills());
         }
     }
 
     @Override
     public void end(boolean forceEnd, Gamemode gamemode) {
         String winner = "None";
-        Team winnerTeam = teams[0];
-        Team loserTeam = teams[1];
+        CustomTeam winnerCustomTeam = customTeams[0];
+        CustomTeam loserCustomTeam = customTeams[1];
 
-        if(teams[0].getKills() > teams[1].getKills()) {
+        if(customTeams[0].getKills() > customTeams[1].getKills()) {
             winner = "Red";
-            winnerTeam = teams[0];
-            loserTeam = teams[1];
-        } else if(teams[0].getKills() < teams[1].getKills()) {
+            winnerCustomTeam = customTeams[0];
+            loserCustomTeam = customTeams[1];
+        } else if(customTeams[0].getKills() < customTeams[1].getKills()) {
             winner = "Blue";
-            winnerTeam = teams[1];
-            loserTeam = teams[0];
+            winnerCustomTeam = customTeams[1];
+            loserCustomTeam = customTeams[0];
         }
 
-        super.endGame(forceEnd, gamemode, winner, winnerTeam, loserTeam);
+        super.endGame(forceEnd, gamemode, winner, winnerCustomTeam, loserCustomTeam);
     }
 }

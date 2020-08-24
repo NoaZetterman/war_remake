@@ -6,11 +6,10 @@ import me.noaz.testplugin.inventories.DefaultInventories;
 import me.noaz.testplugin.ScoreManager;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.killstreaks.Killstreak;
-import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.ChatMessage;
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.weapons.Weapon;
 import me.noaz.testplugin.weapons.guns.FireType;
@@ -49,8 +48,8 @@ public class PlayerExtension {
     private PlayerInformation playerInformation;
     private ScoreManager scoreManager;
 
-    private Team team;
-    private Team enemyTeam;
+    private CustomTeam customTeam;
+    private CustomTeam enemyCustomTeam;
 
     private Gun activePrimaryGun;
     private Gun activeSecondaryGun;
@@ -119,17 +118,17 @@ public class PlayerExtension {
         player.removePotionEffect(PotionEffectType.SLOW);
 
         //If killed by infected, switch team
-        if(enemyTeam.getTeamColor() == Color.GREEN) {
-            team.removePlayer(this);
-            enemyTeam.addPlayer(this);
-            Team temp = enemyTeam;
-            enemyTeam = team;
-            team = temp;
+        if(enemyCustomTeam.getTeamColor() == Color.GREEN) {
+            customTeam.removePlayer(this);
+            enemyCustomTeam.addPlayer(this);
+            CustomTeam temp = enemyCustomTeam;
+            enemyCustomTeam = customTeam;
+            customTeam = temp;
             BroadcastMessage.infectKill(getName());
         }
-        player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
+        player.setPlayerListName(customTeam.getTeamColorAsChatColor() + player.getName());
 
-        player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+        player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + customTeam.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         if(killer != null && killer.getGameMode() != GameMode.SPECTATOR) {
             player.setSpectatorTarget(killer);
@@ -143,7 +142,7 @@ public class PlayerExtension {
             public void run() {
                 player.sendTitle("Respawning in " + i, "", 1,20,1);
                 i--;
-                if(team == null) {
+                if(customTeam == null) {
                     player.setGameMode(GameMode.ADVENTURE);
                     this.cancel();
                 } else if(i < 0) {
@@ -165,8 +164,8 @@ public class PlayerExtension {
         activeLethalEnum = playerInformation.getSelectedLethal();
 
 
-        if(team.getTeamColor() == Color.GREEN) {
-            DefaultInventories.giveInfectedInventory(player.getInventory(), team.getTeamColor());
+        if(customTeam.getTeamColor() == Color.GREEN) {
+            DefaultInventories.giveInfectedInventory(player.getInventory(), customTeam.getTeamColor());
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
             Arrays.fill(actionBarMessage, "");
         } else {
@@ -177,7 +176,7 @@ public class PlayerExtension {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 0, false, false, false));
             }
 
-            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), team.getTeamColor(), activePrimaryGun,
+            DefaultInventories.giveDefaultInGameInventory(player.getInventory(), customTeam.getTeamColor(), activePrimaryGun,
                     activeSecondaryGun, activeLethalEnum, activeTacticalEnum);
         }
 
@@ -190,7 +189,7 @@ public class PlayerExtension {
         player.setHealth(20D);
         player.setGameMode(GameMode.ADVENTURE);
 
-        player.teleport(team.getSpawnPoint());
+        player.teleport(customTeam.getSpawnPoint());
 
         activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
         activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
@@ -217,22 +216,22 @@ public class PlayerExtension {
             activeSecondaryGun.addBullets(activeSecondaryGun.getConfiguration().getScavengerAmmunition());
         }
 
-        if(team != null) {
-            team.addKill();
+        if(customTeam != null) {
+            customTeam.addKill();
         }
 
-        if(enemyTeam != null) {
+        if(enemyCustomTeam != null) {
             int killstreak = playerInformation.getKillstreak();
             if(activePerk == Perk.HARDLINE) {
                 killstreak++;
             }
 
             if(killstreak == Killstreak.RESUPPLY.getKillAmount()) {
-                Killstreak.RESUPPLY.use(this, team, enemyTeam);
+                Killstreak.RESUPPLY.use(this, customTeam, enemyCustomTeam);
             } else if(killstreak == activeKillstreak.getKillAmount()) {
-                activeKillstreak.use(this, team, enemyTeam);
+                activeKillstreak.use(this, customTeam, enemyCustomTeam);
             } else if(killstreak == Killstreak.NUKE.getKillAmount()) {
-                Killstreak.NUKE.use(this, team, enemyTeam);
+                Killstreak.NUKE.use(this, customTeam, enemyCustomTeam);
             }
         }
     }
@@ -268,34 +267,34 @@ public class PlayerExtension {
 
         updateGameScoreboard();
 
-        team.captureFlag();
-        enemyTeam.enemyCapturedFlag();
-        ChatMessage.playerCapturedFlag(player, team.getTeamColorAsChatColor());
+        customTeam.captureFlag();
+        enemyCustomTeam.enemyCapturedFlag();
+        ChatMessage.playerCapturedFlag(player, customTeam.getTeamColorAsChatColor());
     }
 
     /**
      * Makes this player start playing a game at given location with correct equipment
      */
-    public void startPlayingGame(GameMap map) {
+    public void startPlayingGame() {
         updateGameScoreboard();
 
-        player.setPlayerListName(team.getTeamColorAsChatColor() + player.getName());
+        player.setPlayerListName(customTeam.getTeamColorAsChatColor() + player.getName());
         //TODO: Make a separate class for display name stuff
-        player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + team.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
+        player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + customTeam.getTeamColorAsChatColor() + player.getName() + ChatColor.WHITE);
 
         spawn();
     }
 
-    public void endGame(Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam) {
+    public void endGame(Gamemode gamemode, String winner, CustomTeam winnerCustomTeam, CustomTeam loserCustomTeam) {
         switch(gamemode) {
             case TEAM_DEATHMATCH:
-                ChatMessage.displayTeamDeathmatchEndGame(winner, winnerTeam, loserTeam, player);
+                ChatMessage.displayTeamDeathmatchEndGame(winner, winnerCustomTeam, loserCustomTeam, player);
                 break;
             case CAPTURE_THE_FLAG:
-                ChatMessage.displayCaptureTheFlagEndGame(winner, winnerTeam, loserTeam, player);
+                ChatMessage.displayCaptureTheFlagEndGame(winner, winnerCustomTeam, loserCustomTeam, player);
                 break;
             case INFECT:
-                ChatMessage.displayInfectEndGame(winner, winnerTeam, player);
+                ChatMessage.displayInfectEndGame(winner, winnerCustomTeam, player);
                 break;
         }
 
@@ -319,9 +318,10 @@ public class PlayerExtension {
      * Ends the game for this player, teleports the player to spawn and gives spawn inventory, and other spawn configurations
      */
     public void leaveGame() {
-        if(team != null) {
+        if(customTeam != null) {
             playerInformation.updateTotalScore();
             updateLobbyScoreboard();
+
 
             for(PotionEffect effect : player.getActivePotionEffects()) {
                 player.removePotionEffect(effect.getType());
@@ -330,9 +330,9 @@ public class PlayerExtension {
             player.setPlayerListName(player.getName());
             player.setDisplayName("Lvl " + playerInformation.getLevel() + " " + ChatColor.WHITE + player.getName());
 
-            team.removePlayer(this);
-            enemyTeam = null;
-            team = null;
+            customTeam.removePlayer(this);
+            enemyCustomTeam = null;
+            customTeam = null;
 
             activePrimaryGun.reset();
             activeSecondaryGun.reset();
@@ -414,7 +414,7 @@ public class PlayerExtension {
      * @return True if the player is in a game, false otherwise
      */
     public boolean isPlayingGame() {
-        return (team != null);
+        return (customTeam != null);
     }
 
     /**
@@ -558,16 +558,16 @@ public class PlayerExtension {
     }
 
     public ChatColor getTeamChatColor() {
-        if(team != null) {
-            return team.getTeamColorAsChatColor();
+        if(customTeam != null) {
+            return customTeam.getTeamColorAsChatColor();
         } else {
             return ChatColor.WHITE;
         }
     }
 
     public Color getTeamColor() {
-        if(team != null) {
-            return team.getTeamColor();
+        if(customTeam != null) {
+            return customTeam.getTeamColor();
         } else {
             return Color.WHITE;
         }
@@ -678,11 +678,11 @@ public class PlayerExtension {
     }
 
     /**
-     * @param team The team that the player should be in
+     * @param customTeam The team that the player should be in
      */ //Makes a 2 way relation which is weird?
-    public void setTeam(Team team, Team enemyTeam) {
-        this.team = team;
-        this.enemyTeam = enemyTeam;
+    public void setTeam(CustomTeam customTeam, CustomTeam enemyCustomTeam) {
+        this.customTeam = customTeam;
+        this.enemyCustomTeam = enemyCustomTeam;
     }
 
     public String getName() {
@@ -785,6 +785,6 @@ public class PlayerExtension {
     }
 
     public boolean playerIsOnEnemyTeam(Player player) {
-        return enemyTeam.playerIsOnTeam(player);
+        return enemyCustomTeam.playerIsOnTeam(player);
     }
 }

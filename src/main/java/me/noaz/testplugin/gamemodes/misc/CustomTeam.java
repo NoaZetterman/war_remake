@@ -8,6 +8,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 
@@ -18,29 +20,30 @@ import java.util.*;
  * @author Noa Zetterman
  * @version 2019-12-13
  */
-public class Team {
+public class CustomTeam {
     private List<PlayerExtension> players = new ArrayList<>();
     private Color teamColor;
     private ChatColor chatColor;
     private List<Location> spawnPoints;
-    private Random random = new Random();;
+    private Random random = new Random();
 
     private int kills = 0;
     private int captures = 0;
 
     private Flag flag;
 
+
     /**
      * Create a new, empty team
      * @param teamColor The color this team should have, used on leather armor
      */
-    public Team(Color teamColor, ChatColor chatColor) {
+    public CustomTeam(Color teamColor, ChatColor chatColor) {
         this.teamColor = teamColor;
         this.chatColor = chatColor;
     }
 
-    public Team(Color teamColor, ChatColor chatColor, Location flagLocation, Location enemyFlagLocation, GameMap map, TestPlugin plugin,
-                HashMap<Player, PlayerExtension> players) {
+    public CustomTeam(Color teamColor, ChatColor chatColor, Location flagLocation, Location enemyFlagLocation, GameMap map, TestPlugin plugin,
+                      HashMap<Player, PlayerExtension> players) {
         this.teamColor = teamColor;
         this.chatColor = chatColor;
         this.flag = new Flag(teamColor, flagLocation, enemyFlagLocation, map, plugin, players);

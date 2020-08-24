@@ -1,9 +1,8 @@
 package me.noaz.testplugin.gamemodes;
 
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
-import me.noaz.testplugin.messages.BroadcastMessage;
 import me.noaz.testplugin.messages.PlayerListMessage;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.ChatColor;
@@ -17,25 +16,25 @@ public class Infect extends Game {
         this.map = map;
         this.players = players;
 
-        teams = new Team[] {new Team(Color.GREEN, ChatColor.DARK_GREEN), new Team(Color.BLUE, ChatColor.BLUE)};
+        customTeams = new CustomTeam[] {new CustomTeam(Color.GREEN, ChatColor.DARK_GREEN), new CustomTeam(Color.BLUE, ChatColor.BLUE)};
 
-        teams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
-        teams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
+        customTeams[0].setSpawnPoints(map.getLocationsByName("redspawn"));
+        customTeams[1].setSpawnPoints(map.getLocationsByName("bluespawn"));
 
         for(PlayerExtension player : players.values()) {
-            teams[1].addPlayer(player);
-            player.setTeam(teams[1], teams[0]);
+            customTeams[1].addPlayer(player);
+            player.setTeam(customTeams[1], customTeams[0]);
         }
 
         Random random = new Random();
         PlayerExtension root = players.values().toArray(new PlayerExtension[0])[random.nextInt(players.size())];
 
-        teams[1].removePlayer(root);
-        teams[0].addPlayer(root);
-        root.setTeam(teams[0], teams[1]);
+        customTeams[1].removePlayer(root);
+        customTeams[0].addPlayer(root);
+        root.setTeam(customTeams[0], customTeams[1]);
 
         for(PlayerExtension player: players.values()) {
-            player.startPlayingGame(map);
+            player.startPlayingGame();
         }
         //Also add special root effect stuff I guess
     }
@@ -43,42 +42,42 @@ public class Infect extends Game {
 
     @Override
     public void assignTeam(PlayerExtension player) {
-        if(player.isPlayingGame() && teams[1].playerIsOnTeam(player)) {
-            teams[1].removePlayer(player);
+        if(player.isPlayingGame() && customTeams[1].playerIsOnTeam(player)) {
+            customTeams[1].removePlayer(player);
         }
 
-        teams[0].addPlayer(player);
+        customTeams[0].addPlayer(player);
 
-        player.setTeam(teams[0], teams[1]);
+        player.setTeam(customTeams[0], customTeams[1]);
     }
 
     @Override
     public boolean teamHasWon() {
-        return teams[1].getPlayers().size() == 0;
+        return customTeams[1].getPlayers().size() == 0;
     }
 
     @Override
     public void updatePlayerList() {
         for(Player player : players.keySet()) {
-            PlayerListMessage.setInfectHeader(player, teams[1].getTeamSize());
+            PlayerListMessage.setInfectHeader(player, customTeams[1].getTeamSize());
         }
     }
 
     @Override public void end(boolean forceEnd, Gamemode gamemode) {
         String winner;
-        Team winnerTeam;
-        Team loserTeam;
-        if(teams[1].getTeamSize() == 0) {
+        CustomTeam winnerCustomTeam;
+        CustomTeam loserCustomTeam;
+        if(customTeams[1].getTeamSize() == 0) {
             winner = "Zombies";
-            winnerTeam = teams[0];
-            loserTeam = teams[1];
+            winnerCustomTeam = customTeams[0];
+            loserCustomTeam = customTeams[1];
         } else {
             winner = "Humans";
-            winnerTeam = teams[1];
-            loserTeam = teams[0];
+            winnerCustomTeam = customTeams[1];
+            loserCustomTeam = customTeams[0];
         }
 
-        super.endGame(forceEnd, gamemode, winner, winnerTeam, loserTeam);
+        super.endGame(forceEnd, gamemode, winner, winnerCustomTeam, loserCustomTeam);
     }
 
 }

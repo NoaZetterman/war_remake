@@ -1,6 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.maps.Gamemode;
@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Abstract class for a game - Holds the basic components of a gamemode / type of game.
  */
 public abstract class Game {
-    protected Team[] teams;
+    protected CustomTeam[] customTeams;
     protected GameMap map;
     protected HashMap<Player,PlayerExtension> players;
     protected int gameLengthInSeconds = 360;
@@ -26,7 +26,7 @@ public abstract class Game {
     protected void assignTeamToAllPlayers(HashMap<Player, PlayerExtension> players) {
         for(PlayerExtension playerExtension : players.values()) {
             assignTeam(playerExtension);
-            playerExtension.startPlayingGame(map);
+            playerExtension.startPlayingGame();
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class Game {
     public boolean join(PlayerExtension player) {
         if(!player.isPlayingGame()) {
             assignTeam(player);
-            player.startPlayingGame(map);
+            player.startPlayingGame();
             return true;
         }
 
@@ -65,7 +65,7 @@ public abstract class Game {
      */
     public boolean leave(PlayerExtension player) {
         boolean leftTeam = false;
-        for(Team t : teams) {
+        for(CustomTeam t : customTeams) {
             if(t.playerIsOnTeam(player)) {
                 player.leaveGame();
                 leftTeam = true;
@@ -82,9 +82,9 @@ public abstract class Game {
      * @return True if players are on the same team, false otherwise
      */
     public boolean playersOnSameTeam(PlayerExtension player1, PlayerExtension player2) {
-        if(teams[1].playerIsOnTeam(player1) && teams[1].playerIsOnTeam(player2)) {
+        if(customTeams[1].playerIsOnTeam(player1) && customTeams[1].playerIsOnTeam(player2)) {
             return true;
-        } else if(teams[0].playerIsOnTeam(player1) && teams[0].playerIsOnTeam(player2)) {
+        } else if(customTeams[0].playerIsOnTeam(player1) && customTeams[0].playerIsOnTeam(player2)) {
             return true;
         } else {
             return false;
@@ -106,13 +106,13 @@ public abstract class Game {
      */
     public abstract void end(boolean forceEnd, Gamemode gamemode);
 
-    protected void endGame(boolean forceEnd, Gamemode gamemode, String winner, Team winnerTeam, Team loserTeam) {
+    protected void endGame(boolean forceEnd, Gamemode gamemode, String winner, CustomTeam winnerCustomTeam, CustomTeam loserCustomTeam) {
         for (PlayerExtension player : players.values()) {
             if(player.isPlayingGame()) {
                 if (forceEnd) {
                     player.forceEndGame();
                 } else {
-                    player.endGame(gamemode, winner, winnerTeam, loserTeam);
+                    player.endGame(gamemode, winner, winnerCustomTeam, loserCustomTeam);
                 }
             }
         }

@@ -245,8 +245,8 @@ public class DamageEvents implements Listener {
                                 damagedPlayerExtension.addDeath();
                                 damagedPlayerExtension.setLastDamager(damagerExtension);
                             } else {
+                                damagedPlayer.damage(0.1, damager); //Only for the damage effect
                                 damagedPlayer.setHealth(damagedPlayer.getHealth() - event.getDamage());
-                                damagedPlayer.damage(0, damager); //Only for the damage effect
                                 damagedPlayerExtension.setLastDamager(damagerExtension);
                             }
                             break;

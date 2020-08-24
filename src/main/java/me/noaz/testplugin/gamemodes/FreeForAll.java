@@ -1,6 +1,6 @@
 package me.noaz.testplugin.gamemodes;
 
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.messages.PlayerListMessage;
@@ -18,9 +18,9 @@ public class FreeForAll extends Game {
         this.players = players;
         this.map = map;
 
-        teams = new Team[] {new Team(Color.fromRGB(255,85,255), ChatColor.LIGHT_PURPLE)};
+        customTeams = new CustomTeam[] {new CustomTeam(Color.fromRGB(255,85,255), ChatColor.LIGHT_PURPLE)};
 
-        teams[0].setSpawnPoints(map.getLocationsByName("ffaspawn"));
+        customTeams[0].setSpawnPoints(map.getLocationsByName("ffaspawn"));
 
         assignTeamToAllPlayers(players);
     }
@@ -37,13 +37,13 @@ public class FreeForAll extends Game {
      */
     @Override
     public void assignTeam(PlayerExtension player) {
-        teams[0].addPlayer(player);
-        player.setTeam(teams[0], teams[0]);
+        customTeams[0].addPlayer(player);
+        player.setTeam(customTeams[0], customTeams[0]);
     }
 
     @Override
     public boolean teamHasWon() {
-        for(PlayerExtension player : teams[0].getPlayers()) {
+        for(PlayerExtension player : customTeams[0].getPlayers()) {
             int kills = player.getPlayerInformation().getKillsThisGame();
             if(kills >= maxKills) {
                 return true;
@@ -56,7 +56,7 @@ public class FreeForAll extends Game {
     public void updatePlayerList() {
         String leaderName = "";
         int leaderKills = 0;
-        for(PlayerExtension player : teams[0].getPlayers()) {
+        for(PlayerExtension player : customTeams[0].getPlayers()) {
             int kills = player.getPlayerInformation().getKillsThisGame();
             if(leaderKills < kills) {
                 leaderKills = kills;
@@ -73,7 +73,7 @@ public class FreeForAll extends Game {
     public void end(boolean forceEnd, Gamemode gamemode) {
         PlayerExtension leader = null;
         int leaderKills = 0;
-        for(PlayerExtension player : teams[0].getPlayers()) {
+        for(PlayerExtension player : customTeams[0].getPlayers()) {
             int kills = player.getPlayerInformation().getKillsThisGame();
             if(leaderKills <= kills) {
                 leaderKills = kills;

@@ -1,7 +1,7 @@
 package me.noaz.testplugin.killstreaks;
 
 import me.noaz.testplugin.Buyable;
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.Material;
 
@@ -25,8 +25,8 @@ public enum Killstreak {
 
     }
 
-    public void use(PlayerExtension player, Team friendlyTeam, me.noaz.testplugin.gamemodes.misc.Team enemyTeam) {
-        this.killstreak.use(player, friendlyTeam, enemyTeam);
+    public void use(PlayerExtension player, CustomTeam friendlyCustomTeam, CustomTeam enemyCustomTeam) {
+        this.killstreak.use(player, friendlyCustomTeam, enemyCustomTeam);
     }
 
     public int getKillAmount() {

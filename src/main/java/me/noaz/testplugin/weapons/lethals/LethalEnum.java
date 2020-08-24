@@ -11,10 +11,10 @@ import org.bukkit.inventory.ItemStack;
  * and common factors between different lethals.
  */
 public enum LethalEnum {
-    MOLOTOV(10, Material.APPLE, null, 2, 20),
-    GRENADE(11, Material.APPLE, null,2, 20),
-    TOMAHAWK(12, Material.APPLE, null,1, 20),
-    C4(13, Material.LEVER, Material.OAK_DOOR,10, 20),
+    MOLOTOV(10, Material.APPLE, null, 10, 20),
+    GRENADE(11, Material.APPLE, null,10, 20),
+    TOMAHAWK(12, Material.APPLE, null,10, 20),
+    C4(13, Material.LEVER, Material.OAK_DOOR,10, 1),
     NONE(-1, Material.AIR, null,0, 0);
 
     int loadoutMenuSlot;

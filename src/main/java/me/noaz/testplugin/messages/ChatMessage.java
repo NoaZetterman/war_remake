@@ -1,6 +1,6 @@
 package me.noaz.testplugin.messages;
 
-import me.noaz.testplugin.gamemodes.misc.Team;
+import me.noaz.testplugin.gamemodes.misc.CustomTeam;
 import me.noaz.testplugin.maps.Gamemode;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.Reward;
@@ -204,16 +204,16 @@ public class ChatMessage {
         playerWhoCaptured.sendMessage(message);
     }
 
-    public static void teamCapturedFlag(Player player, Team team) {
-        if(team.getTeamColorAsChatColor() == ChatColor.RED) {
+    public static void teamCapturedFlag(Player player, CustomTeam customTeam) {
+        if(customTeam.getTeamColorAsChatColor() == ChatColor.RED) {
             player.sendMessage(ChatColor.RED + "Red" + ChatColor.GRAY + " flag was captured");
         } else {
             player.sendMessage(ChatColor.BLUE + "Blue" + ChatColor.GRAY + " flag was captured");
         }
     }
 
-    public static void enemyTeamCapturedFlag(Player player, Team team) {
-        if(team.getTeamColorAsChatColor() == ChatColor.BLUE) {
+    public static void enemyTeamCapturedFlag(Player player, CustomTeam customTeam) {
+        if(customTeam.getTeamColorAsChatColor() == ChatColor.BLUE) {
             player.sendMessage(ChatColor.RED + "Red" + ChatColor.GRAY + " flag was captured");
         } else {
             player.sendMessage(ChatColor.BLUE + "Blue" + ChatColor.GRAY + " flag was captured");
@@ -232,32 +232,32 @@ public class ChatMessage {
         }
     }
 
-    public static void displayTeamDeathmatchEndGame(String winner, Team winnerTeam, Team loserTeam, Player player) {
+    public static void displayTeamDeathmatchEndGame(String winner, CustomTeam winnerCustomTeam, CustomTeam loserCustomTeam, Player player) {
         if(winner.equals("None")) {
             player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.GRAY + winner + ChatColor.GRAY +
-                    " (" + winnerTeam.getTeamColorAsChatColor() + loserTeam.getKills() + ChatColor.GRAY + " - " +
-                    loserTeam.getTeamColorAsChatColor() + winnerTeam.getKills() + ChatColor.GRAY + ")");
+                    " (" + winnerCustomTeam.getTeamColorAsChatColor() + loserCustomTeam.getKills() + ChatColor.GRAY + " - " +
+                    loserCustomTeam.getTeamColorAsChatColor() + winnerCustomTeam.getKills() + ChatColor.GRAY + ")");
         } else {
-            player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
-                    " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getKills() + ChatColor.GRAY + " - " +
-                    loserTeam.getTeamColorAsChatColor() + loserTeam.getKills() + ChatColor.GRAY + ")");
+            player.sendMessage(ChatColor.GOLD + "Winner: " + winnerCustomTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
+                    " (" + winnerCustomTeam.getTeamColorAsChatColor() + winnerCustomTeam.getKills() + ChatColor.GRAY + " - " +
+                    loserCustomTeam.getTeamColorAsChatColor() + loserCustomTeam.getKills() + ChatColor.GRAY + ")");
         }
     }
 
-    public static void displayCaptureTheFlagEndGame(String winner, Team winnerTeam, Team loserTeam, Player player) {
+    public static void displayCaptureTheFlagEndGame(String winner, CustomTeam winnerCustomTeam, CustomTeam loserCustomTeam, Player player) {
         if(winner.equals("None")) {
             player.sendMessage(ChatColor.GOLD + "Winner: " + ChatColor.GRAY + winner + ChatColor.GRAY +
-                    " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + " - " +
-                    loserTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + ")");
+                    " (" + winnerCustomTeam.getTeamColorAsChatColor() + winnerCustomTeam.getCaptures() + ChatColor.GRAY + " - " +
+                    loserCustomTeam.getTeamColorAsChatColor() + loserCustomTeam.getCaptures() + ChatColor.GRAY + ")");
         } else {
-            player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
-                    " (" + winnerTeam.getTeamColorAsChatColor() + winnerTeam.getCaptures() + ChatColor.GRAY + " - " +
-                    loserTeam.getTeamColorAsChatColor() + loserTeam.getCaptures() + ChatColor.GRAY + ")");
+            player.sendMessage(ChatColor.GOLD + "Winner: " + winnerCustomTeam.getTeamColorAsChatColor() + winner + ChatColor.GRAY +
+                    " (" + winnerCustomTeam.getTeamColorAsChatColor() + winnerCustomTeam.getCaptures() + ChatColor.GRAY + " - " +
+                    loserCustomTeam.getTeamColorAsChatColor() + loserCustomTeam.getCaptures() + ChatColor.GRAY + ")");
         }
     }
 
-    public static void displayInfectEndGame(String winner, Team winnerTeam, Player player) {
-        player.sendMessage(ChatColor.GOLD + "Winner: " + winnerTeam.getTeamColorAsChatColor() + winner + ChatColor.GOLD + " won!");
+    public static void displayInfectEndGame(String winner, CustomTeam winnerCustomTeam, Player player) {
+        player.sendMessage(ChatColor.GOLD + "Winner: " + winnerCustomTeam.getTeamColorAsChatColor() + winner + ChatColor.GOLD + " won!");
     }
 
     public static void displayPersonalStats(Player player, int kills, int deaths, int totalKills, int totalDeaths,int xpGained, int creditsGained) {

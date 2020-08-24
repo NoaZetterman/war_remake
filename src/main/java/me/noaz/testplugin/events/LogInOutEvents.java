@@ -64,7 +64,7 @@ public class LogInOutEvents implements Listener {
 
         for(PotionEffect effect : event.getPlayer().getActivePotionEffects()) {
             event.getPlayer().removePotionEffect(effect.getType());
-        };
+        }
 
         data.removePlayer(event.getPlayer());
     }

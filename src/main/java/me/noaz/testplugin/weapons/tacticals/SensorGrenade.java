@@ -3,9 +3,13 @@ package me.noaz.testplugin.weapons.tacticals;
 import me.noaz.testplugin.TestPlugin;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.ThrowableItem;
+import net.minecraft.server.v1_14_R1.MobEffect;
+import net.minecraft.server.v1_14_R1.MobEffectList;
+import net.minecraft.server.v1_14_R1.PacketPlayOutEntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -37,6 +41,14 @@ public class SensorGrenade extends ThrowableItem implements Tactical {
                     if(currentGlowEffect != null && currentGlowEffect.getDuration() < 5) {
                         player.removePotionEffect(PotionEffectType.GLOWING);
                     }
+
+                    /*PacketPlayOutEntityEffect effect = new PacketPlayOutEntityEffect(player.getEntityId(),
+                            new MobEffect(MobEffectList.fromId(24), 1000, 20, false, false));
+
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(effect);
+
+                    See: https://bukkit.org/threads/glowing-for-one-person.446790/
+                    */
 
                     player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, duration, 4, false, false, false));
                 }

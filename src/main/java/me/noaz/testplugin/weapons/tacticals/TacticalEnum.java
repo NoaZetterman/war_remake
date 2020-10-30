@@ -48,7 +48,7 @@ public enum TacticalEnum {
             case SENSOR_GRENADE:
                 return new SensorGrenade(playerExtension, plugin, cooldownTimeInTicks);
             case TAC_INSERT:
-                return new TacInsert(playerExtension, plugin, cooldownTimeInTicks);
+                return new TacInsert(playerExtension);
             case NONE:
                 return new NoTactical();
             default:

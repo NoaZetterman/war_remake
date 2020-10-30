@@ -46,14 +46,14 @@ public class Events implements Listener {
     }
 
     /**
-     * Fires a gun if the player is in game and has a gun to fire
+     * Fires a gun if the player is in game and has a gun to fire, and left clicks
      *
      * If player is in spawn then it may open the loadout GUI.
      */
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        if(event.getItem() != null && !event.getItem().getType().isEdible()) {
+        if(event.getItem() != null && event.getItem().getType() != Material.GOLDEN_APPLE) {
 
             PlayerExtension player = data.getPlayerExtension(event.getPlayer());
             Action action = event.getAction();

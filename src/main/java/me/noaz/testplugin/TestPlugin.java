@@ -9,6 +9,7 @@ import me.noaz.testplugin.events.Events;
 import me.noaz.testplugin.events.LogInOutEvents;
 
 import org.bukkit.GameMode;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
@@ -24,11 +25,12 @@ public final class TestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        host = "localhost";
-        port = 3306;
-        database = "MYSQL";
-        username = "root";
-        password = "38r947grunoi8/&Fg8hnuby8v";
+        FileConfiguration databaseConfiguration = this.getConfig();
+        host = databaseConfiguration.getString("hostIP");
+        port = databaseConfiguration.getInt("port");
+        database = databaseConfiguration.getString("database");
+        username = databaseConfiguration.getString("username");
+        password = databaseConfiguration.getString("password");
 
         try {
             openConnection();

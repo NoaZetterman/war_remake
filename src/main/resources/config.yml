@@ -1,8 +1,0 @@
-gun:
-  description: This displays the different types of guns
-  type:
-    - "buck"
-    - "burst"
-    - "single"
-#Idk about this
-storage-method: mysql #Or something like this

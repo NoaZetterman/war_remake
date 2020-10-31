@@ -66,7 +66,7 @@ public class GameMapDao {
 
                 maps.add(new GameMap(name, locationHashMap, hasTdm, hasCtf, hasFfa, hasInfect, mapCreator));
 
-                System.out.println("Successfully configured map: " + name);
+                Bukkit.getLogger().info("Successfully configured map: " + name);
 
             }
 
@@ -142,7 +142,7 @@ public class GameMapDao {
             e.printStackTrace();
         }
 
-        System.out.println("Saving new Map: " + mapName);
+        Bukkit.getLogger().info("Saving new Map: " + mapName);
 
         WorldCreator creator = new WorldCreator(mapName);
         World gameWorld = server.createWorld(creator);
@@ -272,6 +272,6 @@ public class GameMapDao {
 
         //Saves the world without the location signs.
         server.unloadWorld(gameWorld, true);
-        System.out.println("Map saved: " + mapName);
+        Bukkit.getLogger().info("Map saved: " + mapName);
     }
 }

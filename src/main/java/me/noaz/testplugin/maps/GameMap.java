@@ -65,14 +65,14 @@ public class GameMap {
             world = Bukkit.getServer().createWorld(new WorldCreator(name));
             world.setDifficulty(Difficulty.PEACEFUL);
             world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-            System.out.println("Map loaded: " + name);
+            Bukkit.getLogger().info("Map loaded: " + name);
         }
     }
 
     public void unloadMap() {
         if(world != null) {
             Bukkit.getServer().unloadWorld(world, false);
-            System.out.println("Map unloaded: " + name);
+            Bukkit.getLogger().info("Map unloaded: " + name);
             world = null;
         }
     }

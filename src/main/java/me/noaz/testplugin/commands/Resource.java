@@ -9,7 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Resource implements CommandExecutor {
-    GameData data;
+    private final GameData data;
+
     public Resource(TestPlugin plugin, GameData data) {
         this.data = data;
         plugin.getCommand("resource").setExecutor(this);

@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Loadout  implements CommandExecutor {
-    GameData gameData;
+    private final GameData gameData;
 
     public Loadout(TestPlugin plugin, GameData gameData) {
         this.gameData = gameData;

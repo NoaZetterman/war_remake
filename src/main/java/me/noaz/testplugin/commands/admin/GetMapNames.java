@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 public class GetMapNames implements CommandExecutor {
-    GameData data;
+    private final GameData data;
 
     public GetMapNames(TestPlugin plugin, GameData data) {
         this.data = data;

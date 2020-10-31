@@ -1,7 +1,6 @@
 package me.noaz.testplugin.commands;
 
 import me.noaz.testplugin.TestPlugin;
-import me.noaz.testplugin.player.PlayerExtension;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class Profile implements CommandExecutor {
-    private TestPlugin plugin;
+    private final TestPlugin plugin;
 
     public Profile(TestPlugin plugin) {
         this.plugin = plugin;

@@ -11,8 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class UpdateCommands implements CommandExecutor {
-    GameData data;
-    Connection connection;
+    private final GameData data;
+    private final Connection connection;
 
     public UpdateCommands(TestPlugin plugin, GameData data,
                           Connection connection) {

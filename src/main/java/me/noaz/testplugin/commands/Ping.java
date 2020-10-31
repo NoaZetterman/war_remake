@@ -15,12 +15,12 @@ public class Ping implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player)) {
-            sender.sendMessage("Only players can execute this command");
-            return false;
+        if(sender instanceof Player) {
+            sender.sendMessage("Ping: " + TTA_Methods.getPing((Player) sender));
+            return true;
         }
 
-        sender.sendMessage("Ping: " + TTA_Methods.getPing((Player) sender));
-        return true;
+        sender.sendMessage("Only players can execute this command");
+        return false;
     }
 }

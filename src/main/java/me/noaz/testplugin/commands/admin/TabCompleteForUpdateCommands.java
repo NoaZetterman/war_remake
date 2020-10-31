@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TabCompleteForUpdateCommands implements TabCompleter {
-    GameData data;
+    private final GameData data;
 
     public TabCompleteForUpdateCommands(GameData data) {
         this.data = data;
     }
-
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args){

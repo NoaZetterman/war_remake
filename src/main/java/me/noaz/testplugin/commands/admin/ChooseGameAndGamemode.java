@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class ChooseGameAndGamemode implements CommandExecutor {
-    private GameLoop gameLoop;
+    private final GameLoop gameLoop;
 
     public ChooseGameAndGamemode(TestPlugin plugin, GameLoop gameLoop) {
         this.gameLoop = gameLoop;

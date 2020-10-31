@@ -11,7 +11,7 @@ import me.noaz.testplugin.commands.admin.UpdateCommands;
 import java.sql.Connection;
 
 /**
- * Initialize all commands
+ * Initialize all commands and tab completers
  */
 public class Command {
     public Command(TestPlugin plugin, GameLoop gameLoop, GameData data, Connection connection) {

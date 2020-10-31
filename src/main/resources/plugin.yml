@@ -7,32 +7,48 @@ description: A test plugin
 
 commands:
   game:
+    description: This command is regarding games.
+    usage: /war join, /war leave
     aliases: [war]
     permission: TestPlugin.game
-    description: This command is regarding games.
+    permission-message: No access
   cg:
+    description: Change current game and gamemode
+    usage: /cg [map] [gamemode]
     aliases: [changeGame]
     permission: TestPlugin.admin
-    description: Change current game and gamemode
+    permission-message: No access
   loadout:
+    description: Opens the loadout selection menu
+    usage: /loadout, /lo
     aliases: [lo]
     permission: TestPlugin.game
-    description: Opens the loadout selection menu
+    permission-message: No access
   maps:
-    permission: TestPlugin.admin
     description: List all playable maps
-  update:
+    usage: /maps
     permission: TestPlugin.admin
+    permission-message: No access
+  update:
     description: Allows to update various database information such as map creator and guns.
+    usage: /update map {creator, information} [text]
+    permission: TestPlugin.admin
+    permission-message: No access
   profile:
-    permission: TestPlugin.profile
     descrtion: Displays a players stats
+    usage: /profile [username]
+    permission: TestPlugin.profile
+    permission-message: No access
   ping:
+    description: Displays ping - Connection time between client and server
+    usage: /ping
     permission: TestPlugin.ping
-    description: Displays players ping
+    permission-message: No access
   resource:
-    permission: TestPlugin.game
     description: Changes the players resourcepack
+    usage: /resource [2D, 3D]
+    permission: TestPlugin.game
+    permission-message: No access
 
 permissions:
   TestPlugin.game:

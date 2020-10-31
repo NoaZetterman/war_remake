@@ -1,6 +1,5 @@
 package me.noaz.testplugin.commands;
 
-import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.GameLoop;
 import me.noaz.testplugin.TestPlugin;
 import org.bukkit.command.Command;
@@ -9,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class GameCommands implements CommandExecutor {
-    private GameLoop gameLoop;
+    private final GameLoop gameLoop;
 
     public GameCommands(TestPlugin plugin, GameLoop gameLoop) {
         this.gameLoop = gameLoop;

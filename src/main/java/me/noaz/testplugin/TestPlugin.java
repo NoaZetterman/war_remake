@@ -8,7 +8,9 @@ import me.noaz.testplugin.events.DamageEvents;
 import me.noaz.testplugin.events.Events;
 import me.noaz.testplugin.events.LogInOutEvents;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,43 +27,60 @@ public final class TestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        FileConfiguration databaseConfiguration = this.getConfig();
-        host = databaseConfiguration.getString("hostIP");
-        port = databaseConfiguration.getInt("port");
-        database = databaseConfiguration.getString("database");
-        username = databaseConfiguration.getString("username");
-        password = databaseConfiguration.getString("password");
-
-        try {
-            openConnection();
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-
         this.saveDefaultConfig();
 
-        //TODO: Fix so that next game shows right after startup
-        new PlayerDao(connection);
-        new GameMapDao(connection);
-        new GunDao(connection);
-        GameData data = new GameData(this);
+        FileConfiguration fileConfiguration = this.getConfig();
+        ConfigurationSection database = fileConfiguration.getConfigurationSection("database");
+        if(database != null) {
+            host = database.getString("hostIP");
+            port = database.getInt("port");
+            this.database = database.getString("name");
+            username = database.getString("username");
+            password = database.getString("password");
 
-        gameLoop = new GameLoop(data, this);
+            try {
+                openConnection();
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
 
-        ScoreManager scoreManager = new ScoreManager(this);
-        getServer().setDefaultGameMode(GameMode.ADVENTURE);
-        getServer().getWorld("world").setPVP(false);
 
-        getServer().getPluginManager().registerEvents(new LogInOutEvents(this, data, scoreManager, connection), this);
-        getServer().getPluginManager().registerEvents(new Events(data), this);
-        getServer().getPluginManager().registerEvents(new DamageEvents(data, gameLoop), this);
+            //TODO: Fix so that next game shows right after startup
+            new PlayerDao(connection);
+            ConfigurationSection mapPaths = fileConfiguration.getConfigurationSection("mapPaths");
+            if(mapPaths == null) {
+                getLogger().severe("Found no map paths, configure in config.yml. Disabling plugin.");
+                Bukkit.getPluginManager().disablePlugin(this);
+            } else {
+                new GameMapDao(connection, mapPaths);
+            }
+            new GunDao(connection);
 
-        new Command(this, gameLoop, data, connection);
+            GameData data = new GameData(this);
+
+            gameLoop = new GameLoop(data, this);
+
+            ScoreManager scoreManager = new ScoreManager(this);
+
+            getServer().setDefaultGameMode(GameMode.ADVENTURE);
+            getServer().getWorld("world").setPVP(false);
+
+            getServer().getPluginManager().registerEvents(new LogInOutEvents(this, data, scoreManager, connection), this);
+            getServer().getPluginManager().registerEvents(new Events(data), this);
+            getServer().getPluginManager().registerEvents(new DamageEvents(data, gameLoop), this);
+
+            new Command(this, gameLoop, data, connection);
+        } else {
+            getLogger().severe("Found no database, configure in config.yml. Disabling plugin.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
     }
 
     @Override
     public void onDisable() {
-        gameLoop.stop();
+        if(gameLoop != null) {
+            gameLoop.stop();
+        }
     }
 
     /**

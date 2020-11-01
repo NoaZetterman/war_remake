@@ -1,0 +1,12 @@
+database:
+  hostIP: "localhost"
+  port: 3306
+  name: "MYSQL" #Not sure
+  username: "root"
+  password: "password"
+
+# The paths are not created, and must be created manually.
+mapPaths:
+  pathToNewMaps: "path/to/new/maps"
+  pathToSavedMapsWithSigns: "path/to/saved/with/signs"
+  pathToPlayableMaps: "path/to/playable/maps"

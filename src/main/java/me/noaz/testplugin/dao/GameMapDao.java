@@ -7,6 +7,7 @@ import me.noaz.testplugin.maps.CustomLocation;
 import me.noaz.testplugin.maps.GameMap;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GameMapDao {
-    private static final String pathToNewMaps = "C:/Users/Noa/MinecraftBukkitServer/newMaps";
-    private static final String pathToSavedMapsWithSigns = "C:/Users/Noa/MinecraftBukkitServer/mapsWithLocationSigns";
-    private static final String pathToPlayableMaps = "C:/Users/Noa/MinecraftBukkitServer/maps";
+    // Change the 3 below to be configured in confing.yml
+    private static String pathToNewMaps;
+    private static String pathToSavedMapsWithSigns;
+    private static String pathToPlayableMaps;
 
     private static final String jsonBlueSpawnKey = "bluespawn";
     private static final String jsonRedSpawnKey = "redspawn";
@@ -33,8 +35,12 @@ public class GameMapDao {
 
     private static Connection connection;
 
-    public GameMapDao(Connection connection) {
+    public GameMapDao(Connection connection, ConfigurationSection mapPaths) {
         GameMapDao.connection = connection;
+
+        GameMapDao.pathToNewMaps = mapPaths.getString("pathToNewMaps");
+        GameMapDao.pathToSavedMapsWithSigns = mapPaths.getString("pathToSavedMapsWithSigns");
+        GameMapDao.pathToPlayableMaps = mapPaths.getString("pathToPlayableMaps");
     }
 
     public static List<GameMap> getAll() {

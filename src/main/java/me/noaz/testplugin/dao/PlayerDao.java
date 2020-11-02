@@ -6,6 +6,7 @@ import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.player.Resourcepack;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.GunType;
 import me.noaz.testplugin.weapons.lethals.LethalEnum;
 import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.entity.Player;
@@ -158,20 +159,64 @@ public class PlayerDao {
 
 
         List<String> ownedPrimarys = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonPrimaryGunsKey);
+        for(GunConfiguration gunConfiguration : gunConfigurations) {
+            if(gunConfiguration.getGunType() != GunType.SECONDARY && gunConfiguration.getUnlockLevel() == 0
+                    && gunConfiguration.getCostToBuy() == 0 && !ownedPrimarys.contains(gunConfiguration.getName())) {
+                ownedPrimarys.add(gunConfiguration.getName());
+            }
+        }
+
         List<String> ownedSecondarys = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonSecondaryGunsKey);
+        for(GunConfiguration gunConfiguration : gunConfigurations) {
+            if(gunConfiguration.getGunType() == GunType.SECONDARY && gunConfiguration.getUnlockLevel() == 0
+                    && gunConfiguration.getCostToBuy() == 0 && !ownedSecondarys.contains(gunConfiguration.getName())) {
+                ownedSecondarys.add(gunConfiguration.getName());
+            }
+        }
+
         List<Perk> ownedPerks = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonPerksKey).stream()
                 .map(Perk::valueOf)
                 .collect(Collectors.toList());
+        for(Perk perk : Perk.values()) {
+            if(perk.getUnlockLevel() == 0
+                    && perk.getCostToBuy() == 0 && !ownedPerks.contains(perk)) {
+                ownedPerks.add(perk);
+            }
+        }
+
+
         List<Killstreak> ownedKillstreaks = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonKillstreakKey).stream()
                 .map(Killstreak::valueOf)
                 .collect(Collectors.toList());
+        for(Killstreak killstreak : Killstreak.values()) {
+            if(killstreak.getUnlockLevel() == 0
+                    && killstreak.getCostToBuy() == 0 && !ownedKillstreaks.contains(killstreak)) {
+                ownedKillstreaks.add(killstreak);
+            }
+        }
+
         List<LethalEnum> ownedLethals = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonLethalKey).stream()
                 .map(LethalEnum::valueOf)
                 .collect(Collectors.toList());
+        for(LethalEnum lethal : LethalEnum.values()) {
+            if(lethal.getUnlockLevel() == 0
+                    && lethal.getCostToBuy() == 0 && !ownedLethals.contains(lethal)) {
+                ownedLethals.add(lethal);
+            }
+        }
+
         List<TacticalEnum> ownedTacticals = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonTacticalKey).stream()
                 .map(TacticalEnum::valueOf)
                 .collect(Collectors.toList());
+        for(TacticalEnum tactical : TacticalEnum.values()) {
+            if(tactical.getUnlockLevel() == 0
+                    && tactical.getCostToBuy() == 0 && !ownedTacticals.contains(tactical)) {
+                ownedTacticals.add(tactical);
+            }
+        }
 
+
+        //TODO: Check if currently used gun/other item is not part of owned list. Then remove that.
         if(!gunExists(selectedPrimaryGun, gunConfigurations)) {
             selectedPrimaryGun = ownedPrimarys.get(0);
         }

@@ -16,7 +16,6 @@ import me.noaz.testplugin.weapons.guns.FireType;
 import me.noaz.testplugin.weapons.guns.GunType;
 import me.noaz.testplugin.weapons.guns.firemodes.BurstGun;
 import me.noaz.testplugin.weapons.guns.firemodes.FullyAutomaticGun;
-import me.noaz.testplugin.weapons.guns.firemodes.BuckGun;
 import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.firemodes.SingleBoltGun;
@@ -671,9 +670,6 @@ public class PlayerExtension {
                 break;
             case AUTOMATIC:
                 gunToChange = new FullyAutomaticGun(plugin, this, playerInformation, gunConfigurationForNewGun);
-                break;
-            case BUCK:
-                gunToChange = new BuckGun(plugin, this, playerInformation, gunConfigurationForNewGun);
                 break;
             default:
                 gunToChange = null;

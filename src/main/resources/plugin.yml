@@ -31,7 +31,7 @@ commands:
     permission-message: No access
   update:
     description: Allows to update various database information such as map creator and guns.
-    usage: /update map {creator, information} [text]
+    usage: /update map [text], /update gun [gun name] [field to update] [data]
     permission: TestPlugin.admin
     permission-message: No access
   profile:

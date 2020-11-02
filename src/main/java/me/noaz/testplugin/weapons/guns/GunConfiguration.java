@@ -1,6 +1,8 @@
 package me.noaz.testplugin.weapons.guns;
 
 import me.noaz.testplugin.Buyable;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,38 +17,38 @@ import java.util.List;
  * @version 2019-12-13
  */
 public class GunConfiguration extends Buyable {
-    private final int gunId;
-    private final List<String> weaponLore;
-    private final GunType gunType;
-    private final FireType fireType;
+    private int gunId;
+    private List<String> weaponLore;
+    private GunType gunType;
+    private FireType fireType;
 
-    private final double accuracyScoped;
-    private final double accuracyNotScoped;
-    private final double bodyDamage;
-    private final double headDamage;
-    private final double damageDropoffPerTick;
-    private final int damageDropoffStartAfterTick;
+    public double accuracyScoped;
+    private double accuracyNotScoped;
+    private double bodyDamage;
+    private double headDamage;
+    private double damageDropoffPerTick;
+    private int damageDropoffStartAfterTick;
     //public double recoil; //Not added yet
-    private final double bulletSpeed;
-    private final int range;
+    private double bulletSpeed;
+    private int range;
 
-    private final int reloadTime;
-    private final int burstDelay;
+    private int reloadTime;
+    private int burstDelay;
 
     //public int weight; //Not implemented
 
-    private final int bulletsPerClick;
-    private final int bulletsPerBurst;
-    private final int startingBullets;
-    private final int clipSize;
+    private int bulletsPerClick;
+    private int bulletsPerBurst;
+    private int startingBullets;
+    private int clipSize;
 
-    private final int scopeAnimations = 1; //Amount of animations in between normal and fully scoped
-    private final int scavengerAmmunition;
-    private final int maxResupplyAmmunition;
+    private int scopeAnimations = 1; //Amount of animations in between normal and fully scoped
+    private int scavengerAmmunition;
+    private int maxResupplyAmmunition;
 
-    private final Sound fireBulletSound;
-    private final Sound fireWhileReloadingSound;
-    private final Sound fireWithoutAmmoSound;
+    private Sound fireBulletSound;
+    private Sound fireWhileReloadingSound;
+    private Sound fireWithoutAmmoSound;
 
     /**
      * Configures a weapon
@@ -79,7 +81,8 @@ public class GunConfiguration extends Buyable {
                             int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
                             int clipSize, int loadoutMenuSlot, int unlockLevel, int costToBuy, int scavengerAmmunition, int maxResupplyAmmunition,
                             String fireBulletSound, String fireWhileReloadingSound, String fireWithoutAmmoSound) {
-        super(name, name, unlockLevel, costToBuy, loadoutMenuSlot, Material.getMaterial(gunMaterial));
+        super(name, StringUtils.replaceChars(name, '_',' '), unlockLevel, costToBuy, loadoutMenuSlot, Material.getMaterial(gunMaterial));
+
         this.gunId = gunId;
         this.gunType = GunType.valueOf(gunType);
         this.fireType = FireType.valueOf(firemode);
@@ -210,5 +213,191 @@ public class GunConfiguration extends Buyable {
 
     private int convertToTicks(int timeInMs) {
         return Math.max(timeInMs/50,1);
+    }
+
+    public void setWeaponLore(List<String> weaponLore) {
+        this.weaponLore = weaponLore;
+    }
+
+    public void setGunType(String gunType) {
+        this.gunType = GunType.valueOf(gunType);
+    }
+
+    public void setFireType(String fireType) {
+        this.fireType = FireType.valueOf(fireType);
+    }
+
+    public void setAccuracyScoped(double accuracyScoped) {
+        this.accuracyScoped = accuracyScoped;
+    }
+
+    public void setAccuracyNotScoped(double accuracyNotScoped) {
+        this.accuracyNotScoped = accuracyNotScoped;
+    }
+
+    public void setBodyDamage(double bodyDamage) {
+        this.bodyDamage = bodyDamage;
+    }
+
+    public void setHeadDamage(double headDamage) {
+        this.headDamage = headDamage;
+    }
+
+    public void setDamageDropoffPerTick(double damageDropoffPerTick) {
+        this.damageDropoffPerTick = damageDropoffPerTick;
+    }
+
+    public void setDamageDropoffStartAfterTick(int damageDropoffStartAfterTick) {
+        this.damageDropoffStartAfterTick = damageDropoffStartAfterTick;
+    }
+
+    public void setBulletSpeed(double bulletSpeed) {
+        this.bulletSpeed = bulletSpeed;
+    }
+
+    public void setRange(int range) {
+        this.range = range;
+    }
+
+    public void setReloadTime(int reloadTime) {
+        this.reloadTime = convertToTicks(reloadTime);
+    }
+
+    public void setBurstDelay(int burstDelay) {
+        this.burstDelay = convertToTicks(burstDelay);
+    }
+
+    public void setBulletsPerClick(int bulletsPerClick) {
+        this.bulletsPerClick = bulletsPerClick;
+    }
+
+    public void setBulletsPerBurst(int bulletsPerBurst) {
+        this.bulletsPerBurst = bulletsPerBurst;
+    }
+
+    public void setStartingBullets(int startingBullets) {
+        this.startingBullets = startingBullets;
+    }
+
+    public void setClipSize(int clipSize) {
+        this.clipSize = clipSize;
+    }
+
+    public void setScopeAnimations(int scopeAnimations) {
+        this.scopeAnimations = scopeAnimations;
+    }
+
+    public void setScavengerAmmunition(int scavengerAmmunition) {
+        this.scavengerAmmunition = scavengerAmmunition;
+    }
+
+    public void setMaxResupplyAmmunition(int maxResupplyAmmunition) {
+        this.maxResupplyAmmunition = maxResupplyAmmunition;
+    }
+
+    public void setFireBulletSound(String fireBulletSound) {
+        this.fireBulletSound = Sound.valueOf(fireBulletSound);
+    }
+
+    public void setFireWhileReloadingSound(String fireWhileReloadingSound) {
+        this.fireWhileReloadingSound = Sound.valueOf(fireWhileReloadingSound);
+    }
+
+    public void setFireWithoutAmmoSound(String fireWithoutAmmoSound) {
+        this.fireWithoutAmmoSound = Sound.valueOf(fireWithoutAmmoSound);
+    }
+
+    /**
+     * Set a field with name field and value value.
+     * @param field The name of the field
+     * @param value The value, as a string
+     */
+    public void setAttribute(String field, String value) throws NumberFormatException {
+        //Better way?
+        switch(field) {
+            case "name":
+                super.setName(StringUtils.replaceChars(value,' ', '_'));
+            case "displayName":
+                super.setDisplayName(StringUtils.replaceChars(value, '_',' '));
+                break;
+            case "unlockLevel":
+                super.setUnlockLevel(Integer.parseInt(value));
+                break;
+            case "costToBuy":
+                super.setCostToBuy(Integer.parseInt(value));
+                break;
+            case "loadoutMenuSlot":
+                super.setLoadoutMenuSlot(Integer.parseInt(value));
+                break;
+            case "material":
+                super.setMaterial(value);
+                break;
+            case "gunType":
+                gunType = GunType.valueOf(value);
+                break;
+            case "fireType":
+                fireType = FireType.valueOf(value);
+                break;
+            case "accuracyScoped":
+                accuracyScoped = Double.parseDouble(value);
+                break;
+            case "accuracyNotScoped":
+                accuracyNotScoped = Double.parseDouble(value);
+                break;
+            case "bodyDamage":
+                bodyDamage = Double.parseDouble(value);
+                break;
+            case "headDamage":
+                headDamage = Double.parseDouble(value);
+                break;
+            case "damageDropoffPerTick":
+                damageDropoffPerTick = Double.parseDouble(value);
+                break;
+            case "damageDropoffStartAfterTick":
+                damageDropoffStartAfterTick = Integer.parseInt(value);
+                break;
+            case "bulletSpeed":
+                bulletSpeed = Integer.parseInt(value);
+                break;
+            case "range":
+                range = Integer.parseInt(value);
+                break;
+            case "reloadTime":
+                reloadTime = Integer.parseInt(value);
+                break;
+            case "burstDelay":
+                burstDelay = Integer.parseInt(value);
+                break;
+            case "bulletsPerClick":
+                bulletsPerClick = Integer.parseInt(value);
+                break;
+            case "bulletsPerBurst":
+                bulletsPerBurst = Integer.parseInt(value);
+                break;
+            case "startingBullets":
+                startingBullets = Integer.parseInt(value);
+                break;
+            case "clipSize":
+                clipSize = Integer.parseInt(value);
+                break;
+            case "scavengerAmmunition":
+                scavengerAmmunition = Integer.parseInt(value);
+                break;
+            case "maxResupplyAmmunition":
+                maxResupplyAmmunition = Integer.parseInt(value);
+                break;
+            case "fireBulletSound":
+                fireBulletSound = Sound.valueOf(value);
+                break;
+            case "fireWhileReloadingSound":
+                fireWhileReloadingSound = Sound.valueOf(value);
+                break;
+            case "fireWithoutAmmoSound":
+                fireWithoutAmmoSound = Sound.valueOf(value);
+                break;
+            default:
+                Bukkit.getLogger().info("Invalid field");
+        }
+
     }
 }

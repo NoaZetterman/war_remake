@@ -46,4 +46,28 @@ public class Buyable {
             return material;
         }
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setUnlockLevel(int unlockLevel) {
+        this.unlockLevel = unlockLevel;
+    }
+
+    public void setCostToBuy(int costToBuy) {
+        this.costToBuy = costToBuy;
+    }
+
+    public void setLoadoutMenuSlot(int loadoutMenuSlot) {
+        this.loadoutMenuSlot = loadoutMenuSlot;
+    }
+
+    public void setMaterial(String material) {
+        this.material = Material.valueOf(material);
+    }
 }

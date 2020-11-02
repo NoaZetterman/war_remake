@@ -7,6 +7,7 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.*;
 
@@ -111,10 +112,30 @@ public class GameData {
     public List<String> getGunNames() {
         List<String> gunNames = new ArrayList<>();
         for(GunConfiguration configuration: gunConfigurations) {
-            gunNames.add(configuration.getDisplayName());
+            gunNames.add(configuration.getName());
         }
 
         return gunNames;
+    }
+
+    public void updateGunConfiguration(String gunName, String field, String value) throws NumberFormatException {
+        for(GunConfiguration configuration : gunConfigurations) {
+            if(gunName.equals(configuration.getName())) {
+                configuration.setAttribute(field, value);
+            }
+        }
+    }
+
+    /**
+     * Save the current gun configuration in the database
+     * @param gunName The name of the gun to save
+     */
+    public void saveGunConfiguration(String gunName) {
+        for(GunConfiguration configuration : gunConfigurations) {
+            if(gunName.equals(configuration.getName())) {
+                GunDao.updateGunConfiguration(configuration);
+            }
+        }
     }
 
     public PlayerExtension getPlayerExtension(Player player) {

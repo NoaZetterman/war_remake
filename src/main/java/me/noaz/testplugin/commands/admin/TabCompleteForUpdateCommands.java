@@ -3,7 +3,9 @@ package me.noaz.testplugin.commands.admin;
 import me.noaz.testplugin.Buyable;
 import me.noaz.testplugin.GameData;
 import me.noaz.testplugin.dao.GunDao;
+import me.noaz.testplugin.weapons.guns.FireType;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.GunType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -58,6 +60,20 @@ public class TabCompleteForUpdateCommands implements TabCompleter {
                     try {
                         list.add(Buyable.class.getDeclaredField(args[2]).getType().getSimpleName());
                     } catch (NoSuchFieldException ignored) {}
+
+                    if(list.get(0).equals("gunType")) {
+                        list.remove(0);
+                        for(GunType gunType : GunType.values()) {
+                            list.add(gunType.toString());
+                        }
+                    }
+
+                    if(list.get(0).equals("fireType")) {
+                        list.remove(0);
+                        for(FireType fireType : FireType.values()) {
+                            list.add(fireType.toString());
+                        }
+                    }
 
                     if(list.size() == 0) {
                         list.add("Unknown, " + args[2] + " is not a valid value");

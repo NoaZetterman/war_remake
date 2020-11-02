@@ -359,7 +359,7 @@ public class LoadoutMenu {
                             items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedVisibleGreenItem(gun);
                         }
                     } else {
-                        items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(gun);
+                        items[gun.getLoadoutMenuSlot()] = BuyableSelection.createUnlockedItem(gun);
                     }
                 }
             }

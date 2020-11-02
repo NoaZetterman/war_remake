@@ -5,10 +5,9 @@ import me.noaz.testplugin.dao.GunDao;
 import me.noaz.testplugin.maps.GameMap;
 import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.util.*;
 
 /**
@@ -131,6 +130,7 @@ public class GameData {
      * @param gunName The name of the gun to save
      */
     public void saveGunConfiguration(String gunName) {
+        gunName = StringUtils.replaceChars(gunName, ' ', '_');
         for(GunConfiguration configuration : gunConfigurations) {
             if(gunName.equals(configuration.getName())) {
                 GunDao.updateGunConfiguration(configuration);
@@ -138,6 +138,13 @@ public class GameData {
         }
     }
 
+    public boolean createNewGunConfiguration(String gunName) {
+        return GunDao.createNewGunConfiguration(gunName, gunConfigurations);
+    }
+
+    public boolean deleteGunConfiguration(String gunName) {
+        return GunDao.deleteGunConfiguration(gunName);
+    }
     public PlayerExtension getPlayerExtension(Player player) {
         return playerExtensions.get(player);
     }

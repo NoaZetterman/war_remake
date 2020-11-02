@@ -120,86 +120,78 @@ public class GunDao {
         }
     }
 
-    /**
-     * Gets the names of all attributes in the gun_configuration table.
-     * @return A list containing all columns
-     */
-    public static List<String> getAttributeNames() {
-        List<String> gunAttributeNames = new ArrayList<>();
+    public static boolean createNewGunConfiguration(String name, List<GunConfiguration> gunConfigurations) {
+        name = StringUtils.replaceChars(name, ' ', '_');
 
         try {
-            PreparedStatement getAttributeNamesFromDatabase = connection.prepareStatement("SELECT COLUMN_NAME FROM " +
-                    "information_schema.columns WHERE TABLE_SCHEMA = 'test' AND TABLE_NAME = 'gun_configuration';");
-            ResultSet result = getAttributeNamesFromDatabase.executeQuery();
+            PreparedStatement createNewGun = connection.prepareStatement("INSERT INTO test.gun_configuration (gun_name) VALUES (?)");
+            createNewGun.setString(1, name);
+            createNewGun.execute();
+            createNewGun.closeOnCompletion();
 
-            while(result.next()) {
-                gunAttributeNames.add(result.getString("COLUMN_NAME"));
+            PreparedStatement getGunConfiguration = connection.prepareStatement("SELECT * FROM test.gun_configuration WHERE gun_name=?");
+            getGunConfiguration.setString(1, name);
+            ResultSet resultSet = getGunConfiguration.executeQuery();
+            while(resultSet.next()) {
+                int gunId = resultSet.getInt("gun_id");
+                String gunMaterial = resultSet.getString("gun_material");
+                String weaponType = resultSet.getString("gun_type");
+                String fireType = resultSet.getString("fire_type");
+                float accuracyNotScoped = resultSet.getFloat("accuracy_not_scoped");
+                float accuracyScoped = resultSet.getFloat("accuracy_scoped");
+                float bodyDamage = resultSet.getFloat("body_damage");
+                float headDamage = resultSet.getFloat("head_damage");
+                float damageDropoffPerTick = resultSet.getFloat("damage_dropoff_per_tick");
+                int damageDropoffStartAfterTick = resultSet.getInt("damage_dropoff_start_after_tick");
+                float bulletSpeed = resultSet.getFloat("bullet_speed");
+                int gunRange = resultSet.getInt("gun_range");
+                int reloadTimeInMs = resultSet.getInt("reload_time_in_ms");
+                int burstDelayInMs = resultSet.getInt("burst_delay_in_ms");
+                int bulletsPerBurst = resultSet.getInt("bullets_per_burst");
+                int bulletsPerClick = resultSet.getInt("bullets_per_click");
+                int startingBullets = resultSet.getInt("starting_bullets");
+                int clipSize = resultSet.getInt("clip_size");
+                int loadoutSlot = resultSet.getInt("loadout_slot");
+                int unlockLevel = resultSet.getInt("unlock_level");
+                int costToBuy = resultSet.getInt("cost_to_buy");
+                int scavengerAmmunition = resultSet.getInt("scavenger_ammunition");
+                int maxResupplyAmmunition = resultSet.getInt("max_resupply_ammunition");
+                String fireBulletSound = resultSet.getString("fire_bullet_sound");
+                String fireWhileReloadingSound = resultSet.getString("fire_while_reloading_sound");
+                String fireWithoutAmmoSound = resultSet.getString("fire_without_ammo_sound");
+
+                gunConfigurations.add(new GunConfiguration(gunId, name, gunMaterial, weaponType,
+                        fireType, accuracyNotScoped, accuracyScoped, bodyDamage, headDamage,
+                        damageDropoffPerTick, damageDropoffStartAfterTick,
+                        bulletSpeed, gunRange, reloadTimeInMs, burstDelayInMs, bulletsPerBurst,
+                        bulletsPerClick, startingBullets, clipSize, loadoutSlot, unlockLevel,
+                        costToBuy, scavengerAmmunition, maxResupplyAmmunition, fireBulletSound, fireWhileReloadingSound, fireWithoutAmmoSound));
             }
 
-            result.close();
-            getAttributeNamesFromDatabase.closeOnCompletion();
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-
-        return gunAttributeNames;
-    }
-
-    /**
-     * Updates
-     * @param gunName
-     * @param attribute
-     * @param data
-     * @return True if it was successful, false otherwise
-     */
-    public static boolean setAttributeName(String gunName, String attribute, String data) {
-        try {
-            //Get the datatype of the data to insert
-            PreparedStatement getAttributeDatatype = connection.prepareStatement("SELECT DATA_TYPE FROM information_schema.columns " +
-                    "WHERE TABLE_SCHEMA = 'test' AND TABLE_NAME = 'gun_configuration' AND COLUMN_NAME = ?;");
-            getAttributeDatatype.setString(1, attribute);
-
-            ResultSet datatypeResult = getAttributeDatatype.executeQuery();
-
-            String datatype = "";
-
-            while(datatypeResult.next()) {
-                datatype = datatypeResult.getString("DATA_TYPE");
-            }
-
-            //Convert and insert data into gun_configuration using that information
-            PreparedStatement updateAttribute = connection.prepareStatement("UPDATE gun_configuration SET " +
-                    " ?=? WHERE gun_name=?");
-            updateAttribute.setString(1,attribute);
-
-            switch(datatype) {
-                case "float":
-                    updateAttribute.setFloat(2,Float.parseFloat(data));
-                    break;
-                case "int":
-                    updateAttribute.setInt(2, Integer.parseInt(data));
-                    break;
-                case "varchar":
-                    updateAttribute.setString(2,data);
-                    break;
-                default:
-                    //This instead? - Converts from java object to correct value(?)
-                    updateAttribute.setObject(2,0);
-                    break;
-            }
-
-            updateAttribute.setString(3,gunName);
-
-            updateAttribute.executeUpdate();
-            updateAttribute.closeOnCompletion();
-
-
-
-
-        } catch(SQLException e) {
+            resultSet.close();
+            getGunConfiguration.closeOnCompletion();
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
+
+        return true;
+    }
+
+    public static boolean deleteGunConfiguration(String name) {
+        name = StringUtils.replaceChars(name, ' ', '_');
+
+        try {
+            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("DELETE FROM test.gun_configuration " +
+                    "WHERE gun_name=?");
+            getGunConfigurationsFromDatabase.setString(1, name);
+            getGunConfigurationsFromDatabase.execute();
+            getGunConfigurationsFromDatabase.closeOnCompletion();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         return true;
     }
 }

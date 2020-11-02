@@ -34,6 +34,11 @@ commands:
     usage: /update map [text], /update gun [gun name] [field to update] [data]
     permission: TestPlugin.admin
     permission-message: No access
+  gun:
+    description: Adds, deletes or saves a gun.
+    usage: /gun [save, delete, add] [gun name]
+    permisson: TestPlugin.admin
+    permission-message: No access
   profile:
     descrtion: Displays a players stats
     usage: /profile [username]

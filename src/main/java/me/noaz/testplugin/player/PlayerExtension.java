@@ -80,7 +80,7 @@ public class PlayerExtension {
         this.plugin = plugin;
         this.player = player;
         this.scoreManager = scoreManager;
-        playerInformation = PlayerDao.get(player);
+        playerInformation = PlayerDao.get(player, gunConfigurations);
         scoreManager.givePlayerNewScoreboard(player.getUniqueId());
 
         this.gunConfigurations = gunConfigurations;

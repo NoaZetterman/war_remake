@@ -5,6 +5,7 @@ import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
 import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.player.Resourcepack;
+import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.lethals.LethalEnum;
 import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.entity.Player;
@@ -79,7 +80,7 @@ public class PlayerDao {
         }
     }
 
-    public static PlayerInformation get(Player player) {
+    public static PlayerInformation get(Player player, List<GunConfiguration> gunConfigurations) {
         boolean exists = false;
         try {
             PreparedStatement s = connection.prepareStatement("SELECT EXISTS(SELECT * FROM test.player WHERE uuid=?)");
@@ -88,6 +89,9 @@ public class PlayerDao {
             while(resultSet.next()) {
                 exists = resultSet.getBoolean(1);
             }
+
+            resultSet.close();
+            s.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -144,11 +148,15 @@ public class PlayerDao {
                 ownedEquipmentAsJson = new JsonParser().parse(playerDataResultSet.getString("owned_equipment")).getAsJsonObject();
                 timePlayedInMinutes = playerDataResultSet.getInt("seconds_online");
             }
+
+            playerDataResultSet.close();
+            getPlayerData.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        //Try catch on those and if they flip up then give default stuff
+
+
         List<String> ownedPrimarys = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonPrimaryGunsKey);
         List<String> ownedSecondarys = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonSecondaryGunsKey);
         List<Perk> ownedPerks = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonPerksKey).stream()
@@ -164,6 +172,13 @@ public class PlayerDao {
                 .map(TacticalEnum::valueOf)
                 .collect(Collectors.toList());
 
+        if(!gunExists(selectedPrimaryGun, gunConfigurations)) {
+            selectedPrimaryGun = ownedPrimarys.get(0);
+        }
+        if(!gunExists(selectedSecondaryGun, gunConfigurations)) {
+            selectedSecondaryGun = ownedSecondarys.get(0);
+        }
+
         return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, ownedKillstreaks, ownedLethals, ownedTacticals, selectedPrimaryGun,
                 selectedSecondaryGun, selectedPerk, selectedKillstreak, selectedLethal, selectedTactical, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
                 totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills, flagCaptures, freeForAllWins);
@@ -175,8 +190,19 @@ public class PlayerDao {
             PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT INTO test.player (uuid) VALUES (?)");
             createPlayerIfNotExist.setString(1, player.getUniqueId().toString());
             createPlayerIfNotExist.execute();
+            createPlayerIfNotExist.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean gunExists(String gunName, List<GunConfiguration> gunConfigurations) {
+        for(GunConfiguration gunConfiguration : gunConfigurations) {
+            if(gunName.equals(gunConfiguration.getName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

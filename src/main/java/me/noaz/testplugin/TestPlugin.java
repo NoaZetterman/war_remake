@@ -20,7 +20,7 @@ import java.sql.SQLException;
 
 public final class TestPlugin extends JavaPlugin {
     private Connection connection;
-    private String host, database, username, password;
+    private String host, databaseName, username, password;
     private int port;
 
     private GameLoop gameLoop;
@@ -34,7 +34,7 @@ public final class TestPlugin extends JavaPlugin {
         if(database != null) {
             host = database.getString("hostIP");
             port = database.getInt("port");
-            this.database = database.getString("name");
+            databaseName = database.getString("name");
             username = database.getString("username");
             password = database.getString("password");
 
@@ -96,7 +96,7 @@ public final class TestPlugin extends JavaPlugin {
                 return;
             }
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.database + "?verifyServerCertificate=false&useSSL=true"
+            connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.databaseName + "?verifyServerCertificate=false&useSSL=true"
                     , this.username, this.password);
         }
     }

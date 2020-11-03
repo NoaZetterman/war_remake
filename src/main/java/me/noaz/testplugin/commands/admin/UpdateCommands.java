@@ -34,7 +34,7 @@ public class UpdateCommands implements CommandExecutor {
                         //TODO: Redo this with dao
                         try {
                             PreparedStatement updateMap;
-                            updateMap = connection.prepareStatement("UPDATE test.map SET " +
+                            updateMap = connection.prepareStatement("UPDATE map SET " +
                                     "creator=? WHERE name=?");
 
                             StringBuilder message = new StringBuilder();

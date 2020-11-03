@@ -47,7 +47,7 @@ public class PlayerDao {
                     .map(Enum::name)
                     .collect(Collectors.toList())));
 
-            PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE test.Player SET " +
+            PreparedStatement updatePlayerData = connection.prepareStatement("UPDATE player SET " +
                     "kills=?, deaths=?,  bullets_hit=?, bullets_fired=?, headshots=?," +
                     "level=?, credits=?, xp_on_level=?, flag_captures=?, free_for_all_wins=?, seconds_online=?, last_online=?, " +
                     "selected_primary=?, selected_secondary=?, selected_perk=?, selected_killstreak=?, " +
@@ -76,6 +76,7 @@ public class PlayerDao {
             updatePlayerData.setString(21, playerInformation.getPlayer().getUniqueId().toString());
 
             updatePlayerData.execute();
+            updatePlayerData.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -84,7 +85,7 @@ public class PlayerDao {
     public static PlayerInformation get(Player player, List<GunConfiguration> gunConfigurations) {
         boolean exists = false;
         try {
-            PreparedStatement s = connection.prepareStatement("SELECT EXISTS(SELECT * FROM test.player WHERE uuid=?)");
+            PreparedStatement s = connection.prepareStatement("SELECT EXISTS(SELECT * FROM player WHERE uuid=?)");
             s.setString(1, player.getUniqueId().toString());
             ResultSet resultSet = s.executeQuery();
             while(resultSet.next()) {
@@ -125,7 +126,7 @@ public class PlayerDao {
         JsonObject ownedEquipmentAsJson = new JsonObject();
 
         try {
-            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM test.player WHERE uuid=?;");
+            PreparedStatement getPlayerData = connection.prepareStatement("SELECT * FROM player WHERE uuid=?;");
             getPlayerData.setString(1, player.getUniqueId().toString());
             ResultSet playerDataResultSet = getPlayerData.executeQuery();
             while(playerDataResultSet.next()) {
@@ -232,9 +233,10 @@ public class PlayerDao {
 
     private static void add(Player player) {
         try {
-            PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT INTO test.player (uuid) VALUES (?)");
+            PreparedStatement createPlayerIfNotExist = connection.prepareStatement("INSERT INTO player (uuid) VALUES (?)");
             createPlayerIfNotExist.setString(1, player.getUniqueId().toString());
             createPlayerIfNotExist.execute();
+
             createPlayerIfNotExist.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();

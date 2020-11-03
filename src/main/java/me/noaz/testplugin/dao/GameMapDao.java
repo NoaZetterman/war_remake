@@ -47,7 +47,7 @@ public class GameMapDao {
         List<GameMap> maps = new ArrayList<>();
 
         try {
-            PreparedStatement getExistingMaps = connection.prepareStatement("SELECT * FROM test.map");
+            PreparedStatement getExistingMaps = connection.prepareStatement("SELECT * FROM map");
 
             ResultSet existingMaps = getExistingMaps.executeQuery();
 
@@ -76,6 +76,8 @@ public class GameMapDao {
 
             }
 
+            existingMaps.close();
+            getExistingMaps.closeOnCompletion();
         } catch(SQLException e) {
             e.printStackTrace();
         }
@@ -254,7 +256,7 @@ public class GameMapDao {
             /*
             PreparedStatement createMap = connection.prepareStatement("REPLACE INTO test.map" +
                     "(name, has_tdm, has_ctf, has_ffa, has_infect) VALUES (?,?,?,?,?)");*/
-            PreparedStatement createMap = connection.prepareStatement("INSERT INTO test.map" +
+            PreparedStatement createMap = connection.prepareStatement("INSERT INTO map" +
                     "(name, has_tdm, has_ctf, has_ffa, has_infect, map_locations) VALUES (?,?,?,?,?,?) " +
                     "ON DUPLICATE KEY UPDATE name=?, has_tdm=?, has_ctf=?, has_ffa=?, has_infect=?, map_locations=?");
             createMap.setString(1, mapName);
@@ -271,7 +273,7 @@ public class GameMapDao {
             createMap.setBoolean(11, hasInfect);
             createMap.setString(12, locationss.toString());
             createMap.execute();
-
+            createMap.closeOnCompletion();
         } catch(SQLException e) {
             e.printStackTrace();
         }

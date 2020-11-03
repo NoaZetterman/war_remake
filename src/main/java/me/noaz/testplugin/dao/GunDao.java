@@ -21,7 +21,7 @@ public class GunDao {
         List<GunConfiguration> gunConfigurations = new ArrayList<>();
 
         try {
-            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("SELECT * FROM test.gun_configuration");
+            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("SELECT * FROM gun_configuration");
             ResultSet result = getGunConfigurationsFromDatabase.executeQuery();
 
             while(result.next()) {
@@ -77,7 +77,7 @@ public class GunDao {
      */
     public static void updateGunConfiguration(GunConfiguration gunConfiguration) {
         try {
-            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("SELECT * FROM test.gun_configuration " +
+            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("SELECT * FROM gun_configuration " +
                     "WHERE gun_id=?");
             getGunConfigurationsFromDatabase.setInt(1, gunConfiguration.getGunId());
             ResultSet result = getGunConfigurationsFromDatabase.executeQuery();
@@ -124,12 +124,12 @@ public class GunDao {
         name = StringUtils.replaceChars(name, ' ', '_');
 
         try {
-            PreparedStatement createNewGun = connection.prepareStatement("INSERT INTO test.gun_configuration (gun_name) VALUES (?)");
+            PreparedStatement createNewGun = connection.prepareStatement("INSERT INTO gun_configuration (gun_name) VALUES (?)");
             createNewGun.setString(1, name);
             createNewGun.execute();
             createNewGun.closeOnCompletion();
 
-            PreparedStatement getGunConfiguration = connection.prepareStatement("SELECT * FROM test.gun_configuration WHERE gun_name=?");
+            PreparedStatement getGunConfiguration = connection.prepareStatement("SELECT * FROM gun_configuration WHERE gun_name=?");
             getGunConfiguration.setString(1, name);
             ResultSet resultSet = getGunConfiguration.executeQuery();
             while(resultSet.next()) {
@@ -182,10 +182,11 @@ public class GunDao {
         name = StringUtils.replaceChars(name, ' ', '_');
 
         try {
-            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("DELETE FROM test.gun_configuration " +
+            PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("DELETE FROM gun_configuration " +
                     "WHERE gun_name=?");
             getGunConfigurationsFromDatabase.setString(1, name);
             getGunConfigurationsFromDatabase.execute();
+
             getGunConfigurationsFromDatabase.closeOnCompletion();
         } catch (SQLException e) {
             e.printStackTrace();

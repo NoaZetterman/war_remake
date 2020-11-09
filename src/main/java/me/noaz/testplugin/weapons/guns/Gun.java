@@ -153,7 +153,7 @@ public abstract class Gun implements Weapon {
         if(!isReloading && currentClip != gunConfiguration.getClipSize() && currentBullets != 0) {
             isReloading = true;
 
-            final int reloadTime = player.getActivePerk() == Perk.SLEIGHT_OF_HAND ? gunConfiguration.getReloadTime()/2 : gunConfiguration.getReloadTime();
+            final int reloadTime = player.getActivePerk() == Perk.SLEIGHT_OF_HAND ? gunConfiguration.getReloadTimeInTicks()/2 : gunConfiguration.getReloadTimeInTicks();
 
             reloadTask = new BukkitRunnable() {
                 int i = 0;
@@ -199,7 +199,7 @@ public abstract class Gun implements Weapon {
             @Override
             public void run() {
                 i++;
-                if(i >= gunConfiguration.getBurstDelay()) {
+                if(i >= gunConfiguration.getBurstDelayInTicks()) {
                     isNextBulletReady = true;
                     this.cancel();
                 }

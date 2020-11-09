@@ -20,13 +20,14 @@ public class GunCommands implements CommandExecutor {
         if(args[0] != null && args[1] != null) {
             StringBuilder gunNameAsStringBuilder = new StringBuilder();
             for(int i = 1; i < args.length-1; i++) {
-                gunNameAsStringBuilder.append(args[i]).append(" ");
+                gunNameAsStringBuilder.append(args[i]).append("_");
             }
 
             gunNameAsStringBuilder.append(args[args.length - 1]);
             String gunName = gunNameAsStringBuilder.toString();
             switch (args[0].toLowerCase()) {
                 case "save":
+                    System.out.println("Saving gun '" + gunName + "'");
                     data.saveGunConfiguration(gunName);
                     break;
                 case "add":

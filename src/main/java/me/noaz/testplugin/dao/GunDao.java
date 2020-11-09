@@ -24,7 +24,7 @@ public class GunDao {
             PreparedStatement getGunConfigurationsFromDatabase = connection.prepareStatement("SELECT * FROM gun_configuration");
             ResultSet result = getGunConfigurationsFromDatabase.executeQuery();
 
-            while(result.next()) {
+            while (result.next()) {
                 int gunId = result.getInt("gun_id");
                 String name = result.getString("gun_name");
                 String gunMaterial = result.getString("gun_material");
@@ -38,8 +38,8 @@ public class GunDao {
                 int damageDropoffStartAfterTick = result.getInt("damage_dropoff_start_after_tick");
                 float bulletSpeed = result.getFloat("bullet_speed");
                 int gunRange = result.getInt("gun_range");
-                int reloadTimeInMs = result.getInt("reload_time_in_ms");
-                int burstDelayInMs = result.getInt("burst_delay_in_ms");
+                int reloadTimeInMs = result.getInt("reload_time_in_ticks");
+                int burstDelayInMs = result.getInt("burst_delay_in_ticks");
                 int bulletsPerBurst = result.getInt("bullets_per_burst");
                 int bulletsPerClick = result.getInt("bullets_per_click");
                 int startingBullets = result.getInt("starting_bullets");
@@ -82,7 +82,7 @@ public class GunDao {
             getGunConfigurationsFromDatabase.setInt(1, gunConfiguration.getGunId());
             ResultSet result = getGunConfigurationsFromDatabase.executeQuery();
 
-            while(result.next()) {
+            while (result.next()) {
                 gunConfiguration.setName(result.getString("gun_name"));
                 gunConfiguration.setDisplayName(result.getString("gun_name"));
                 gunConfiguration.setMaterial(result.getString("gun_material"));
@@ -96,8 +96,8 @@ public class GunDao {
                 gunConfiguration.setDamageDropoffStartAfterTick(result.getInt("damage_dropoff_start_after_tick"));
                 gunConfiguration.setBulletSpeed(result.getFloat("bullet_speed"));
                 gunConfiguration.setRange(result.getInt("gun_range"));
-                gunConfiguration.setReloadTime(result.getInt("reload_time_in_ms"));
-                gunConfiguration.setBurstDelay(result.getInt("burst_delay_in_ms"));
+                gunConfiguration.setReloadTimeInTicks(result.getInt("reload_time_in_ticks"));
+                gunConfiguration.setBurstDelayInTicks(result.getInt("burst_delay_in_ticks"));
                 gunConfiguration.setBulletsPerBurst(result.getInt("bullets_per_burst"));
                 gunConfiguration.setBulletsPerClick(result.getInt("bullets_per_click"));
                 gunConfiguration.setStartingBullets(result.getInt("starting_bullets"));
@@ -132,7 +132,7 @@ public class GunDao {
             PreparedStatement getGunConfiguration = connection.prepareStatement("SELECT * FROM gun_configuration WHERE gun_name=?");
             getGunConfiguration.setString(1, name);
             ResultSet resultSet = getGunConfiguration.executeQuery();
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 int gunId = resultSet.getInt("gun_id");
                 String gunMaterial = resultSet.getString("gun_material");
                 String weaponType = resultSet.getString("gun_type");
@@ -145,8 +145,8 @@ public class GunDao {
                 int damageDropoffStartAfterTick = resultSet.getInt("damage_dropoff_start_after_tick");
                 float bulletSpeed = resultSet.getFloat("bullet_speed");
                 int gunRange = resultSet.getInt("gun_range");
-                int reloadTimeInMs = resultSet.getInt("reload_time_in_ms");
-                int burstDelayInMs = resultSet.getInt("burst_delay_in_ms");
+                int reloadTimeInMs = resultSet.getInt("reload_time_in_ticks");
+                int burstDelayInMs = resultSet.getInt("burst_delay_in_ticks");
                 int bulletsPerBurst = resultSet.getInt("bullets_per_burst");
                 int bulletsPerClick = resultSet.getInt("bullets_per_click");
                 int startingBullets = resultSet.getInt("starting_bullets");
@@ -193,6 +193,56 @@ public class GunDao {
             return false;
         }
 
+        return true;
+    }
+
+    public static boolean saveGunConfiguration(GunConfiguration gunConfiguration) {
+        try {
+            PreparedStatement updateGun = connection.prepareStatement("UPDATE gun_configuration SET gun_name=?, " +
+                    "gun_material=?, gun_type=?, fire_type=?, accuracy_not_scoped=?, accuracy_scoped=?, " +
+                    "body_damage=?, head_damage=?, damage_dropoff_per_tick=?, damage_dropoff_start_after_tick=?, " +
+                    "bullet_speed=?, gun_range=?, reload_time_in_ticks=?, burst_delay_in_ticks=?, bullets_per_burst=?, " +
+                    "bullets_per_click=?, starting_bullets=?, clip_size=?, loadout_slot=?, unlock_level=?, " +
+                    "cost_to_buy=?, scavenger_ammunition=?, max_resupply_ammunition=?, fire_bullet_sound=?, " +
+                    "fire_while_reloading_sound=?, fire_without_ammo_sound=? WHERE gun_id=?");
+
+
+            updateGun.setString(1, gunConfiguration.getName());
+            updateGun.setString(2, gunConfiguration.getMaterial().toString());
+            updateGun.setString(3, gunConfiguration.getGunType().name());
+            updateGun.setString(4, gunConfiguration.getFireType().toString());
+            updateGun.setDouble(5, gunConfiguration.getAccuracyNotScoped());
+            updateGun.setDouble(6, gunConfiguration.getAccuracyScoped());
+            updateGun.setDouble(7, gunConfiguration.getBodyDamage());
+            updateGun.setDouble(8, gunConfiguration.getHeadDamage());
+            updateGun.setDouble(9, gunConfiguration.getDamageDropoffPerTick());
+            updateGun.setInt(10, gunConfiguration.getDamageDropoffStartAfterTick());
+            updateGun.setDouble(11, gunConfiguration.getBulletSpeed());
+            updateGun.setInt(12, gunConfiguration.getRange());
+            updateGun.setInt(13, gunConfiguration.getReloadTimeInTicks());
+            updateGun.setInt(14, gunConfiguration.getBurstDelayInTicks());
+            updateGun.setInt(15, gunConfiguration.getBulletsPerBurst());
+            updateGun.setInt(16, gunConfiguration.getBulletsPerClick());
+            updateGun.setInt(17, gunConfiguration.getStartingBullets());
+            updateGun.setInt(18, gunConfiguration.getClipSize());
+            updateGun.setInt(19, gunConfiguration.getLoadoutMenuSlot());
+            updateGun.setInt(20, gunConfiguration.getUnlockLevel());
+            updateGun.setInt(21, gunConfiguration.getCostToBuy());
+            updateGun.setInt(22, gunConfiguration.getScavengerAmmunition());
+            updateGun.setInt(23, gunConfiguration.getMaxResupplyAmmunition());
+            updateGun.setString(24, gunConfiguration.getFireBulletSound().toString());
+            updateGun.setString(25, gunConfiguration.getFireWhileReloadingSound().toString());
+            updateGun.setString(26, gunConfiguration.getFireWithoutAmmoSound().toString());
+            updateGun.setInt(27, gunConfiguration.getGunId());
+
+            updateGun.execute();
+            updateGun.closeOnCompletion();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 }

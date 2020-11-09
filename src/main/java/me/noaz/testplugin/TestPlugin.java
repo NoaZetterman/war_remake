@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -42,34 +43,38 @@ public final class TestPlugin extends JavaPlugin {
                 openConnection();
             } catch (ClassNotFoundException | SQLException e) {
                 e.printStackTrace();
-            }
-
-
-            //TODO: Fix so that next game shows right after startup
-            new PlayerDao(connection);
-            ConfigurationSection mapPaths = fileConfiguration.getConfigurationSection("mapPaths");
-            if(mapPaths == null) {
-                getLogger().severe("Found no map paths, configure in config.yml. Disabling plugin.");
+                getLogger().severe("Could not establish database connection, shutting down plugin");
                 Bukkit.getPluginManager().disablePlugin(this);
-            } else {
-                new GameMapDao(connection, mapPaths);
             }
-            new GunDao(connection);
 
-            GameData data = new GameData(this);
 
-            gameLoop = new GameLoop(data, this);
+            if(connection != null) {
+                //TODO: Fix so that next game shows right after startup
+                new PlayerDao(connection);
+                ConfigurationSection mapPaths = fileConfiguration.getConfigurationSection("mapPaths");
+                if (mapPaths == null) {
+                    getLogger().severe("Found no map paths, configure in config.yml. Disabling plugin.");
+                    Bukkit.getPluginManager().disablePlugin(this);
+                } else {
+                    new GameMapDao(connection, mapPaths);
+                }
+                new GunDao(connection);
 
-            ScoreManager scoreManager = new ScoreManager(this);
+                GameData data = new GameData(this);
 
-            getServer().setDefaultGameMode(GameMode.ADVENTURE);
-            getServer().getWorld("world").setPVP(false);
+                gameLoop = new GameLoop(data, this);
 
-            getServer().getPluginManager().registerEvents(new LogInOutEvents(this, data, scoreManager, connection), this);
-            getServer().getPluginManager().registerEvents(new Events(data), this);
-            getServer().getPluginManager().registerEvents(new DamageEvents(data, gameLoop), this);
+                ScoreManager scoreManager = new ScoreManager(this);
 
-            new Command(this, gameLoop, data, connection);
+                getServer().setDefaultGameMode(GameMode.ADVENTURE);
+                getServer().getWorld("world").setPVP(false);
+
+                getServer().getPluginManager().registerEvents(new LogInOutEvents(this, data, scoreManager, connection), this);
+                getServer().getPluginManager().registerEvents(new Events(data), this);
+                getServer().getPluginManager().registerEvents(new DamageEvents(data, gameLoop), this);
+
+                new Command(this, gameLoop, data, connection);
+            }
         } else {
             getLogger().severe("Found no database, configure in config.yml. Disabling plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
@@ -95,9 +100,19 @@ public final class TestPlugin extends JavaPlugin {
             if (connection != null && !connection.isClosed()) {
                 return;
             }
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.databaseName + "?verifyServerCertificate=false&useSSL=true"
-                    , this.username, this.password);
+
+            FileConfiguration fileConfiguration = this.getConfig();
+            ConfigurationSection database = fileConfiguration.getConfigurationSection("database");
+            String type = database.getString("type");
+
+            if(type.equals("mysql")) {
+                Class.forName("com.mysql.jdbc.Driver");
+                connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.databaseName
+                        , this.username, this.password);
+            } else if(type.equals("sqlite")) {
+                Class.forName("org.sqlite.JDBC");
+                connection = DriverManager.getConnection("jdbc:sqlite:gun_server.db");
+            }
         }
     }
 }

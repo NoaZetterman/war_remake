@@ -32,8 +32,8 @@ public class GunConfiguration extends Buyable {
     private double bulletSpeed;
     private int range;
 
-    private int reloadTime;
-    private int burstDelay;
+    private int reloadTimeInTicks;
+    private int burstDelayInTicks;
 
     //public int weight; //Not implemented
 
@@ -61,8 +61,8 @@ public class GunConfiguration extends Buyable {
      * @param headDamage The damage bullets fired with this weapon should do to the head of another player
      * @param bulletSpeed The bullet speed of the bullets fired with this weapon
      * @param range The range, in blocks, the bullets fired by this weapon should have.
-     * @param reloadTimeInMs The reload time this weapon should have in ms
-     * @param burstDelayInMs The delay in between bursts this weapon should have, delay between shots if there is no bursts
+     * @param reloadTimeInTicks The reload time this weapon should have in ms
+     * @param burstDelayInTicks The delay in between bursts this weapon should have, delay between shots if there is no bursts
      * @param bulletsPerBurst The amount of bullets that should be fired when shooting (right clicking with the gun),
      *                        if this is 1 then it acts as a gun without bursts.
      * @param bulletsPerClick The amount of bullets that should be fired per shot, usually one but different for  ex:shotguns
@@ -78,7 +78,7 @@ public class GunConfiguration extends Buyable {
     public GunConfiguration(int gunId, String name, String gunMaterial, String gunType, String firemode, double accuracyNotScoped,
                             double accuracyScoped, double bodyDamage, double headDamage, double damageDropoffPerTick,
                             int damageDropoffStartAfterTick, double bulletSpeed, int range,
-                            int reloadTimeInMs, int burstDelayInMs, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
+                            int reloadTimeInTicks, int burstDelayInTicks, int bulletsPerBurst, int bulletsPerClick, int startingBullets,
                             int clipSize, int loadoutMenuSlot, int unlockLevel, int costToBuy, int scavengerAmmunition, int maxResupplyAmmunition,
                             String fireBulletSound, String fireWhileReloadingSound, String fireWithoutAmmoSound) {
         super(name, StringUtils.replaceChars(name, '_',' '), unlockLevel, costToBuy, loadoutMenuSlot, Material.getMaterial(gunMaterial));
@@ -95,8 +95,8 @@ public class GunConfiguration extends Buyable {
 
         this.bulletSpeed = bulletSpeed;
         this.range = range;
-        this.reloadTime = convertToTicks(reloadTimeInMs);
-        this.burstDelay = convertToTicks(burstDelayInMs);
+        this.reloadTimeInTicks = reloadTimeInTicks;
+        this.burstDelayInTicks = burstDelayInTicks;
         this.bulletsPerBurst = bulletsPerBurst;
         this.bulletsPerClick = bulletsPerClick;
         this.startingBullets = startingBullets;
@@ -171,8 +171,8 @@ public class GunConfiguration extends Buyable {
         return clipSize;
     }
 
-    public int getReloadTime() {
-        return reloadTime;
+    public int getReloadTimeInTicks() {
+        return reloadTimeInTicks;
     }
 
     public int getBulletsPerBurst() {
@@ -183,8 +183,8 @@ public class GunConfiguration extends Buyable {
         return bulletsPerClick;
     }
 
-    public int getBurstDelay() {
-        return burstDelay;
+    public int getBurstDelayInTicks() {
+        return burstDelayInTicks;
     }
 
     public int getMaxResupplyAmmunition() {
@@ -209,10 +209,6 @@ public class GunConfiguration extends Buyable {
 
     public Sound getFireWithoutAmmoSound() {
         return fireWithoutAmmoSound;
-    }
-
-    private int convertToTicks(int timeInMs) {
-        return Math.max(timeInMs/50,1);
     }
 
     public void setWeaponLore(List<String> weaponLore) {
@@ -259,12 +255,12 @@ public class GunConfiguration extends Buyable {
         this.range = range;
     }
 
-    public void setReloadTime(int reloadTime) {
-        this.reloadTime = convertToTicks(reloadTime);
+    public void setReloadTimeInTicks(int reloadTimeInTicks) {
+        this.reloadTimeInTicks = reloadTimeInTicks;
     }
 
-    public void setBurstDelay(int burstDelay) {
-        this.burstDelay = convertToTicks(burstDelay);
+    public void setBurstDelayInTicks(int burstDelayInTicks) {
+        this.burstDelayInTicks = burstDelayInTicks;
     }
 
     public void setBulletsPerClick(int bulletsPerClick) {
@@ -363,10 +359,10 @@ public class GunConfiguration extends Buyable {
                 range = Integer.parseInt(value);
                 break;
             case "reloadTime":
-                reloadTime = Integer.parseInt(value);
+                reloadTimeInTicks = Integer.parseInt(value);
                 break;
             case "burstDelay":
-                burstDelay = Integer.parseInt(value);
+                burstDelayInTicks = Integer.parseInt(value);
                 break;
             case "bulletsPerClick":
                 bulletsPerClick = Integer.parseInt(value);

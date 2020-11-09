@@ -130,10 +130,9 @@ public class GameData {
      * @param gunName The name of the gun to save
      */
     public void saveGunConfiguration(String gunName) {
-        gunName = StringUtils.replaceChars(gunName, ' ', '_');
         for(GunConfiguration configuration : gunConfigurations) {
             if(gunName.equals(configuration.getName())) {
-                GunDao.updateGunConfiguration(configuration);
+                GunDao.saveGunConfiguration(configuration);
             }
         }
     }

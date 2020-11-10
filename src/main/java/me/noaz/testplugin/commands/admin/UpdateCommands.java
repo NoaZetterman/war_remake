@@ -30,7 +30,7 @@ public class UpdateCommands implements CommandExecutor {
         if(args[0] != null && args[1] != null && args[2] != null) {
             switch(args[0].toLowerCase()) {
                 case "map":
-                    if(data.getMapNames().contains(args[1])) {
+                    if (data.getMapNames().contains(args[1])) {
                         //TODO: Redo this with dao
                         try {
                             PreparedStatement updateMap;
@@ -38,7 +38,7 @@ public class UpdateCommands implements CommandExecutor {
                                     "creator=? WHERE name=?");
 
                             StringBuilder message = new StringBuilder();
-                            for(int i = 2; i < args.length-1; i++) {
+                            for (int i = 2; i < args.length - 1; i++) {
                                 message.append(args[i]).append(" ");
                             }
 
@@ -49,39 +49,16 @@ public class UpdateCommands implements CommandExecutor {
                             updateMap.execute();
                             updateMap.closeOnCompletion();
 
-                        } catch(SQLException e) {
+                        } catch (SQLException e) {
                             e.printStackTrace();
                             sender.sendMessage("Failed to set creator");
                         }
                     }
                     break;
-                case "gun":
-                    if(args[3] == null) {
-                        return false;
-                    }
-
-                    String gunName = args[1];
-                    String field =  args[2];
-
-                    //Support spaces, for display names
-                    StringBuilder val = new StringBuilder();
-                    for(int i = 3; i < args.length-1; i++) {
-                        val.append(args[i]).append(" ");
-                    }
-
-                    val.append(args[args.length - 1]);
-                    String value = val.toString();
-
-                    try {
-                        data.updateGunConfiguration(gunName, field, value);
-                        sender.sendMessage("Set " + field + " to: " + value + " for gun " + gunName);
-                    } catch(NumberFormatException e) {
-                        sender.sendMessage("Invalid data format, failed to set value");
-                    }
             }
         } else {
             //Useless comments?
-            sender.sendMessage("Not enough parameters use: [map/gun] [map/gun name] [set<variable>] [new value]");
+            sender.sendMessage("Not enough parameters");
             sender.sendMessage("For more information type /help update");
             return false;
         }

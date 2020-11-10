@@ -32,75 +32,19 @@ public class TabCompleteForUpdateCommands implements TabCompleter {
             List<String> listWithOnlyMatching = new ArrayList<>();
             switch(args.length) {
                 case 1:
-                    list.add("gun");
                     list.add("map");
                     StringUtil.copyPartialMatches(args[0], list, listWithOnlyMatching);
                     break;
                 case 2:
                     if(args[0].toLowerCase().equals("map")) {
                         list = data.getMapNames();
-                    } else if(args[0].toLowerCase().equals("gun")){
-                        list = data.getGunNames();
                     }
                     StringUtil.copyPartialMatches(args[1], list, listWithOnlyMatching);
                     break;
-                case 3:
-                    if(args[0].toLowerCase().equals("gun")) {
-                        for(Field field : GunConfiguration.class.getDeclaredFields()) {
-                            list.add(field.getName());
-                        }
-                        for(Field field: Buyable.class.getDeclaredFields()) {
-                            list.add(field.getName());
-                        }
-                    }
-                    StringUtil.copyPartialMatches(args[2], list, listWithOnlyMatching);
-                    break;
-                case 4:
-                    try {
-                            list.add(GunConfiguration.class.getDeclaredField(args[2]).getType().getSimpleName());
-                    } catch (NoSuchFieldException ignored) {}
-                    try {
-                        list.add(Buyable.class.getDeclaredField(args[2]).getType().getSimpleName());
-                    } catch (NoSuchFieldException ignored) {}
-
-                    if(list.get(0).equals("GunType")) {
-                        list.remove(0);
-                        for(GunType gunType : GunType.values()) {
-                            list.add(gunType.name());
-                        }
-                    }
-
-                    if(list.get(0).equals("FireType")) {
-                        list.remove(0);
-                        for(FireType fireType : FireType.values()) {
-                            list.add(fireType.name());
-                        }
-                    }
-
-                    if(list.get(0).equals("Sound")) {
-                        list.remove(0);
-                        for(Sound sound : Sound.values()) {
-                            list.add(sound.name());
-                        }
-                    }
-
-                    if(list.get(0).equals("Material")) {
-                        list.remove(0);
-                        for(Material material: Material.values()) {
-                            list.add(material.name());
-                        }
-                    }
-
-                    if(list.size() == 0) {
-                        list.add("Unknown, " + args[2] + " is not a valid value");
-                    }
-                    //This is information and should not match to certain values
-                    StringUtil.copyPartialMatches(args[3], list, listWithOnlyMatching);
-                    break;
-            }
-
-            return listWithOnlyMatching;
         }
+        return listWithOnlyMatching;
+    }
         return null;
     }
+
 }

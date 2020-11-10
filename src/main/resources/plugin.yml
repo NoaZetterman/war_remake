@@ -31,12 +31,12 @@ commands:
     permission-message: No access
   update:
     description: Allows to update various database information such as map creator and guns.
-    usage: /update map [text], /update gun [gun name] [field to update] [data]
+    usage: /update map [text]
     permission: TestPlugin.admin
     permission-message: No access
   gun:
-    description: Adds, deletes or saves a gun.
-    usage: /gun [save, delete, add] [gun name]
+    description: Adds, deletes, updates or saves a gun. Or shows stats for the gun
+    usage: /gun [save, delete, add, info] [gun name], /gun update [gun name] [field to update] [data]
     permisson: TestPlugin.admin
     permission-message: No access
   profile:

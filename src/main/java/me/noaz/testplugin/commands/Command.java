@@ -21,7 +21,7 @@ public class Command {
         new Loadout(plugin, data);
 
         plugin.getServer().getPluginCommand("update").setTabCompleter(new TabCompleteForUpdateCommands(data));
-        plugin.getServer().getPluginCommand("gun").setTabCompleter(new TabCompleteForGunCommands());
+        plugin.getServer().getPluginCommand("gun").setTabCompleter(new TabCompleteForGunCommands(data));
         plugin.getServer().getPluginCommand("resource").setTabCompleter(new TabCompleteForResource());
 
         new Profile(plugin);

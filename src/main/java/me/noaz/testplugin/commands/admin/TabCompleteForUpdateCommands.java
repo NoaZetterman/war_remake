@@ -6,6 +6,8 @@ import me.noaz.testplugin.dao.GunDao;
 import me.noaz.testplugin.weapons.guns.FireType;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
 import me.noaz.testplugin.weapons.guns.GunType;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -61,17 +63,31 @@ public class TabCompleteForUpdateCommands implements TabCompleter {
                         list.add(Buyable.class.getDeclaredField(args[2]).getType().getSimpleName());
                     } catch (NoSuchFieldException ignored) {}
 
-                    if(list.get(0).equals("gunType")) {
+                    if(list.get(0).equals("GunType")) {
                         list.remove(0);
                         for(GunType gunType : GunType.values()) {
-                            list.add(gunType.toString());
+                            list.add(gunType.name());
                         }
                     }
 
-                    if(list.get(0).equals("fireType")) {
+                    if(list.get(0).equals("FireType")) {
                         list.remove(0);
                         for(FireType fireType : FireType.values()) {
-                            list.add(fireType.toString());
+                            list.add(fireType.name());
+                        }
+                    }
+
+                    if(list.get(0).equals("Sound")) {
+                        list.remove(0);
+                        for(Sound sound : Sound.values()) {
+                            list.add(sound.name());
+                        }
+                    }
+
+                    if(list.get(0).equals("Material")) {
+                        list.remove(0);
+                        for(Material material: Material.values()) {
+                            list.add(material.name());
                         }
                     }
 
@@ -79,7 +95,7 @@ public class TabCompleteForUpdateCommands implements TabCompleter {
                         list.add("Unknown, " + args[2] + " is not a valid value");
                     }
                     //This is information and should not match to certain values
-                    listWithOnlyMatching = list;
+                    StringUtil.copyPartialMatches(args[3], list, listWithOnlyMatching);
                     break;
             }
 

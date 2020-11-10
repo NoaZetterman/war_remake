@@ -514,7 +514,7 @@ public class PlayerExtension {
      */
     public GunConfiguration getPrimaryGunConfiguration() {
         for(GunConfiguration gun : gunConfigurations) {
-            if(gun.getDisplayName().equals(playerInformation.getSelectedPrimaryGun())) {
+            if(gun.getName().equals(playerInformation.getSelectedPrimaryGun())) {
                 return gun;
             }
         }
@@ -526,7 +526,7 @@ public class PlayerExtension {
      */
     public GunConfiguration getSecondaryGunConfiguration() {
         for(GunConfiguration gun : gunConfigurations) {
-            if(gun.getDisplayName().equals(playerInformation.getSelectedSecondaryGun())) {
+            if(gun.getName().equals(playerInformation.getSelectedSecondaryGun())) {
                 return gun;
             }
         }
@@ -613,7 +613,7 @@ public class PlayerExtension {
 
     public void buyGun(String gunName, List<GunConfiguration> gunConfigurations) {
         for(GunConfiguration gun: gunConfigurations) {
-            if(gun.getDisplayName().equals(gunName)) {
+            if(gun.getName().equals(gunName)) {
                 changeCredits(-gun.getCostToBuy());
 
                 if(gun.getGunType() == GunType.SECONDARY) {
@@ -652,7 +652,7 @@ public class PlayerExtension {
     private Gun createGun(String gunName) {
         GunConfiguration gunConfigurationForNewGun = null;
         for(GunConfiguration gun : gunConfigurations) {
-            if(gun.getDisplayName().equals(gunName)) {
+            if(gun.getName().equals(gunName)) {
                 gunConfigurationForNewGun = gun;
             }
         }

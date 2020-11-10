@@ -107,7 +107,7 @@ public final class TestPlugin extends JavaPlugin {
 
             if(type.equals("mysql")) {
                 Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.databaseName
+                connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.databaseName + "?verifyServerCertificate=false&useSSL=true&autoReconnect=true"
                         , this.username, this.password);
             } else if(type.equals("sqlite")) {
                 Class.forName("org.sqlite.JDBC");

@@ -129,12 +129,14 @@ public class GameData {
      * Save the current gun configuration in the database
      * @param gunName The name of the gun to save
      */
-    public void saveGunConfiguration(String gunName) {
+    public boolean saveGunConfiguration(String gunName) {
         for(GunConfiguration configuration : gunConfigurations) {
             if(gunName.equals(configuration.getName())) {
-                GunDao.saveGunConfiguration(configuration);
+                return GunDao.saveGunConfiguration(configuration);
             }
         }
+
+        return false;
     }
 
     public boolean createNewGunConfiguration(String gunName) {

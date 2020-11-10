@@ -27,11 +27,18 @@ public class GunCommands implements CommandExecutor {
             String gunName = gunNameAsStringBuilder.toString();
             switch (args[0].toLowerCase()) {
                 case "save":
-                    System.out.println("Saving gun '" + gunName + "'");
-                    data.saveGunConfiguration(gunName);
+                    if(data.saveGunConfiguration(gunName)) {
+                        sender.sendMessage("Saving gun: " + gunName);
+                    } else {
+                        sender.sendMessage("Failed saving gun");
+                    }
                     break;
                 case "add":
-                    data.createNewGunConfiguration(gunName);
+                    if(data.createNewGunConfiguration(gunName)) {
+                        sender.sendMessage("Added gun: " + gunName);
+                    } else {
+                        sender.sendMessage("Failed to add gun");
+                    }
                     break;
                 case "delete":
                     if(data.deleteGunConfiguration(gunName)) {

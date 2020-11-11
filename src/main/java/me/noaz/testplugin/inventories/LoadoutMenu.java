@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoadoutMenu {
-    private static int inventorySize = 36;
+    private static int inventorySize = 45;
     private static int buyScreenInventorySize = 45;
 
     //TODO: Rename goBackArrow so it says GoBack

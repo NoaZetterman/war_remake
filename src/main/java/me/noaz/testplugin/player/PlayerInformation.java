@@ -299,7 +299,6 @@ public class PlayerInformation {
         ownedKillstreaks.add(killstreak);
     }
 
-
     public void setSelectedPrimaryGun(String primaryGun) {
         this.selectedPrimaryGun = primaryGun;
     }

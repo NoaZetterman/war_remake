@@ -19,7 +19,7 @@ public class ConcussionGrenade extends ThrowableItem implements Tactical {
 
 
     public ConcussionGrenade(PlayerExtension playerExtension, TestPlugin plugin, int cooldownTimeInTicks) {
-        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin, 4, 1.3f, itemSlot, cooldownTimeInTicks, 0);
+        super(playerExtension, playerExtension.getPlayer().getWorld(), plugin, 6, 1.3f, itemSlot, cooldownTimeInTicks, 0);
     }
 
     @Override

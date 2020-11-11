@@ -29,7 +29,6 @@ public class PlayerDao {
 
     public static void update(PlayerInformation playerInformation) {
         try {
-            System.out.println("Player info owned guns: " + playerInformation.getOwnedGuns());
             JsonObject ownedEquipmentAsJson = new JsonObject();
 
             ownedEquipmentAsJson.add(jsonGunsKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedGuns()));

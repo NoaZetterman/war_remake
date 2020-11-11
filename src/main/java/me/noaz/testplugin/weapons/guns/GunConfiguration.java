@@ -358,10 +358,10 @@ public class GunConfiguration extends Buyable {
             case "range":
                 range = Integer.parseInt(value);
                 break;
-            case "reloadTime":
+            case "reloadTimeInTicks":
                 reloadTimeInTicks = Integer.parseInt(value);
                 break;
-            case "burstDelay":
+            case "burstDelayInTicks":
                 burstDelayInTicks = Integer.parseInt(value);
                 break;
             case "bulletsPerClick":

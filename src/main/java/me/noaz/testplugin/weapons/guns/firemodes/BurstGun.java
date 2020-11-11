@@ -6,6 +6,7 @@ import me.noaz.testplugin.player.PlayerExtension;
 import me.noaz.testplugin.player.PlayerInformation;
 import me.noaz.testplugin.weapons.guns.Gun;
 import me.noaz.testplugin.weapons.guns.GunConfiguration;
+import me.noaz.testplugin.weapons.guns.GunType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -34,7 +35,11 @@ public class BurstGun extends Gun {
                 public void run() {
                     i++;
                     if (i <= totalBulletsInCurrentBurst) {
-                        fireBullet(velocity);
+                        if(gunConfiguration.getGunType() == GunType.SHOTGUN) {
+                            fireBullet();
+                        } else {
+                            fireBullet(velocity);
+                        }
                     } else {
                         if(currentClip <= 0) {
                             reload();

@@ -107,7 +107,7 @@ public class DamageEvents implements Listener {
 
                 } else {
 
-                    hitPlayer.damage(0, shooter); //To get the damage animation and correct player hit
+                    hitPlayer.damage(0.1, shooter); //To get the damage animation and correct player hit
 
                     hitPlayer.setHealth(healthLeft);
 

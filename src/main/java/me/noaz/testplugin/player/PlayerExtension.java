@@ -163,7 +163,6 @@ public class PlayerExtension {
         activeTacticalEnum = playerInformation.getSelectedTactical();
         activeLethalEnum = playerInformation.getSelectedLethal();
 
-
         if(customTeam.getTeamColor() == Color.GREEN) {
             DefaultInventories.giveInfectedInventory(player.getInventory(), customTeam.getTeamColor());
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10000000, 1, false, false, false));
@@ -189,6 +188,9 @@ public class PlayerExtension {
         player.setHealth(20D);
         player.setGameMode(GameMode.ADVENTURE);
 
+        activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
+        activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
+
         //If player uses TacInsert and has picked a new spawn location, spawn at that location instead of
         // a given spawnpoint.
         if(activeTactical instanceof TacInsert && ((TacInsert) activeTactical).hasSavedLocation()) {
@@ -196,9 +198,6 @@ public class PlayerExtension {
         } else {
             player.teleport(customTeam.getSpawnPoint());
         }
-
-        activeLethal = activeLethalEnum.getAsWeapon(this, plugin);
-        activeTactical = activeTacticalEnum.getAsWeapon(this, plugin);
     }
 
     /**
@@ -432,17 +431,20 @@ public class PlayerExtension {
      * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
     public Weapon getWeaponInMainHand() {
-        if(player.getInventory().getItemInMainHand().getItemMeta() == null) {
-            return null;
-        } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activePrimaryGun.getConfiguration().getName())) {
+        //TODO: Change additional material to a name
+        if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activePrimaryGun.getConfiguration().getName())) {
             return activePrimaryGun;
         } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeSecondaryGun.getConfiguration().getName())) {
             return activeSecondaryGun;
         } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeLethalEnum.toString())) {
             return activeLethal;
+        } else if (player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()) {
+            return activeLethal;
         } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeTacticalEnum.toString())) {
             return activeTactical;
-        }else {
+        } else if (player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getAdditionalMaterial()) {
+            return activeTactical;
+        } else {
             return null;
         }
     }
@@ -459,19 +461,19 @@ public class PlayerExtension {
      * @return true if player has weapon in main hand, false otherwise
      */
     public boolean hasWeaponInMainHand() {
-        return (isPlayingGame()
-                && player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()
+        return (isPlayingGame() && player.getInventory().getItemInMainHand().getItemMeta() != null
+                && (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activePrimaryGun.getConfiguration().getName())
+            || player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeSecondaryGun.getConfiguration().getName())
+            || player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeLethalEnum.toString())
             || player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getMaterial()
-            || player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getAdditionalMaterial());
+            || player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeTacticalEnum.toString())
+            || player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getAdditionalMaterial()));
     }
 
     public boolean hasGunInMainHand() {
-        return (isPlayingGame()
-                && (player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()
-                || player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()));
+        return (isPlayingGame() && player.getInventory().getItemInMainHand().getItemMeta() != null
+                && (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activePrimaryGun.getConfiguration().getName())
+                || player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeSecondaryGun.getConfiguration().getName())));
     }
 
     public void changeMainHand(int newSlot) {

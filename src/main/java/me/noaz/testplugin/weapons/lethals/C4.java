@@ -10,6 +10,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -102,6 +103,7 @@ public class C4 implements Lethal {
                 } else {
                     stack.setAmount(stack.getAmount() - 1);
                 }
+
 
                 playerExtension.getPlayer().getInventory().setItem(additionalItemSlot, new ItemStack(detonatorMaterial));
             }

@@ -279,7 +279,7 @@ public class Events implements Listener {
     public void onHandSwingEvent(PlayerAnimationEvent event) {
         if(event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
             PlayerExtension player = data.getPlayerExtension(event.getPlayer());
-            if(player.isPlayingGame() && player.hasWeaponInMainHand()) {
+            if(player.hasWeaponInMainHand()) {
                 player.changeScope(event.getPlayer().getInventory().getHeldItemSlot());
             }
         }

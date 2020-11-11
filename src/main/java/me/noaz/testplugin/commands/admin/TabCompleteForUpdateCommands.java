@@ -27,20 +27,20 @@ public class TabCompleteForUpdateCommands implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args){
-        if(sender instanceof Player){
-            List<String> list = new ArrayList<>();
-            List<String> listWithOnlyMatching = new ArrayList<>();
-            switch(args.length) {
-                case 1:
-                    list.add("map");
-                    StringUtil.copyPartialMatches(args[0], list, listWithOnlyMatching);
-                    break;
-                case 2:
-                    if(args[0].toLowerCase().equals("map")) {
-                        list = data.getMapNames();
-                    }
-                    StringUtil.copyPartialMatches(args[1], list, listWithOnlyMatching);
-                    break;
+    if(sender instanceof Player){
+        List<String> list = new ArrayList<>();
+        List<String> listWithOnlyMatching = new ArrayList<>();
+        switch(args.length) {
+            case 1:
+                list.add("map");
+                StringUtil.copyPartialMatches(args[0], list, listWithOnlyMatching);
+                break;
+            case 2:
+                if(args[0].toLowerCase().equals("map")) {
+                    list = data.getMapNames();
+                }
+                StringUtil.copyPartialMatches(args[1], list, listWithOnlyMatching);
+                break;
         }
         return listWithOnlyMatching;
     }

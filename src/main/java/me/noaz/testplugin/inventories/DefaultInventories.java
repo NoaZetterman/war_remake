@@ -54,13 +54,13 @@ public class DefaultInventories {
         setArmor(inventory, teamColor);
 
         inventory.setItem(0, new ItemStack(Material.DIAMOND_SWORD));
-        inventory.setItem(1, customItem(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getLore()));
-        inventory.setItem(2, customItem(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getLore()));
+        inventory.setItem(1, customItem(primaryGun.getMaterialAsItemStack(), primaryGun.toString(), primaryGun.getConfiguration().getName(), primaryGun.getLore()));
+        inventory.setItem(2, customItem(secondaryGun.getMaterialAsItemStack(), secondaryGun.toString(), secondaryGun.getConfiguration().getName(), secondaryGun.getLore()));
         if(lethal != LethalEnum.NONE) {
-            inventory.setItem(3, customItem(lethal.getMaterialAsItemStack(), "Lethal", secondaryGun.getLore()));
+            inventory.setItem(3, customItem(lethal.getMaterialAsItemStack(), lethal.toString(), lethal.toString(), secondaryGun.getLore()));
         }
         if(tactical != TacticalEnum.NONE) {
-            inventory.setItem(4, customItem(tactical.getMaterialAsItemStack(), "Tactical", secondaryGun.getLore()));
+            inventory.setItem(4, customItem(tactical.getMaterialAsItemStack(), tactical.toString(), tactical.toString(), secondaryGun.getLore()));
         }
     }
 
@@ -114,9 +114,10 @@ public class DefaultInventories {
         return armor;
     }
 
-    private static ItemStack customItem(ItemStack item, String name, List<String> lore) {
+    private static ItemStack customItem(ItemStack item, String displayName, String name, List<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
+        meta.setDisplayName(displayName);
+        meta.setLocalizedName(name);
         meta.setUnbreakable(true);
         meta.setLore(lore);
 

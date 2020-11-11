@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
 
 public class PlayerDao {
     private static Connection connection;
-    private static final String jsonPrimaryGunsKey = "primary_guns";
-    private static final String jsonSecondaryGunsKey = "secondary_guns";
+    private static final String jsonGunsKey = "guns";
     private static final String jsonPerksKey = "perks";
     private static final String jsonKillstreakKey = "killstreaks";
     private static final String jsonLethalKey = "lethals";
@@ -30,10 +29,10 @@ public class PlayerDao {
 
     public static void update(PlayerInformation playerInformation) {
         try {
+            System.out.println("Player info owned guns: " + playerInformation.getOwnedGuns());
             JsonObject ownedEquipmentAsJson = new JsonObject();
 
-            ownedEquipmentAsJson.add(jsonPrimaryGunsKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedPrimaryGuns()));
-            ownedEquipmentAsJson.add(jsonSecondaryGunsKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedSecondaryGuns()));
+            ownedEquipmentAsJson.add(jsonGunsKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedGuns()));
             ownedEquipmentAsJson.add(jsonPerksKey, JsonUtils.stringListToJsonArray(playerInformation.getOwnedPerks().stream()
                                     .map(Enum::name)
                                     .collect(Collectors.toList())));
@@ -159,19 +158,11 @@ public class PlayerDao {
 
 
 
-        List<String> ownedPrimarys = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonPrimaryGunsKey);
+        List<String> ownedGuns = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonGunsKey);
         for(GunConfiguration gunConfiguration : gunConfigurations) {
             if(gunConfiguration.getGunType() != GunType.SECONDARY && gunConfiguration.getUnlockLevel() == 0
-                    && gunConfiguration.getCostToBuy() == 0 && !ownedPrimarys.contains(gunConfiguration.getName())) {
-                ownedPrimarys.add(gunConfiguration.getName());
-            }
-        }
-
-        List<String> ownedSecondarys = JsonUtils.jsonArrayToStringList(ownedEquipmentAsJson, jsonSecondaryGunsKey);
-        for(GunConfiguration gunConfiguration : gunConfigurations) {
-            if(gunConfiguration.getGunType() == GunType.SECONDARY && gunConfiguration.getUnlockLevel() == 0
-                    && gunConfiguration.getCostToBuy() == 0 && !ownedSecondarys.contains(gunConfiguration.getName())) {
-                ownedSecondarys.add(gunConfiguration.getName());
+                    && gunConfiguration.getCostToBuy() == 0 && !ownedGuns.contains(gunConfiguration.getName())) {
+                ownedGuns.add(gunConfiguration.getName());
             }
         }
 
@@ -219,13 +210,13 @@ public class PlayerDao {
 
         //TODO: Check if currently used gun/other item is not part of owned list. Then remove that.
         if(!gunExists(selectedPrimaryGun, gunConfigurations)) {
-            selectedPrimaryGun = ownedPrimarys.get(0);
+            selectedPrimaryGun = ownedGuns.get(0);
         }
         if(!gunExists(selectedSecondaryGun, gunConfigurations)) {
-            selectedSecondaryGun = ownedSecondarys.get(0);
+            selectedSecondaryGun = ownedGuns.get(0);
         }
 
-        return new PlayerInformation(player, ownedPrimarys, ownedSecondarys, ownedPerks, ownedKillstreaks, ownedLethals, ownedTacticals, selectedPrimaryGun,
+        return new PlayerInformation(player, ownedGuns, ownedPerks, ownedKillstreaks, ownedLethals, ownedTacticals, selectedPrimaryGun,
                 selectedSecondaryGun, selectedPerk, selectedKillstreak, selectedLethal, selectedTactical, selectedResourcepack, timePlayedInMinutes, totalKills, totalDeaths,
                 totalFiredBullets, totalFiredBulletsThatHitEnemy, xpOnCurrentLevel, level, credits, totalHeadshotKills, flagCaptures, freeForAllWins);
 

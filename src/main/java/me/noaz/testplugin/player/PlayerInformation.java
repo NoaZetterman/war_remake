@@ -2,9 +2,7 @@ package me.noaz.testplugin.player;
 
 import me.noaz.testplugin.killstreaks.Killstreak;
 import me.noaz.testplugin.perk.Perk;
-import me.noaz.testplugin.weapons.lethals.Grenade;
 import me.noaz.testplugin.weapons.lethals.LethalEnum;
-import me.noaz.testplugin.weapons.tacticals.Tactical;
 import me.noaz.testplugin.weapons.tacticals.TacticalEnum;
 import org.bukkit.entity.Player;
 
@@ -26,8 +24,7 @@ public class PlayerInformation {
     private Long lastSavedTimeInSeconds;
     private Resourcepack selectedResourcepack;
 
-    private List<String> ownedPrimaryGuns;
-    private List<String> ownedSecondaryGuns;
+    private List<String> ownedGuns;
     private List<Perk> ownedPerks;
     private List<Killstreak> ownedKillstreaks;
     private List<LethalEnum> ownedLethals;
@@ -63,7 +60,7 @@ public class PlayerInformation {
     private int xpThisGame;
     private int flagCapturesThisGame = 0;
 
-    public PlayerInformation(Player player, List<String> ownedPrimaryGuns, List<String> ownedSecondaryGuns,
+    public PlayerInformation(Player player, List<String> ownedGuns,
                              List<Perk> ownedPerks, List<Killstreak> ownedKillstreaks, List<LethalEnum> ownedLethals,
                              List<TacticalEnum> ownedTacticals, String selectedPrimaryGun,
                              String selectedSecondaryGun, Perk selectedPerk, Killstreak selectedKillstreak, LethalEnum selectedLethal,
@@ -79,8 +76,7 @@ public class PlayerInformation {
 
         this.selectedResourcepack = selectedResourcepack;
 
-        this.ownedPrimaryGuns = ownedPrimaryGuns;
-        this.ownedSecondaryGuns = ownedSecondaryGuns;
+        this.ownedGuns = ownedGuns;
         this.ownedPerks = ownedPerks;
         this.ownedKillstreaks = ownedKillstreaks;
         this.ownedLethals = ownedLethals;
@@ -125,12 +121,8 @@ public class PlayerInformation {
         return totalOnlineTimeInSeconds;
     }
 
-    public boolean hasPrimary(String gunName) {
-        return ownedPrimaryGuns.contains(gunName);
-    }
-
-    public boolean hasSecondary(String gunName) {
-        return ownedSecondaryGuns.contains(gunName);
+    public boolean hasGun(String gunName) {
+        return ownedGuns.contains(gunName);
     }
 
     public boolean hasPerk(Perk perk) {
@@ -149,12 +141,8 @@ public class PlayerInformation {
         return ownedKillstreaks.contains(killstreak);
     }
 
-    public List<String> getOwnedPrimaryGuns() {
-        return ownedPrimaryGuns;
-    }
-
-    public List<String> getOwnedSecondaryGuns() {
-        return ownedSecondaryGuns;
+    public List<String> getOwnedGuns() {
+        return ownedGuns;
     }
 
     public List<Perk> getOwnedPerks() {
@@ -291,12 +279,8 @@ public class PlayerInformation {
         return freeForAllWins;
     }
 
-    public void addPrimary(String name) {
-        ownedPrimaryGuns.add(name);
-    }
-
-    public void addSecondary(String name) {
-        ownedSecondaryGuns.add(name);
+    public void addGun(String name) {
+        ownedGuns.add(name);
     }
 
     public void addPerk(Perk perk) {

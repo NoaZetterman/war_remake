@@ -432,17 +432,15 @@ public class PlayerExtension {
      * @return The weapon the player currently has in main hand (right hand, and currently selected), null if there's no weapon in main hand.
      */
     public Weapon getWeaponInMainHand() {
-        if (player.getInventory().getItemInMainHand().getType() == activePrimaryGun.getMaterial()) {
+        if(player.getInventory().getItemInMainHand().getItemMeta() == null) {
+            return null;
+        } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activePrimaryGun.getConfiguration().getName())) {
             return activePrimaryGun;
-        } else if (player.getInventory().getItemInMainHand().getType() == activeSecondaryGun.getMaterial()) {
+        } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeSecondaryGun.getConfiguration().getName())) {
             return activeSecondaryGun;
-        } else if (player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getMaterial()) {
+        } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeLethalEnum.toString())) {
             return activeLethal;
-        } else if (player.getInventory().getItemInMainHand().getType() == activeLethalEnum.getAdditionalMaterial()) {
-            return activeLethal;
-        } else if (player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getMaterial()) {
-            return activeTactical;
-        } else if (player.getInventory().getItemInMainHand().getType() == activeTacticalEnum.getAdditionalMaterial()) {
+        } else if (player.getInventory().getItemInMainHand().getItemMeta().getLocalizedName().equals(activeTacticalEnum.toString())) {
             return activeTactical;
         }else {
             return null;
@@ -616,11 +614,7 @@ public class PlayerExtension {
             if(gun.getName().equals(gunName)) {
                 changeCredits(-gun.getCostToBuy());
 
-                if(gun.getGunType() == GunType.SECONDARY) {
-                    playerInformation.addSecondary(gunName);
-                } else {
-                    playerInformation.addPrimary(gunName);
-                }
+                playerInformation.addGun(gunName);
             }
         }
     }
@@ -721,12 +715,8 @@ public class PlayerExtension {
         return isDead;
     }
 
-    public boolean ownsPrimaryGun(String name) {
-        return playerInformation.hasPrimary(name);
-    }
-
-    public boolean ownsSecondaryGun(String name) {
-        return playerInformation.hasSecondary(name);
+    public boolean ownsGun(String name) {
+        return playerInformation.hasGun(name);
     }
 
     public boolean ownsKillstreak(Killstreak killstreak) {

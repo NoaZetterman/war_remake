@@ -85,7 +85,7 @@ public class LoadoutMenu {
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
                             if(gun.getName().equals(clickedItemName)) {
-                                if(player.ownsPrimaryGun(clickedItemName)) {
+                                if(player.ownsGun(clickedItemName)) {
                                     player.setSelectedPrimaryGun(clickedItemName);
                                 } else if(gun.getCostToBuy() <= player.getCredits()) {
                                     GunSelection.createBuyScreen(player, gun);
@@ -101,7 +101,7 @@ public class LoadoutMenu {
                     } else {
                         for(GunConfiguration gun: gunConfigurations) {
                             if(gun.getName().equals(clickedItemName)) {
-                                if(player.ownsSecondaryGun(clickedItemName)) {
+                                if(player.ownsGun(clickedItemName)) {
                                     player.setSelectedSecondaryGun(clickedItemName);
                                 } else if(gun.getCostToBuy() <= player.getCredits()) {
                                     GunSelection.createBuyScreen(player, gun);
@@ -318,7 +318,7 @@ public class LoadoutMenu {
 
             for(GunConfiguration gun : configurations) {
                 if(gun.getGunType() != GunType.SECONDARY) {
-                    if (!player.ownsPrimaryGun(gun.getName())) {
+                    if (!player.ownsGun(gun.getName())) {
                         if(gun.getUnlockLevel() > player.getLevel()) {
                             items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(gun);
                         } else if(gun.getCostToBuy() > player.getCredits()) {
@@ -350,7 +350,7 @@ public class LoadoutMenu {
 
             for(GunConfiguration gun : configurations) {
                 if(gun.getGunType() == GunType.SECONDARY) {
-                    if (!player.ownsSecondaryGun(gun.getName())) {
+                    if (!player.ownsGun(gun.getName())) {
                         if(gun.getUnlockLevel() > player.getLevel()) {
                             items[gun.getLoadoutMenuSlot()] = BuyableSelection.createLockedItem(gun);
                         } else if(gun.getCostToBuy() > player.getCredits()) {
